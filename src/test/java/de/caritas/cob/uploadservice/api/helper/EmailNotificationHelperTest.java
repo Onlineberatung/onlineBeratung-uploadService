@@ -1,0 +1,67 @@
+package de.caritas.cob.uploadservice.api.helper;
+
+import static de.caritas.cob.uploadservice.helper.TestConstants.KEYCLOAK_ACCESS_TOKEN;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import de.caritas.cob.uploadservice.api.model.NewMessageNotificationDto;
+import de.caritas.cob.uploadservice.api.service.LogService;
+import de.caritas.cob.uploadservice.api.service.helper.ServiceHelper;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
+
+@RunWith(MockitoJUnitRunner.class)
+public class EmailNotificationHelperTest {
+
+  private static final String RC_GROUP_ID = "fR2Rz7dmWmHdXE8uz";
+  private static final String USER_SERVICE_API_SEND_NEW_MESSAGE_NOTIFICATION_URL =
+      "http://caritas.local/service/user/mails/new";
+  private static final String ERROR = "error";
+
+  @Mock private RestTemplate restTemplate;
+  @Mock private ServiceHelper serviceHelper;
+  @Mock private LogService logService;
+  @InjectMocks private EmailNotificationHelper emailNotificationHelper;
+
+  @Test
+  public void sendEmailNotificationViaUserService_Should_LogException_OnError()
+      throws RestClientException {
+
+    RestClientException exception = new RestClientException(ERROR);
+
+    when(restTemplate.exchange(
+            ArgumentMatchers.anyString(),
+            ArgumentMatchers.any(),
+            ArgumentMatchers.<HttpEntity<?>>any(),
+            ArgumentMatchers.<Class<NewMessageNotificationDto>>any()))
+        .thenThrow(exception);
+
+    emailNotificationHelper.sendEmailNotificationViaUserService(
+        RC_GROUP_ID, USER_SERVICE_API_SEND_NEW_MESSAGE_NOTIFICATION_URL, KEYCLOAK_ACCESS_TOKEN);
+
+    verify(logService, times(1)).logUserServiceHelperError(Mockito.any());
+  }
+
+  @Test
+  public void sendEmailNotificationViaUserService_Should_CallUserServiceWithGiveUrl() {
+
+    emailNotificationHelper.sendEmailNotificationViaUserService(
+        RC_GROUP_ID, USER_SERVICE_API_SEND_NEW_MESSAGE_NOTIFICATION_URL, KEYCLOAK_ACCESS_TOKEN);
+
+    verify(restTemplate, times(1))
+        .exchange(
+            Mockito.eq(USER_SERVICE_API_SEND_NEW_MESSAGE_NOTIFICATION_URL),
+                Mockito.eq(HttpMethod.POST),
+            Mockito.any(), Mockito.eq(Void.class));
+  }
+}

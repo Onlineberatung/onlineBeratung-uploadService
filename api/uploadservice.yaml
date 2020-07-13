@@ -1,0 +1,170 @@
+swagger: "2.0"
+info:
+  description: "This information will be replaced by the SpringFox config information"
+  version: "0.0.1"
+  title: "will be replaced"
+securityDefinitions:
+  Bearer:
+    type: "apiKey"
+    name: "Authorization"
+    in: "header"
+
+# REST API path definitions #
+paths:
+  /uploads/messages/key:
+    post:
+      tags:
+        - "upload-controller"
+      summary: "Update the master-key fragment for the Session-Key [Authorization: Role: technical]"
+      operationId: "updateKey"
+      security:
+        - Bearer: []
+      parameters:
+        - in: "body"
+          name: "key"
+          required: true
+          schema:
+            $ref: "#/definitions/MasterKeyDto"
+      responses:
+        202:
+          description: "ACCEPTED - key was successfully inserted"
+        401:
+          description: "UNAUTHORIZED - no/invalid Keycloak token"
+        403:
+          description: "FORBIDDEN - no/invalid role/authorization"
+        409:
+          description: "CONFLICT - master-key is already set"
+        500:
+          description: "INTERNAL SERVER ERROR - server encountered unexpected condition"
+  /uploads/new/{roomId}:
+    post:
+      tags:
+        - "upload-controller"
+      summary: "Upload a file and send a message to a Rocket.Chat room [Authorization: Role: user, consultant]"
+      operationId: "uploadFileToRoom"
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          required: true
+          description: "Rocket.Chat room id"
+          name: "roomId"
+          type: string
+        - in: "header"
+          name: "RCToken"
+          type: string
+          required: true
+        - in: "header"
+          name: "RCUserId"
+          type: string
+          required: true
+        - in: "formData"
+          name: "msg"
+          type: string
+          description: "A text message"
+          required: false
+        - in: "formData"
+          name: "description"
+          type: string
+          description: "A description of the file"
+          required: false
+        - in: "formData"
+          name: "tmId"
+          type: string
+          description: "The thread message id (if you want upload a file to a thread)"
+          required: false
+        - in: "formData"
+          name: "file"
+          type: file
+          description: "File to upload"
+          required: true
+        - in: "formData"
+          name: "sendNotification"
+          type: string
+          description: "Flag, whether an email notification should be sent or not (true/false)"
+          required: true
+
+      responses:
+        201:
+          description: "CREATED - upload was successfully performed"
+        400:
+          description: "BAD REQUEST - invalid/incomplete request or body object"
+        401:
+          description: "UNAUTHORIZED - no/invalid Keycloak token"
+        403:
+          description: "FORBIDDEN - no/invalid role/authorization"
+        413:
+          description: "REQUEST ENTITY TOO LARGE - Maximum upload size exceeded"
+        415:
+          description: "UNSUPPORTED MEDIA TYPE - Type of uploaded file is not allowed"
+        500:
+          description: "INTERNAL SERVER ERROR - server encountered unexpected condition"
+
+  /uploads/feedback/new/{feedbackRoomId}:
+    post:
+      tags:
+        - "upload-controller"
+      summary: "Upload a file and send a message to to a Rocket.Chat feedback room [Authorization: authority for feedback chat]"
+      operationId: "uploadFileToFeedbackRoom"
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          required: true
+          description: "Rocket.Chat room id"
+          name: "feedbackRoomId"
+          type: string
+        - in: "header"
+          name: "RCToken"
+          type: string
+          required: true
+        - in: "header"
+          name: "RCUserId"
+          type: string
+          required: true
+        - in: "formData"
+          name: "msg"
+          type: string
+          description: "A text message"
+          required: false
+        - in: "formData"
+          name: "description"
+          type: string
+          description: "A description of the file"
+          required: false
+        - in: "formData"
+          name: "tMid"
+          type: string
+          description: "The thread message id (if you want upload a file to a thread)"
+          required: false
+        - in: "formData"
+          name: "file"
+          type: file
+          description: "File to upload"
+          required: true
+        - in: "formData"
+          name: "sendNotification"
+          type: string
+          description: "Flag, whether an email notification should be sent or not (true/false)"
+          required: true
+
+      responses:
+        201:
+          description: "CREATED - upload was successfully performed"
+        400:
+          description: "BAD REQUEST - invalid/incomplete request or body object"
+        401:
+          description: "UNAUTHORIZED - no/invalid Keycloak token"
+        403:
+          description: "FORBIDDEN - no/invalid role/authorization"
+        413:
+          description: "REQUEST ENTITY TOO LARGE - Maximum upload size exceeded"
+        415:
+          description: "UNSUPPORTED MEDIA TYPE - Type of uploaded file is not allowed"
+        500:
+          description: "INTERNAL SERVER ERROR - server encountered unexpected condition"
+
+# Model/object definitions #
+definitions:
+  MasterKeyDto:
+    type: "object"
