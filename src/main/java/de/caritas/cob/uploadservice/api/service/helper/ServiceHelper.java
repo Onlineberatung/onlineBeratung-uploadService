@@ -17,8 +17,6 @@ public class ServiceHelper {
   @Value("${csrf.cookie.property}")
   private String csrfCookieProperty;
 
-  @Autowired private AuthenticatedUser authenticatedUser;
-
   /**
    * Adds the Rocket.Chat user id, token and group id to the given {@link HttpHeaders} object
    *

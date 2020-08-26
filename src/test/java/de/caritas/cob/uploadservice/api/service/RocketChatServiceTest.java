@@ -29,12 +29,16 @@ import static de.caritas.cob.uploadservice.helper.TestConstants.RC_UPLOAD_ERROR_
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_USER_ID;
 import static de.caritas.cob.uploadservice.helper.TestConstants.STANDARD_SUCCESS_RESPONSE_DTO;
 import static de.caritas.cob.uploadservice.helper.TestConstants.UPLOAD_FILE;
+import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.powermock.reflect.Whitebox.setInternalState;
 
 import de.caritas.cob.uploadservice.api.container.RocketChatCredentials;
 import de.caritas.cob.uploadservice.api.container.RocketChatUploadParameter;
@@ -54,6 +58,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -68,7 +73,7 @@ public class RocketChatServiceTest {
   @InjectMocks private RocketChatService rocketChatService;
   @Mock RocketChatCredentialsHelper rcCredentialsHelper;
   @Mock private RestTemplate restTemplate;
-  @Mock private LogService logService;
+  @Mock private Logger logger;
   @Mock private EncryptionService encryptionService;
   @Mock private UploadErrorHelper uploadErrorHelper;
 
@@ -118,6 +123,8 @@ public class RocketChatServiceTest {
             .roomId(RC_ROOM_ID)
             .tmId(RC_TMID)
             .build();
+
+    setInternalState(LogService.class, "LOGGER", logger);
   }
 
   /* Method: markGroupAsReadForSystemUser */
@@ -141,7 +148,7 @@ public class RocketChatServiceTest {
       assertTrue("Expected RocketChatPostMarkGroupAsReadException thrown", true);
     }
 
-    verify(logService, times(1)).logRocketChatServiceError(ex);
+    verify(logger, times(1)).error(anyString(), eq(getStackTrace(ex)));
   }
 
   @Test
@@ -169,7 +176,7 @@ public class RocketChatServiceTest {
 
     boolean response = rocketChatService.markGroupAsReadForSystemUser(RC_ROOM_ID);
     assertFalse(response);
-    verify(logService, times(1)).logRocketChatServiceError(Mockito.anyString());
+    verify(logger, times(1)).error(anyString(), anyString());
   }
 
   /* Method: roomsUpload */
@@ -236,8 +243,8 @@ public class RocketChatServiceTest {
       // nop
     }
 
-    verify(logService, times(1))
-        .logRocketChatServiceError(RC_UPLOAD_ERROR_ENTITY_TOO_LARGE.getErrorMessage());
+    verify(logger, times(1))
+        .error("Rocket.Chat service error: {}", RC_UPLOAD_ERROR_ENTITY_TOO_LARGE.getErrorMessage());
   }
 
   @Test
@@ -302,8 +309,9 @@ public class RocketChatServiceTest {
       // nop
     }
 
-    verify(logService, times(1))
-        .logRocketChatServiceError(RC_UPLOAD_ERROR_INVALID_FILE_TYPE.getErrorMessage());
+    verify(logger, times(1))
+        .error("Rocket.Chat service error: {}",
+            RC_UPLOAD_ERROR_INVALID_FILE_TYPE.getErrorMessage());
   }
 
   @Test

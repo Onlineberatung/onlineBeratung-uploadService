@@ -1,6 +1,6 @@
 package de.caritas.cob.uploadservice.api;
 
-import lombok.extern.slf4j.Slf4j;
+import de.caritas.cob.uploadservice.api.service.LogService;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
-@Slf4j
 @ControllerAdvice
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class ApiDefaultResponseEntityExceptionHandler {
@@ -26,8 +25,7 @@ public class ApiDefaultResponseEntityExceptionHandler {
   @ExceptionHandler({RuntimeException.class})
   public ResponseEntity<Object> handleInternal(final RuntimeException ex,
       final WebRequest request) {
-    log.error("Default: UploadService API: 500 Internal Server Error: {}",
-        org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace(ex));
+    LogService.logInternalServerError(ex);
 
     return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
   }

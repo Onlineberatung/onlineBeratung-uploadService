@@ -30,8 +30,6 @@ public class EncryptionService {
 
   private String fragment_masterKey = INITIAL_MASTER_KEY;
 
-  @Autowired private LogService logService;
-
   /**
    * Updates the Master-Key fragment
    *
@@ -96,7 +94,7 @@ public class EncryptionService {
       return ENCRYPTED_MESSAGE_FLAG
           + Base64.getEncoder().encodeToString(cipher.doFinal(messageToEncrypt.getBytes("UTF-8")));
     } catch (Exception e) {
-      logService.logEncryptionServiceError(e);
+      LogService.logEncryptionServiceError(e);
       throw new CustomCryptoException(e);
     }
   }
@@ -122,10 +120,10 @@ public class EncryptionService {
       cipher.init(Cipher.DECRYPT_MODE, keySpec);
       return new String(cipher.doFinal(Base64.getDecoder().decode(messageToDecrypt)));
     } catch (BadPaddingException e) {
-      logService.logEncryptionPossibleBadKeyError(e);
+      LogService.logEncryptionPossibleBadKeyError(e);
       throw new CustomCryptoException(e);
     } catch (Exception e) {
-      logService.logEncryptionServiceError(e);
+      LogService.logEncryptionServiceError(e);
       throw new CustomCryptoException(e);
     }
   }

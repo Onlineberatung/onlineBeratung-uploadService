@@ -2,10 +2,13 @@ package de.caritas.cob.uploadservice.api.service;
 
 import static net.therore.logback.EventMatchers.text;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.powermock.reflect.Whitebox.setInternalState;
 
 import de.caritas.cob.uploadservice.api.exception.RocketChatBadRequestException;
 import java.io.PrintWriter;
@@ -17,6 +20,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.slf4j.Logger;
+import org.springframework.http.HttpStatus;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LogServiceTest {
@@ -25,102 +30,158 @@ public class LogServiceTest {
   private static final String RC_SERVICE_ERROR_TEXT = "Rocket.Chat service error: ";
   private static final String INTERNAL_SERVER_ERROR_TEXT = "Internal Server Error: ";
   private static final String BAD_REQUEST_TEXT = "Bad Request: ";
-  @Rule public LogbackRule rule = new LogbackRule();
-  @Mock Exception exception;
-  @InjectMocks private LogService logService;
-  @Mock private RocketChatBadRequestException rocketChatBadRequestException;
+
+  @Mock
+  Exception exception;
+
+  @Mock
+  private RocketChatBadRequestException rocketChatBadRequestException;
+
+  @Mock
+  private Logger logger;
 
   @Before
   public void setup() {
-    logService = new LogService();
+    setInternalState(LogService.class, "LOGGER", logger);
   }
 
-  /** Tests for method: logRocketChatServiceError */
+  /**
+   * Tests for method: logRocketChatServiceError
+   */
   @Test
   public void logRocketChatServiceError_Should_LogExceptionStackTrace() {
 
-    logService.logRocketChatServiceError(rocketChatBadRequestException);
+    LogService.logRocketChatServiceError(rocketChatBadRequestException);
     verify(rocketChatBadRequestException, atLeastOnce()).printStackTrace(any(PrintWriter.class));
   }
 
   @Test
   public void logRocketChatServiceError_Should_LogErrorMessage() {
 
-    logService.logRocketChatServiceError(ERROR_MESSAGE);
-    verify(rule.getLog(), times(1)).contains(argThat(text(RC_SERVICE_ERROR_TEXT + ERROR_MESSAGE)));
+    LogService.logRocketChatServiceError(ERROR_MESSAGE);
+    verify(logger, times(1)).error(eq(RC_SERVICE_ERROR_TEXT + "{}"),
+        eq(ERROR_MESSAGE));
   }
 
   @Test
   public void logRocketChatServiceError_Should_LogErrorMessageAndExceptionStackTrace() {
 
-    logService.logRocketChatServiceError(ERROR_MESSAGE, rocketChatBadRequestException);
-    verify(rule.getLog(), times(1)).contains(argThat(text(RC_SERVICE_ERROR_TEXT + ERROR_MESSAGE)));
+    LogService.logRocketChatServiceError(ERROR_MESSAGE, rocketChatBadRequestException);
+    verify(logger, times(1)).error(eq(RC_SERVICE_ERROR_TEXT + "{}"),
+        eq(ERROR_MESSAGE));
     verify(rocketChatBadRequestException, atLeastOnce()).printStackTrace(any(PrintWriter.class));
   }
 
-  /** Tests for method: logUserServiceHelperError */
+  /**
+   * Tests for method: logUserServiceHelperError
+   */
   @Test
   public void logUserServiceHelperError_Should_LogExceptionStackTrace() {
 
-    logService.logUserServiceHelperError(exception);
+    LogService.logUserServiceHelperError(exception);
     verify(exception, atLeastOnce()).printStackTrace(any(PrintWriter.class));
   }
 
-  /** Tests for method: logInfo */
+  /**
+   * Tests for method: logInfo
+   */
   @Test
   public void logInfo_Should_LogMessage() {
 
-    logService.logInfo(ERROR_MESSAGE);
-    verify(rule.getLog(), times(1)).contains(argThat(text(ERROR_MESSAGE)));
+    LogService.logInfo(ERROR_MESSAGE);
+    verify(logger, times(1)).info(eq(ERROR_MESSAGE));
   }
 
-  /** Tests for method: logEncryptionServiceError */
+  /**
+   * Tests for method: logEncryptionServiceError
+   */
   @Test
   public void logEncryptionServiceError_Should_LogExceptionStackTrace() {
 
-    logService.logEncryptionServiceError(exception);
+    LogService.logEncryptionServiceError(exception);
     verify(exception, atLeastOnce()).printStackTrace(any(PrintWriter.class));
   }
 
-  /** Tests for method: logEncryptionPossibleBadKeyError */
+  /**
+   * Tests for method: logEncryptionPossibleBadKeyError
+   */
   @Test
   public void logEncryptionPossibleBadKeyError_Should_LogExceptionStackTrace() {
 
-    logService.logEncryptionPossibleBadKeyError(exception);
+    LogService.logEncryptionPossibleBadKeyError(exception);
     verify(exception, atLeastOnce()).printStackTrace(any(PrintWriter.class));
   }
 
-  /** Tests for method: logRocketChatBadRequestError */
+  /**
+   * Tests for method: logRocketChatBadRequestError
+   */
   @Test
   public void logRocketChatBadRequestError_Should_LogExceptionStackTrace() {
 
-    logService.logRocketChatBadRequestError(exception);
+    LogService.logRocketChatBadRequestError(exception);
     verify(exception, atLeastOnce()).printStackTrace(any(PrintWriter.class));
   }
 
-  /** Tests for method: logInternalServerError */
+  /**
+   * Tests for method: logInternalServerError
+   */
   @Test
   public void logInternalServerError_Should_LogErrorMessageAndExceptionStackTrace() {
 
-    logService.logInternalServerError(ERROR_MESSAGE, exception);
-    verify(rule.getLog(), times(1))
-        .contains(argThat(text(INTERNAL_SERVER_ERROR_TEXT + ERROR_MESSAGE)));
+    LogService.logInternalServerError(ERROR_MESSAGE, exception);
+    verify(logger, times(1))
+        .error(anyString(), eq(INTERNAL_SERVER_ERROR_TEXT), eq(ERROR_MESSAGE));
     verify(exception, atLeastOnce()).printStackTrace(any(PrintWriter.class));
   }
 
   @Test
   public void logInternalServerError_Should_LogExceptionStackTrace() {
 
-    logService.logInternalServerError(exception);
-    verify(rule.getLog(), times(1)).contains(argThat(text(INTERNAL_SERVER_ERROR_TEXT)));
+    LogService.logInternalServerError(exception);
+    verify(logger, times(1)).error(anyString(), eq(INTERNAL_SERVER_ERROR_TEXT));
     verify(exception, atLeastOnce()).printStackTrace(any(PrintWriter.class));
   }
 
-  /** Tests for method: logInfo */
+  /**
+   * Tests for method: logInfo
+   */
   @Test
   public void logBadRequest_Should_LogMessage() {
 
-    logService.logBadRequest(ERROR_MESSAGE);
-    verify(rule.getLog(), times(1)).contains(argThat(text(BAD_REQUEST_TEXT + ERROR_MESSAGE)));
+    LogService.logBadRequest(ERROR_MESSAGE);
+    verify(logger, times(1)).error(eq(BAD_REQUEST_TEXT + "{}"),
+        eq(ERROR_MESSAGE));
+  }
+
+  @Test
+  public void logWarning_Should_LogMessage() {
+
+    LogService.logWarning(exception);
+    verify(exception, atLeastOnce()).printStackTrace(any(PrintWriter.class));
+    verify(logger, times(1)).warn(anyString(), anyString());
+  }
+
+  @Test
+  public void logWarning_Should_LogMessageAndStatus() {
+
+    LogService.logWarning(HttpStatus.ACCEPTED, exception);
+    verify(exception, atLeastOnce()).printStackTrace(any(PrintWriter.class));
+    verify(logger, times(1)).warn(anyString(), eq(HttpStatus.ACCEPTED.getReasonPhrase()),
+        anyString());
+  }
+
+  @Test
+  public void logError_Should_LogMessage() {
+
+    LogService.logError(exception);
+    verify(exception, atLeastOnce()).printStackTrace(any(PrintWriter.class));
+    verify(logger, times(1)).error(anyString(), anyString());
+  }
+
+  @Test
+  public void logDebug_Should_LogMessage() {
+
+    LogService.logDebug(ERROR_MESSAGE);
+    verify(logger, times(1)).debug(anyString(), eq(ERROR_MESSAGE));
   }
 }

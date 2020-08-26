@@ -29,7 +29,6 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-@Slf4j
 public class RocketChatService {
 
   @Value("${rocket.chat.api.post.group.messages.read.url}")
@@ -66,8 +65,6 @@ public class RocketChatService {
   public static final String ROCKET_CHAT_ERROR_TYPE_INVALID_FILE_TYPE = "error-invalid-file-type";
 
   @Autowired private RestTemplate restTemplate;
-
-  @Autowired private LogService logService;
 
   @Autowired private EncryptionService encryptionService;
 
@@ -108,7 +105,7 @@ public class RocketChatService {
           rcGroupId);
 
     } else {
-      logService.logRocketChatServiceError(
+      LogService.logRocketChatServiceError(
           String.format("Could not set messages as read for system user in group %s", rcGroupId));
       return false;
     }
@@ -130,13 +127,13 @@ public class RocketChatService {
       HttpHeaders headers = getRocketChatHeader(rcToken, rcUserId);
       PostGroupAsReadDto postGroupAsReadDto = new PostGroupAsReadDto(rcGroupId);
       HttpEntity<PostGroupAsReadDto> request =
-          new HttpEntity<PostGroupAsReadDto>(postGroupAsReadDto, headers);
+          new HttpEntity<>(postGroupAsReadDto, headers);
 
       response =
           restTemplate.postForObject(rcPostGroupMessagesRead, request, StandardResponseDto.class);
 
     } catch (Exception ex) {
-      logService.logRocketChatServiceError(ex);
+      LogService.logRocketChatServiceError(ex);
       throw new RocketChatPostMarkGroupAsReadException(ex);
     }
 
@@ -170,7 +167,7 @@ public class RocketChatService {
           getParameterMapForUploadRequest(
               rocketChatUploadParameter, rocketChatCredentials.getRocketChatUserId());
       HttpEntity<MultiValueMap<String, Object>> request =
-          new HttpEntity<MultiValueMap<String, Object>>(map, headers);
+          new HttpEntity<>(map, headers);
 
       response = restTemplate.postForObject(uploadUrl, request, UploadResponseDto.class);
 
@@ -184,10 +181,10 @@ public class RocketChatService {
               rocketChatUploadParameter.getRoomId(),
               rocketChatCredentials.getRocketChatUserId());
       if (uploadError.getRcErrorType().equals(ROCKET_CHAT_ERROR_TYPE_FILE_TOO_LARGE)) {
-        logService.logRocketChatServiceError(uploadError.getErrorMessage());
+        LogService.logRocketChatServiceError(uploadError.getErrorMessage());
         throw new MaxUploadSizeExceededException(-1, httpStatusCodeException);
       } else if (uploadError.getRcErrorType().equals(ROCKET_CHAT_ERROR_TYPE_INVALID_FILE_TYPE)) {
-        logService.logRocketChatServiceError(uploadError.getErrorMessage());
+        LogService.logRocketChatServiceError(uploadError.getErrorMessage());
         throw new InvalidFileTypeException(uploadError.getErrorMessage(), httpStatusCodeException);
       } else {
         throw new MultipartException(uploadError.getErrorMessage(), httpStatusCodeException);

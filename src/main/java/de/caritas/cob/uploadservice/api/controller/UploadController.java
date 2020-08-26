@@ -12,6 +12,8 @@ import io.swagger.annotations.Api;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,14 +25,16 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-/** Controller for upload requests. */
+/**
+ * Controller for upload requests.
+ */
 @RestController
+@RequiredArgsConstructor
 @Api(tags = "upload-controller")
 public class UploadController implements UploadsApi {
 
-  @Autowired UploadFacade uploadFacade;
-  @Autowired EncryptionService encryptionService;
-  @Autowired LogService logService;
+  private final @NonNull UploadFacade uploadFacade;
+  private final @NonNull EncryptionService encryptionService;
 
   /**
    * Updates the Master-Key Fragment for the en-/decryption of messages.
@@ -43,7 +47,7 @@ public class UploadController implements UploadsApi {
 
     if (!encryptionService.getMasterKey().equals(masterKey.getMasterKey())) {
       encryptionService.updateMasterKey(masterKey.getMasterKey());
-      logService.logInfo("MasterKey updated");
+      LogService.logInfo("MasterKey updated");
       return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -129,8 +133,9 @@ public class UploadController implements UploadsApi {
             .tmId(tmId)
             .build();
 
-    return new ResponseEntity<Void>(
+    return new ResponseEntity<>(
         uploadFacade.uploadFileToFeedbackRoom(
-            rocketChatCredentials, rocketChatUploadParameter, Boolean.valueOf(sendNotification)));
+            rocketChatCredentials, rocketChatUploadParameter,
+            Boolean.parseBoolean(sendNotification)));
   }
 }
