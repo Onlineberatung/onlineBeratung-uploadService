@@ -60,15 +60,6 @@ public class LogService {
   }
 
   /**
-   * Logs a Encryption possible bad key service error.
-   *
-   * @param exception the exception to be logged
-   */
-  public static void logEncryptionPossibleBadKeyError(Exception exception) {
-    LOGGER.error(RC_ENCRYPTION_BAD_KEY_SERVICE_ERROR + "{}", getStackTrace(exception));
-  }
-
-  /**
    * Logs a Rocket.Chat Bad Request error.
    *
    * @param exception the exception to be logged

@@ -1,5 +1,7 @@
 package de.caritas.cob.uploadservice.api.controller;
 
+import static java.lang.Boolean.parseBoolean;
+
 import de.caritas.cob.uploadservice.api.aspect.TempCleanup;
 import de.caritas.cob.uploadservice.api.container.RocketChatCredentials;
 import de.caritas.cob.uploadservice.api.container.RocketChatUploadParameter;
@@ -14,7 +16,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,7 +56,7 @@ public class UploadController implements UploadsApi {
   }
 
   /**
-   * Upload a file to a Rocket.Chat room with a text message
+   * Upload a file to a Rocket.Chat room with a text message.
    *
    * @param roomId Rocket.Chat room id
    * @param rcToken Rocket.Chat token
@@ -91,13 +92,14 @@ public class UploadController implements UploadsApi {
             .tmId(tmId)
             .build();
 
-    return new ResponseEntity<Void>(
-        uploadFacade.uploadFileToRoom(
-            rocketChatCredentials, rocketChatUploadParameter, Boolean.valueOf(sendNotification)));
+    uploadFacade.uploadFileToRoom(
+        rocketChatCredentials, rocketChatUploadParameter, parseBoolean(sendNotification));
+
+    return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
   /**
-   * Upload a file to a Rocket.Chat feedback room with a text message
+   * Upload a file to a Rocket.Chat feedback room with a text message.
    *
    * @param feedbackRoomId Rocket.Chat feedback room id
    * @param rcToken Rocket.Chat token
@@ -133,9 +135,9 @@ public class UploadController implements UploadsApi {
             .tmId(tmId)
             .build();
 
-    return new ResponseEntity<>(
-        uploadFacade.uploadFileToFeedbackRoom(
-            rocketChatCredentials, rocketChatUploadParameter,
-            Boolean.parseBoolean(sendNotification)));
+    uploadFacade.uploadFileToFeedbackRoom(rocketChatCredentials, rocketChatUploadParameter,
+        parseBoolean(sendNotification));
+
+    return new ResponseEntity<>(HttpStatus.CREATED);
   }
 }

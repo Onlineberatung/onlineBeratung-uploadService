@@ -52,7 +52,7 @@ public class RocketChatCredentialsHelper {
    *
    * @return
    */
-  public RocketChatCredentials getSystemUser() {
+  public RocketChatCredentials getSystemUser() throws RocketChatUserNotInitializedException {
     // If both are uninitialized throw Exception
     if (systemUser_A == null && systemUser_B == null) {
       throw new RocketChatUserNotInitializedException("No system user was initialized");
@@ -73,7 +73,7 @@ public class RocketChatCredentialsHelper {
   }
 
   /** Update the Credentials */
-  public void updateCredentials() {
+  public void updateCredentials() throws RocketChatLoginException {
 
     if (systemUser_A != null && systemUser_B != null) {
       if (systemUser_A.getTimeStampCreated().isBefore(systemUser_B.getTimeStampCreated())) {
@@ -105,7 +105,8 @@ public class RocketChatCredentialsHelper {
    * @param password
    * @return
    */
-  public RocketChatCredentials loginUserServiceUser(String username, String password) {
+  public RocketChatCredentials loginUserServiceUser(String username, String password)
+      throws RocketChatLoginException {
 
     RocketChatCredentials rcc =
         RocketChatCredentials.builder()
@@ -145,7 +146,8 @@ public class RocketChatCredentialsHelper {
    * @param password
    * @return
    */
-  public ResponseEntity<LoginResponseDto> loginUser(String username, String password) {
+  public ResponseEntity<LoginResponseDto> loginUser(String username, String password)
+      throws RocketChatLoginException {
 
     try {
       HttpHeaders headers = new HttpHeaders();

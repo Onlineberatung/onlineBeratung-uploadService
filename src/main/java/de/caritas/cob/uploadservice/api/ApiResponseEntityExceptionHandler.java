@@ -1,16 +1,12 @@
 package de.caritas.cob.uploadservice.api;
 
-import de.caritas.cob.uploadservice.api.exception.CustomCryptoException;
 import de.caritas.cob.uploadservice.api.exception.InvalidFileTypeException;
 import de.caritas.cob.uploadservice.api.exception.KeycloakException;
-import de.caritas.cob.uploadservice.api.exception.NoMasterKeyException;
-import de.caritas.cob.uploadservice.api.exception.RocketChatBadRequestException;
+import de.caritas.cob.uploadservice.api.exception.httpresponses.InternalServerErrorException;
 import de.caritas.cob.uploadservice.api.service.LogService;
 import java.net.UnknownHostException;
 import javax.validation.ConstraintViolationException;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.hibernate.service.spi.ServiceException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataAccessException;
@@ -92,7 +88,7 @@ public class ApiResponseEntityExceptionHandler extends ResponseEntityExceptionHa
    * @param request WebRequest
    * @return a ResponseEntity instance
    */
-  @ExceptionHandler({ConstraintViolationException.class, RocketChatBadRequestException.class})
+  @ExceptionHandler(ConstraintViolationException.class)
   public ResponseEntity<Object> handleBadRequest(
       final RuntimeException ex, final WebRequest request) {
     LogService.logWarning(ex);
@@ -182,15 +178,28 @@ public class ApiResponseEntityExceptionHandler extends ResponseEntityExceptionHa
         NullPointerException.class,
         IllegalArgumentException.class,
         IllegalStateException.class,
-        ServiceException.class,
         KeycloakException.class,
-        UnknownHostException.class,
-        CustomCryptoException.class,
-        NoMasterKeyException.class
+        UnknownHostException.class
       })
   public ResponseEntity<Object> handleInternal(
       final RuntimeException ex, final WebRequest request) {
     LogService.logError(ex);
+
+    return handleExceptionInternal(
+        null, null, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+  }
+
+  /**
+   * 500 - Internal Server Error.
+   *
+   * @param ex InternalServerErrorException
+   * @param request WebRequest
+   * @return a ResponseEntity instance
+   */
+  @ExceptionHandler(InternalServerErrorException.class)
+  public ResponseEntity<Object> handleInternal(
+      final InternalServerErrorException ex, final WebRequest request) {
+    ex.executeLogging();
 
     return handleExceptionInternal(
         null, null, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);

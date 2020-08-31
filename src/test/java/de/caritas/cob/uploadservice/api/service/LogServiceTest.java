@@ -1,23 +1,17 @@
 package de.caritas.cob.uploadservice.api.service;
 
-import static net.therore.logback.EventMatchers.text;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.powermock.reflect.Whitebox.setInternalState;
 
-import de.caritas.cob.uploadservice.api.exception.RocketChatBadRequestException;
 import java.io.PrintWriter;
-import net.therore.logback.LogbackRule;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
@@ -35,9 +29,6 @@ public class LogServiceTest {
   Exception exception;
 
   @Mock
-  private RocketChatBadRequestException rocketChatBadRequestException;
-
-  @Mock
   private Logger logger;
 
   @Before
@@ -51,8 +42,8 @@ public class LogServiceTest {
   @Test
   public void logRocketChatServiceError_Should_LogExceptionStackTrace() {
 
-    LogService.logRocketChatServiceError(rocketChatBadRequestException);
-    verify(rocketChatBadRequestException, atLeastOnce()).printStackTrace(any(PrintWriter.class));
+    LogService.logRocketChatServiceError(exception);
+    verify(exception, atLeastOnce()).printStackTrace(any(PrintWriter.class));
   }
 
   @Test
@@ -66,10 +57,10 @@ public class LogServiceTest {
   @Test
   public void logRocketChatServiceError_Should_LogErrorMessageAndExceptionStackTrace() {
 
-    LogService.logRocketChatServiceError(ERROR_MESSAGE, rocketChatBadRequestException);
+    LogService.logRocketChatServiceError(ERROR_MESSAGE, exception);
     verify(logger, times(1)).error(eq(RC_SERVICE_ERROR_TEXT + "{}"),
         eq(ERROR_MESSAGE));
-    verify(rocketChatBadRequestException, atLeastOnce()).printStackTrace(any(PrintWriter.class));
+    verify(exception, atLeastOnce()).printStackTrace(any(PrintWriter.class));
   }
 
   /**
@@ -99,16 +90,6 @@ public class LogServiceTest {
   public void logEncryptionServiceError_Should_LogExceptionStackTrace() {
 
     LogService.logEncryptionServiceError(exception);
-    verify(exception, atLeastOnce()).printStackTrace(any(PrintWriter.class));
-  }
-
-  /**
-   * Tests for method: logEncryptionPossibleBadKeyError
-   */
-  @Test
-  public void logEncryptionPossibleBadKeyError_Should_LogExceptionStackTrace() {
-
-    LogService.logEncryptionPossibleBadKeyError(exception);
     verify(exception, atLeastOnce()).printStackTrace(any(PrintWriter.class));
   }
 

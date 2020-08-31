@@ -1,6 +1,7 @@
 package de.caritas.cob.uploadservice.api.helper;
 
 import de.caritas.cob.uploadservice.api.container.RocketChatUploadParameter;
+import de.caritas.cob.uploadservice.api.exception.CustomCryptoException;
 import de.caritas.cob.uploadservice.api.service.EncryptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,8 @@ public class RocketChatUploadParameterEncrypter {
    * @param rocketChatUploadParameter {@link RocketChatUploadParameter} container
    * @return a {@link RocketChatUploadParameter} instance with encrypted message and description
    */
-  public RocketChatUploadParameter encrypt(RocketChatUploadParameter rocketChatUploadParameter) {
+  public RocketChatUploadParameter encrypt(RocketChatUploadParameter rocketChatUploadParameter)
+      throws CustomCryptoException {
 
     String encryptedMessage =
         (rocketChatUploadParameter.getMessage() != null)

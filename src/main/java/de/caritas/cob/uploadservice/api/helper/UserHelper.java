@@ -25,7 +25,6 @@ public class UserHelper {
       return ENCODING_PREFIX
           + base32
               .encodeAsString(username.getBytes())
-              .toString()
               .replace(BASE32_PLACEHOLDER, BASE32_PLACEHOLDER_REPLACE_STRING);
     } catch (Exception exception) {
       // Catch generic exception because of lack of base32 documentation

@@ -1,6 +1,6 @@
 package de.caritas.cob.uploadservice.api.exception;
 
-public class RocketChatPostMarkGroupAsReadException extends RuntimeException {
+public class RocketChatPostMarkGroupAsReadException extends Exception {
 
   private static final long serialVersionUID = -5666387091852981692L;
 

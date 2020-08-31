@@ -66,7 +66,7 @@ public class EncryptionService {
    * @throws UnsupportedEncodingException
    */
   private SecretKeySpec generateSecretKeySpec(String secret)
-      throws UnsupportedEncodingException, NoSuchAlgorithmException {
+      throws UnsupportedEncodingException, NoSuchAlgorithmException, NoMasterKeyException {
 
     if (getMasterKey().equals(INITIAL_MASTER_KEY)) {
       throw new NoMasterKeyException("No MasterKey found - please provide a MasterKey!");
@@ -86,7 +86,7 @@ public class EncryptionService {
    * @param secret The secret to be used
    * @return
    */
-  public String encrypt(String messageToEncrypt, String secret) {
+  public String encrypt(String messageToEncrypt, String secret) throws CustomCryptoException {
     try {
       SecretKeySpec keySpec = generateSecretKeySpec(secret);
       Cipher cipher = Cipher.getInstance(CIPHER_METHODS);
@@ -106,7 +106,7 @@ public class EncryptionService {
    * @param secret The secret to be used
    * @return The decrypted message
    */
-  public String decrypt(String messageToDecrypt, String secret) {
+  public String decrypt(String messageToDecrypt, String secret) throws CustomCryptoException {
 
     if (messageToDecrypt == null || !messageToDecrypt.startsWith(ENCRYPTED_MESSAGE_FLAG)) {
       return messageToDecrypt;
@@ -119,11 +119,7 @@ public class EncryptionService {
       Cipher cipher = Cipher.getInstance(CIPHER_METHODS);
       cipher.init(Cipher.DECRYPT_MODE, keySpec);
       return new String(cipher.doFinal(Base64.getDecoder().decode(messageToDecrypt)));
-    } catch (BadPaddingException e) {
-      LogService.logEncryptionPossibleBadKeyError(e);
-      throw new CustomCryptoException(e);
     } catch (Exception e) {
-      LogService.logEncryptionServiceError(e);
       throw new CustomCryptoException(e);
     }
   }
