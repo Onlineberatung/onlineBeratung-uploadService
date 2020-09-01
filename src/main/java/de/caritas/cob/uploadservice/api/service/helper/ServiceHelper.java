@@ -1,8 +1,6 @@
 package de.caritas.cob.uploadservice.api.service.helper;
 
-import de.caritas.cob.uploadservice.api.helper.AuthenticatedUser;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -17,12 +15,10 @@ public class ServiceHelper {
   @Value("${csrf.cookie.property}")
   private String csrfCookieProperty;
 
-  @Autowired private AuthenticatedUser authenticatedUser;
-
   /**
-   * Adds the Rocket.Chat user id, token and group id to the given {@link HttpHeaders} object
+   * Adds the Rocket.Chat user id, token and group id to the given {@link HttpHeaders} object.
    *
-   * @return
+   * @return HttpHeaders
    */
   public HttpHeaders getKeycloakAndCsrfHttpHeaders(String accessToken) {
     HttpHeaders header = new HttpHeaders();
@@ -34,10 +30,10 @@ public class ServiceHelper {
   }
 
   /**
-   * Adds CSRF cookie and header value to the given {@link HttpHeaders} object
+   * Adds CSRF cookie and header value to the given {@link HttpHeaders} object.
    *
-   * @param httpHeaders
-   * @param csrfToken
+   * @param httpHeaders the header to add csrf values
+   * @return HttpHeaders
    */
   private HttpHeaders addCsrfValues(HttpHeaders httpHeaders) {
     String csrfToken = UUID.randomUUID().toString();

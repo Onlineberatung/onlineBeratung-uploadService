@@ -1,6 +1,6 @@
 package de.caritas.cob.uploadservice.api.exception;
 
-public class NoMasterKeyException extends RuntimeException {
+public class NoMasterKeyException extends Exception {
 
   private static final long serialVersionUID = 362702101121444833L;
 

@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import de.caritas.cob.uploadservice.api.container.RocketChatCredentials;
+import de.caritas.cob.uploadservice.api.exception.RocketChatLoginException;
 import de.caritas.cob.uploadservice.api.exception.RocketChatUserNotInitializedException;
 import de.caritas.cob.uploadservice.api.model.rocket.chat.login.DataDto;
 import de.caritas.cob.uploadservice.api.model.rocket.chat.login.LoginResponseDto;
@@ -124,7 +125,7 @@ public class RocketChatCredentialsHelperTest {
 
   /** Method: updateCredentials */
   @Test
-  public void updateCredentials_Should_LoginAUsers_WhenNoUsersAreLoggedIn() {
+  public void updateCredentials_Should_LoginAUsers_WhenNoUsersAreLoggedIn() throws Exception {
     // Prepare Header for Requests
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -152,8 +153,7 @@ public class RocketChatCredentialsHelperTest {
   }
 
   @Test
-  public void updateCredentials_Should_LoginBUsers_WhenAUsersAreLoggedIn()
-      throws NoSuchFieldException {
+  public void updateCredentials_Should_LoginBUsers_WhenAUsersAreLoggedIn() throws Exception {
     // Prepare Header for Requests
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -201,7 +201,7 @@ public class RocketChatCredentialsHelperTest {
 
   @Test
   public void updateCredentials_Should_LogoutAndReLoginBUsers_WhenAllUsersArePresent()
-      throws NoSuchFieldException {
+      throws Exception {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -286,8 +286,7 @@ public class RocketChatCredentialsHelperTest {
   }
 
   @Test
-  public void getSystemUser_Should_ReturnUserA_WhenOnlyUserAIsInitialized()
-      throws NoSuchFieldException {
+  public void getSystemUser_Should_ReturnUserA_WhenOnlyUserAIsInitialized() throws Exception {
 
     RocketChatCredentials sysUserA =
         RocketChatCredentials.builder()
@@ -308,8 +307,7 @@ public class RocketChatCredentialsHelperTest {
   }
 
   @Test
-  public void getSystemUser_Should_ReturnUserB_WhenOnlyUserBIsInitialized()
-      throws NoSuchFieldException {
+  public void getSystemUser_Should_ReturnUserB_WhenOnlyUserBIsInitialized() throws Exception {
 
     RocketChatCredentials sysUserB =
         RocketChatCredentials.builder()
@@ -330,7 +328,7 @@ public class RocketChatCredentialsHelperTest {
   }
 
   @Test
-  public void getSystemUser_Should_ReturnUserA_WhenUserAIsNewer() throws NoSuchFieldException {
+  public void getSystemUser_Should_ReturnUserA_WhenUserAIsNewer() throws Exception {
 
     // Prepare User A
     RocketChatCredentials sysUserA =
@@ -368,7 +366,7 @@ public class RocketChatCredentialsHelperTest {
   }
 
   @Test
-  public void getSystemUser_Should_ReturnUserB_WhenUserBIsNewer() throws NoSuchFieldException {
+  public void getSystemUser_Should_ReturnUserB_WhenUserBIsNewer() throws Exception {
 
     // Prepare User A - 5 minutes older than User B
     RocketChatCredentials sysUserA =

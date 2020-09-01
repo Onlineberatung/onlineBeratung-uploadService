@@ -173,12 +173,6 @@ public class UploadControllerTestIT {
   @Test
   public void uploadFileToRoom_Should_ReturnOk_WhenValidRequest() throws Exception {
 
-    when(uploadFacade.uploadFileToRoom(
-            ArgumentMatchers.any(RocketChatCredentials.class),
-            ArgumentMatchers.any(RocketChatUploadParameter.class),
-            ArgumentMatchers.anyBoolean()))
-        .thenReturn(HttpStatus.CREATED);
-
     MockPart fileToUpload = new MockPart(FORM_PARAM_FILE, "fileToUpload", "content".getBytes());
 
     mvc.perform(
@@ -196,12 +190,6 @@ public class UploadControllerTestIT {
 
   @Test
   public void uploadFileToFeedbackRoom_Should_ReturnOk_WhenValidRequest() throws Exception {
-
-    when(uploadFacade.uploadFileToFeedbackRoom(
-            ArgumentMatchers.any(RocketChatCredentials.class),
-            ArgumentMatchers.any(RocketChatUploadParameter.class),
-            ArgumentMatchers.anyBoolean()))
-        .thenReturn(HttpStatus.CREATED);
 
     MockPart fileToUpload = new MockPart(FORM_PARAM_FILE, "fileToUpload", "content".getBytes());
 
