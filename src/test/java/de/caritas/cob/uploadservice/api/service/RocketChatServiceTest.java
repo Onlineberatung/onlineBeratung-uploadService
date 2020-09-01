@@ -207,40 +207,6 @@ public class RocketChatServiceTest {
   }
 
   @Test
-  public void roomsUpload_Should_LogErrorMessage_WhenRcErrorTypeIsFileTooLarge() {
-
-    HttpStatusCodeException httpStatusCodeException =
-        new HttpServerErrorException(
-            HttpStatus.BAD_REQUEST,
-            ERROR_MSG,
-            RC_UPLOAD_ERROR_RESPONSE_BODY_ENTITY_TOO_LARGE.getBytes(),
-            StandardCharsets.UTF_8);
-    when(restTemplate.postForObject(
-        ArgumentMatchers.anyString(),
-        any(),
-        ArgumentMatchers.<Class<UploadResponseDto>>any()))
-        .thenThrow(httpStatusCodeException);
-
-    when(uploadErrorHelper.getParsedErrorResponse(
-        httpStatusCodeException.getResponseBodyAsString()))
-        .thenReturn(RC_UPLOAD_ERROR_RESPONSE_DTO_ENTITY_TOO_LARGE);
-    when(uploadErrorHelper.getErrorFromUploadResponse(
-        Mockito.eq(RC_UPLOAD_ERROR_RESPONSE_DTO_ENTITY_TOO_LARGE),
-        Mockito.anyString(),
-        Mockito.anyString()))
-        .thenReturn(RC_UPLOAD_ERROR_ENTITY_TOO_LARGE);
-
-    try {
-      rocketChatService.roomsUpload(rocketChatCredentials, rocketChatUploadParameter);
-    } catch (MaxUploadSizeExceededException maxUploadSizeExceededException) {
-      // nop
-    }
-
-    verify(logger, times(1))
-        .error("Rocket.Chat service error: {}", RC_UPLOAD_ERROR_ENTITY_TOO_LARGE.getErrorMessage());
-  }
-
-  @Test
   public void roomsUpload_Should_ThrowInvalidFileTypeException_WhenRcErrorTypeIsInvalidFileType() {
 
     HttpStatusCodeException httpStatusCodeException =
@@ -270,41 +236,6 @@ public class RocketChatServiceTest {
     } catch (InvalidFileTypeException invalidFileTypeException) {
       assertTrue("Expected InvalidFileTypeException thrown", true);
     }
-  }
-
-  @Test
-  public void roomsUpload_Should_LogErrorMessage_WhenRcErrorTypeIsInvalidFileType() {
-
-    HttpStatusCodeException httpStatusCodeException =
-        new HttpServerErrorException(
-            HttpStatus.BAD_REQUEST,
-            ERROR_MSG,
-            RC_UPLOAD_ERROR_RESPONSE_BODY_INVALID_FILE_TYPE.getBytes(),
-            StandardCharsets.UTF_8);
-    when(restTemplate.postForObject(
-        ArgumentMatchers.anyString(),
-        any(),
-        ArgumentMatchers.<Class<UploadResponseDto>>any()))
-        .thenThrow(httpStatusCodeException);
-
-    when(uploadErrorHelper.getParsedErrorResponse(
-        httpStatusCodeException.getResponseBodyAsString()))
-        .thenReturn(RC_UPLOAD_ERROR_RESPONSE_DTO_INVALID_FILE_TYPE);
-    when(uploadErrorHelper.getErrorFromUploadResponse(
-        Mockito.eq(RC_UPLOAD_ERROR_RESPONSE_DTO_INVALID_FILE_TYPE),
-        Mockito.anyString(),
-        Mockito.anyString()))
-        .thenReturn(RC_UPLOAD_ERROR_INVALID_FILE_TYPE);
-
-    try {
-      rocketChatService.roomsUpload(rocketChatCredentials, rocketChatUploadParameter);
-    } catch (InvalidFileTypeException invalidFileTypeException) {
-      // nop
-    }
-
-    verify(logger, times(1))
-        .error("Rocket.Chat service error: {}",
-            RC_UPLOAD_ERROR_INVALID_FILE_TYPE.getErrorMessage());
   }
 
   @Test
