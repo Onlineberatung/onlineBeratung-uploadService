@@ -87,7 +87,7 @@ public class LogService {
   }
 
   /**
-   * Internal Server Error/Exception.
+   * Logs an Internal Server Error/Exception.
    *
    * @param message the message to be logged
    * @param exception the exception to be logged
@@ -98,7 +98,7 @@ public class LogService {
   }
 
   /**
-   * Internal Server Error/Exception.
+   * Logs an Internal Server Error/Exception.
    *
    * @param exception the exception to be logged
    */
@@ -108,7 +108,7 @@ public class LogService {
   }
 
   /**
-   * Bad Request.
+   * Logs an Bad Request.
    *
    * @param message the message to be logged
    */
@@ -117,7 +117,7 @@ public class LogService {
   }
 
   /**
-   * Warning.
+   * Logs an Warning.
    *
    * @param exception the exception to be logged
    */
@@ -126,7 +126,7 @@ public class LogService {
   }
 
   /**
-   * Warning.
+   * Logs an Warning.
    *
    * @param httpStatus an status to be logged
    * @param exception the exception to be logged

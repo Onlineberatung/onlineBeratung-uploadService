@@ -167,10 +167,8 @@ public class RocketChatService {
               rocketChatUploadParameter.getRoomId(),
               rocketChatCredentials.getRocketChatUserId());
       if (uploadError.getRcErrorType().equals(ROCKET_CHAT_ERROR_TYPE_FILE_TOO_LARGE)) {
-        LogService.logRocketChatServiceError(uploadError.getErrorMessage());
         throw new MaxUploadSizeExceededException(-1, httpStatusCodeException);
       } else if (uploadError.getRcErrorType().equals(ROCKET_CHAT_ERROR_TYPE_INVALID_FILE_TYPE)) {
-        LogService.logRocketChatServiceError(uploadError.getErrorMessage());
         throw new InvalidFileTypeException(uploadError.getErrorMessage(), httpStatusCodeException);
       } else {
         throw new MultipartException(uploadError.getErrorMessage(), httpStatusCodeException);
