@@ -7,6 +7,7 @@ import static de.caritas.cob.uploadservice.helper.FieldConstants.FIELD_NAME_RC_R
 import static de.caritas.cob.uploadservice.helper.FieldConstants.FIELD_VALUE_RC_POST_GROUP_MESSAGES_READ;
 import static de.caritas.cob.uploadservice.helper.FieldConstants.FIELD_VALUE_RC_ROOMS_UPLOAD_URL;
 import static de.caritas.cob.uploadservice.helper.TestConstants.ERROR_MSG;
+import static de.caritas.cob.uploadservice.helper.TestConstants.FILE_NAME_SANITIZED;
 import static de.caritas.cob.uploadservice.helper.TestConstants.INVALID_RC_SYSTEM_USER;
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_DESCRIPTION;
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_MESSAGE;
@@ -26,8 +27,10 @@ import static de.caritas.cob.uploadservice.helper.TestConstants.RC_UPLOAD_ERROR_
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_UPLOAD_ERROR_UNKNOWN_ERROR;
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_USER_ID;
 import static de.caritas.cob.uploadservice.helper.TestConstants.STANDARD_SUCCESS_RESPONSE_DTO;
+import static de.caritas.cob.uploadservice.helper.TestConstants.UNSANITIZED_UPLOAD_FILE;
 import static de.caritas.cob.uploadservice.helper.TestConstants.UPLOAD_FILE;
 import static org.assertj.core.api.Assertions.fail;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -41,6 +44,7 @@ import de.caritas.cob.uploadservice.api.container.RocketChatCredentials;
 import de.caritas.cob.uploadservice.api.container.RocketChatUploadParameter;
 import de.caritas.cob.uploadservice.api.exception.InvalidFileTypeException;
 import de.caritas.cob.uploadservice.api.exception.RocketChatPostMarkGroupAsReadException;
+import de.caritas.cob.uploadservice.api.helper.MultipartInputStreamFileResource;
 import de.caritas.cob.uploadservice.api.helper.UploadErrorHelper;
 import de.caritas.cob.uploadservice.api.model.rocket.chat.StandardResponseDto;
 import de.caritas.cob.uploadservice.api.model.rocket.chat.UploadResponseDto;
@@ -49,7 +53,9 @@ import java.nio.charset.StandardCharsets;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -58,6 +64,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
@@ -71,18 +78,20 @@ public class RocketChatServiceTest {
   @InjectMocks
   private RocketChatService rocketChatService;
   @Mock
-  RocketChatCredentialsHelper rcCredentialsHelper;
+  private RocketChatCredentialsHelper rcCredentialsHelper;
   @Mock
   private RestTemplate restTemplate;
   @Mock
   private Logger logger;
   @Mock
-  private EncryptionService encryptionService;
-  @Mock
   private UploadErrorHelper uploadErrorHelper;
+
+  @Captor
+  private ArgumentCaptor<HttpEntity<MultiValueMap<String, Object>>> mapArgumentCaptor;
 
   private RocketChatCredentials rocketChatCredentials;
   private RocketChatUploadParameter rocketChatUploadParameter;
+  private RocketChatUploadParameter rocketChatUploadParameterWithUnsanitizedFileName;
 
   /**
    * Setup method.
@@ -92,11 +101,11 @@ public class RocketChatServiceTest {
     FieldSetter.setField(
         rocketChatService,
         rocketChatService.getClass().getDeclaredField(FIELD_NAME_RC_HEADER_AUTH_TOKEN),
-        String.valueOf(RC_TOKEN));
+        RC_TOKEN);
     FieldSetter.setField(
         rocketChatService,
         rocketChatService.getClass().getDeclaredField(FIELD_NAME_RC_HEADER_USER_ID),
-        String.valueOf(RC_USER_ID));
+        RC_USER_ID);
     FieldSetter.setField(
         rocketChatService,
         rocketChatService.getClass().getDeclaredField(FIELD_NAME_RC_POST_GROUP_MESSAGES_READ),
@@ -116,6 +125,15 @@ public class RocketChatServiceTest {
         RocketChatUploadParameter.builder()
             .description(RC_DESCRIPTION)
             .file(UPLOAD_FILE)
+            .message(RC_MESSAGE)
+            .roomId(RC_ROOM_ID)
+            .tmId(RC_TMID)
+            .build();
+
+    rocketChatUploadParameterWithUnsanitizedFileName =
+        RocketChatUploadParameter.builder()
+            .description(RC_DESCRIPTION)
+            .file(UNSANITIZED_UPLOAD_FILE)
             .message(RC_MESSAGE)
             .roomId(RC_ROOM_ID)
             .tmId(RC_TMID)
@@ -318,5 +336,25 @@ public class RocketChatServiceTest {
     } catch (Exception exception) {
       fail("Method should not throw exception on success");
     }
+  }
+
+  @Test
+  public void roomsUpload_Should_UploadFileWithSanitizedFileName() {
+
+    when(restTemplate.postForObject(
+        ArgumentMatchers.anyString(),
+        any(),
+        ArgumentMatchers.<Class<UploadResponseDto>>any()))
+        .thenReturn(RC_UPLOAD_ERROR_RESPONSE_DTO_SUCCESS);
+
+    rocketChatService
+        .roomsUpload(rocketChatCredentials, rocketChatUploadParameterWithUnsanitizedFileName);
+
+    verify(restTemplate).postForObject(ArgumentMatchers.anyString(), mapArgumentCaptor.capture(),
+        ArgumentMatchers.<Class<Void>>any());
+
+    MultipartInputStreamFileResource file = (MultipartInputStreamFileResource) mapArgumentCaptor
+        .getValue().getBody().get(null).get(3);
+    assertEquals(FILE_NAME_SANITIZED, file.getFilename());
   }
 }

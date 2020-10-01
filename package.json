@@ -24,5 +24,8 @@
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0"
   }
 }

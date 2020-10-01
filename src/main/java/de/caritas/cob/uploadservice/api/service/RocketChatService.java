@@ -7,6 +7,7 @@ import de.caritas.cob.uploadservice.api.exception.InvalidFileTypeException;
 import de.caritas.cob.uploadservice.api.exception.RocketChatPostMarkGroupAsReadException;
 import de.caritas.cob.uploadservice.api.exception.RocketChatUserNotInitializedException;
 import de.caritas.cob.uploadservice.api.exception.httpresponses.InternalServerErrorException;
+import de.caritas.cob.uploadservice.api.helper.FileSanitizer;
 import de.caritas.cob.uploadservice.api.helper.MultipartInputStreamFileResource;
 import de.caritas.cob.uploadservice.api.helper.UploadErrorHelper;
 import de.caritas.cob.uploadservice.api.model.rocket.chat.StandardResponseDto;
@@ -64,13 +65,6 @@ public class RocketChatService {
   private final @NonNull RocketChatCredentialsHelper rcCredentialHelper;
   private final @NonNull UploadErrorHelper uploadErrorHelper;
 
-  /**
-   * Creates and returns the {@link HttpHeaders} with Rocket.Chat Authentication Token and User Id.
-   *
-   * @param rcToken String
-   * @param rcUserId String
-   * @return HttpHeaders instance
-   */
   private HttpHeaders getRocketChatHeader(String rcToken, String rcUserId) {
     HttpHeaders headers = new HttpHeaders();
     headers.add(rcHeaderAuthToken, rcToken);
@@ -107,13 +101,6 @@ public class RocketChatService {
     }
   }
 
-  /**
-   * Marks the specified Rocket.Chat group as read for the given user credentials.
-   *
-   * @param rcToken String
-   * @param rcUserId String
-   * @param rcGroupId String
-   */
   private void markGroupAsRead(String rcToken, String rcUserId, String rcGroupId)
       throws RocketChatPostMarkGroupAsReadException {
 
@@ -183,10 +170,6 @@ public class RocketChatService {
     }
   }
 
-  /**
-   * @param rocketChatUploadParameter {@link RocketChatUploadParameter} container
-   * @return a MultiValueMap<String, Object> instance
-   */
   private MultiValueMap<String, Object> getParameterMapForUploadRequest(
       RocketChatUploadParameter rocketChatUploadParameter, String rcUserId) {
 
@@ -199,7 +182,8 @@ public class RocketChatService {
       MultipartFile file = rocketChatUploadParameter.getFile();
       parameterMap.add(
           rcFormParamFile,
-          new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
+          new MultipartInputStreamFileResource(
+              file.getInputStream(), FileSanitizer.sanitizeFileName(file.getOriginalFilename())));
     } catch (IOException ex) {
       throw new InternalServerErrorException(
           String.format(
