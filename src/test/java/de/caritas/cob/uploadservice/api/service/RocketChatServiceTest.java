@@ -339,8 +339,7 @@ public class RocketChatServiceTest {
   }
 
   @Test
-  public void roomsUpload_Should_UploadFileWithSanitizedFileName()
-      throws Exception {
+  public void roomsUpload_Should_UploadFileWithSanitizedFileName() {
 
     when(restTemplate.postForObject(
         ArgumentMatchers.anyString(),

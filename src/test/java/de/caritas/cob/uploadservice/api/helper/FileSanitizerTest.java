@@ -23,4 +23,13 @@ public class FileSanitizerTest {
     assertEquals(FILE_NAME_DEFAULT, FileSanitizer.sanitizeFileName(FILE_NAME_ONLY_SPECIAL_CHARS));
   }
 
+  @Test
+  public void sanitizeFileName_Should_ReturnNull_When_ProvidedFileNameIsNull() {
+    assertEquals(null, FileSanitizer.sanitizeFileName(null));
+  }
+
+  @Test
+  public void sanitizeFileName_Should_ReturnNull_When_ProvidedFileNameIsEmpty() {
+    assertEquals(null, FileSanitizer.sanitizeFileName(""));
+  }
 }
