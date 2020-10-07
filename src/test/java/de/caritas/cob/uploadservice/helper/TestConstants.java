@@ -142,7 +142,9 @@ public class TestConstants {
   public static final String FORM_PARAM_TMID_VALUE = "This is the tmid";
   public static final String FORM_PARAM_FILE = "file";
   public static final String FILE_NAME_UNSANITIZED = "äöüßÄÖÜt!\"e...~´´`::.jpg;.jpg;st-+_#$1.jpg.doc";
+  public static final String FILE_NAME_UNSANITIZED_WITH_SPACES = "   äöüßÄÖÜt!\"e ...~´´`::.jpg;.jpg;st-+_#$1.jpg.doc  ";
   public static final String FILE_NAME_SANITIZED = "äöüßÄÖÜtejpgjpgst-+#1jpg.doc";
+  public static final String FILE_NAME_SANITIZED_WITH_SPACES = "äöüßÄÖÜte jpgjpgst-+#1jpg.doc";
   public static final String FILE_NAME_ONLY_SPECIAL_CHARS = "!...~´´`.;;;§%%%_$.jpg";
   public static final String FILE_NAME_DEFAULT = "Anhang.jpg";
   public static final MockMultipartFile UPLOAD_FILE =
