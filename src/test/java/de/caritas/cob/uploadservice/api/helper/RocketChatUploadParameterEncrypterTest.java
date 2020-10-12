@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import de.caritas.cob.uploadservice.api.container.RocketChatUploadParameter;
+import de.caritas.cob.uploadservice.api.exception.CustomCryptoException;
 import de.caritas.cob.uploadservice.api.service.EncryptionService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +24,7 @@ public class RocketChatUploadParameterEncrypterTest {
   @InjectMocks RocketChatUploadParameterEncrypter rocketChatUploadParameterEncrypter;
 
   @Test
-  public void encrypt_Should_EncryptMessageAndDescription() {
+  public void encrypt_Should_EncryptMessageAndDescription() throws CustomCryptoException {
 
     RocketChatUploadParameter rocketChatUploadParameter =
         RocketChatUploadParameter.builder()

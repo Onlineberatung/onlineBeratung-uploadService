@@ -20,14 +20,11 @@ public class EmailNotificationHelper {
 
   private final RestTemplate restTemplate;
   private final ServiceHelper serviceHelper;
-  private final LogService logService;
 
   @Autowired
-  public EmailNotificationHelper(
-      RestTemplate restTemplate, ServiceHelper serviceHelper, LogService logService) {
+  public EmailNotificationHelper(RestTemplate restTemplate, ServiceHelper serviceHelper) {
     this.restTemplate = restTemplate;
     this.serviceHelper = serviceHelper;
-    this.logService = logService;
   }
 
   /**
@@ -43,14 +40,13 @@ public class EmailNotificationHelper {
     try {
       HttpHeaders header = serviceHelper.getKeycloakAndCsrfHttpHeaders(accessToken);
       NewMessageNotificationDto notificationDto = new NewMessageNotificationDto(rcGroupId);
-      HttpEntity<NewMessageNotificationDto> request =
-          new HttpEntity<NewMessageNotificationDto>(notificationDto, header);
+      HttpEntity<NewMessageNotificationDto> request = new HttpEntity<>(notificationDto, header);
 
       restTemplate.exchange(
           userServiceApiSendNewMessageNotificationUrl, HttpMethod.POST, request, Void.class);
 
     } catch (RestClientException ex) {
-      logService.logUserServiceHelperError(ex);
+      LogService.logUserServiceHelperError(ex);
     }
   }
 }

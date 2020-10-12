@@ -2,11 +2,14 @@ package de.caritas.cob.uploadservice.api.facade;
 
 import de.caritas.cob.uploadservice.api.container.RocketChatCredentials;
 import de.caritas.cob.uploadservice.api.container.RocketChatUploadParameter;
+import de.caritas.cob.uploadservice.api.exception.CustomCryptoException;
+import de.caritas.cob.uploadservice.api.exception.RocketChatPostMarkGroupAsReadException;
+import de.caritas.cob.uploadservice.api.exception.httpresponses.InternalServerErrorException;
 import de.caritas.cob.uploadservice.api.helper.RocketChatUploadParameterEncrypter;
 import de.caritas.cob.uploadservice.api.helper.RocketChatUploadParameterSanitizer;
+import de.caritas.cob.uploadservice.api.service.LogService;
 import de.caritas.cob.uploadservice.api.service.RocketChatService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 /*
@@ -38,9 +41,8 @@ public class UploadFacade {
    *
    * @param rocketChatCredentials {@link RocketChatCredentials} container
    * @param rocketChatUploadParameter {@link RocketChatUploadParameter} container
-   * @return true, if successful
    */
-  public HttpStatus uploadFileToRoom(
+  public void uploadFileToRoom(
       RocketChatCredentials rocketChatCredentials,
       RocketChatUploadParameter rocketChatUploadParameter,
       boolean sendNotification) {
@@ -50,7 +52,6 @@ public class UploadFacade {
     if (sendNotification) {
       emailNotificationFacade.sendEmailNotification(rocketChatUploadParameter.getRoomId());
     }
-    return HttpStatus.CREATED;
   }
 
   /**
@@ -59,9 +60,8 @@ public class UploadFacade {
    *
    * @param rocketChatCredentials {@link RocketChatCredentials} container
    * @param rocketChatUploadParameter {@link RocketChatUploadParameter} container
-   * @return true, if successful
    */
-  public HttpStatus uploadFileToFeedbackRoom(
+  public void uploadFileToFeedbackRoom(
       RocketChatCredentials rocketChatCredentials,
       RocketChatUploadParameter rocketChatUploadParameter,
       boolean sendNotification) {
@@ -71,25 +71,26 @@ public class UploadFacade {
     if (sendNotification) {
       emailNotificationFacade.sendFeedbackEmailNotification(rocketChatUploadParameter.getRoomId());
     }
-    return HttpStatus.CREATED;
   }
 
-  /**
-   * Cleanup user input and upload to Rocket.Chat
-   *
-   * @param rocketChatCredentials {@link RocketChatCredentials} container
-   * @param rocketChatUploadParameter {@link RocketChatUploadParameter} container
-   */
-  public void sanitizeAndEncryptParametersAndUploadToRocketChatRoom(
+  private void sanitizeAndEncryptParametersAndUploadToRocketChatRoom(
       RocketChatCredentials rocketChatCredentials,
       RocketChatUploadParameter rocketChatUploadParameter) {
 
-    RocketChatUploadParameter cleanedRocketChatUploadParameter =
-        rocketChatUploadParameterSanitizer.sanitize(rocketChatUploadParameter);
-    RocketChatUploadParameter encryptedRocketChatUploadParameter =
-        rocketChatUploadParameterEncrypter.encrypt(rocketChatUploadParameter);
+    rocketChatUploadParameterSanitizer.sanitize(rocketChatUploadParameter);
+    RocketChatUploadParameter encryptedRocketChatUploadParameter;
+    try {
+      encryptedRocketChatUploadParameter = rocketChatUploadParameterEncrypter
+          .encrypt(rocketChatUploadParameter);
+    } catch (CustomCryptoException e) {
+      throw new InternalServerErrorException(e, LogService::logEncryptionServiceError);
+    }
 
     rocketChatService.roomsUpload(rocketChatCredentials, encryptedRocketChatUploadParameter);
-    rocketChatService.markGroupAsReadForSystemUser(rocketChatUploadParameter.getRoomId());
+    try {
+      rocketChatService.markGroupAsReadForSystemUser(rocketChatUploadParameter.getRoomId());
+    } catch (RocketChatPostMarkGroupAsReadException e) {
+      throw new InternalServerErrorException(e, LogService::logRocketChatServiceError);
+    }
   }
 }

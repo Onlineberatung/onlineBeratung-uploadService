@@ -1,13 +1,16 @@
 package de.caritas.cob.uploadservice.api.helper;
 
 import static de.caritas.cob.uploadservice.helper.TestConstants.KEYCLOAK_ACCESS_TOKEN;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.powermock.reflect.Whitebox.setInternalState;
 
 import de.caritas.cob.uploadservice.api.model.NewMessageNotificationDto;
 import de.caritas.cob.uploadservice.api.service.LogService;
 import de.caritas.cob.uploadservice.api.service.helper.ServiceHelper;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -15,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.slf4j.Logger;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestClientException;
@@ -30,8 +34,13 @@ public class EmailNotificationHelperTest {
 
   @Mock private RestTemplate restTemplate;
   @Mock private ServiceHelper serviceHelper;
-  @Mock private LogService logService;
+  @Mock private Logger logger;
   @InjectMocks private EmailNotificationHelper emailNotificationHelper;
+
+  @Before
+  public void setup() {
+    setInternalState(LogService.class, "LOGGER", logger);
+  }
 
   @Test
   public void sendEmailNotificationViaUserService_Should_LogException_OnError()
@@ -49,7 +58,7 @@ public class EmailNotificationHelperTest {
     emailNotificationHelper.sendEmailNotificationViaUserService(
         RC_GROUP_ID, USER_SERVICE_API_SEND_NEW_MESSAGE_NOTIFICATION_URL, KEYCLOAK_ACCESS_TOKEN);
 
-    verify(logService, times(1)).logUserServiceHelperError(Mockito.any());
+    verify(logger, times(1)).error(anyString(), anyString());
   }
 
   @Test

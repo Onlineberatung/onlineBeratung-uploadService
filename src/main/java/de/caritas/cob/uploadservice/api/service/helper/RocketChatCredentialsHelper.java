@@ -21,7 +21,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-@Slf4j
 public class RocketChatCredentialsHelper {
 
   @Value("${rocket.systemuser.username}")
@@ -42,8 +41,6 @@ public class RocketChatCredentialsHelper {
   @Value("${rocket.chat.header.user.id}")
   private String rocketChatHeaderUserId;
 
-  @Autowired private LogService logService;
-
   @Autowired private RestTemplate restTemplate;
 
   // Tokens
@@ -55,7 +52,7 @@ public class RocketChatCredentialsHelper {
    *
    * @return
    */
-  public RocketChatCredentials getSystemUser() {
+  public RocketChatCredentials getSystemUser() throws RocketChatUserNotInitializedException {
     // If both are uninitialized throw Exception
     if (systemUser_A == null && systemUser_B == null) {
       throw new RocketChatUserNotInitializedException("No system user was initialized");
@@ -76,7 +73,7 @@ public class RocketChatCredentialsHelper {
   }
 
   /** Update the Credentials */
-  public void updateCredentials() {
+  public void updateCredentials() throws RocketChatLoginException {
 
     if (systemUser_A != null && systemUser_B != null) {
       if (systemUser_A.getTimeStampCreated().isBefore(systemUser_B.getTimeStampCreated())) {
@@ -108,7 +105,8 @@ public class RocketChatCredentialsHelper {
    * @param password
    * @return
    */
-  public RocketChatCredentials loginUserServiceUser(String username, String password) {
+  public RocketChatCredentials loginUserServiceUser(String username, String password)
+      throws RocketChatLoginException {
 
     RocketChatCredentials rcc =
         RocketChatCredentials.builder()
@@ -124,7 +122,7 @@ public class RocketChatCredentialsHelper {
       rcc.setRocketChatUserId(response.getBody().getData().getUserId());
 
     } catch (Exception ex) {
-      logService.logRocketChatServiceError(
+      LogService.logRocketChatServiceError(
           "Could not login " + username + " user in Rocket.Chat", ex);
       throw new RocketChatLoginException(ex);
     }
@@ -134,7 +132,7 @@ public class RocketChatCredentialsHelper {
           "Could not login "
               + username
               + " user in Rocket.Chat correctly, no authToken or UserId received.";
-      logService.logRocketChatServiceError(error);
+      LogService.logRocketChatServiceError(error);
       throw new RocketChatLoginException(error);
     }
 
@@ -148,26 +146,23 @@ public class RocketChatCredentialsHelper {
    * @param password
    * @return
    */
-  public ResponseEntity<LoginResponseDto> loginUser(String username, String password) {
+  public ResponseEntity<LoginResponseDto> loginUser(String username, String password)
+      throws RocketChatLoginException {
 
     try {
       HttpHeaders headers = new HttpHeaders();
       headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-      MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+      MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
       map.add("username", username);
       map.add("password", password);
 
       HttpEntity<MultiValueMap<String, String>> request =
-          new HttpEntity<MultiValueMap<String, String>>(map, headers);
+          new HttpEntity<>(map, headers);
 
-      ResponseEntity<LoginResponseDto> response =
-          restTemplate.postForEntity(rocketChatApiUserLogin, request, LoginResponseDto.class);
-
-      return response;
-
+      return restTemplate.postForEntity(rocketChatApiUserLogin, request, LoginResponseDto.class);
     } catch (Exception ex) {
-      logService.logRocketChatServiceError(
+      LogService.logRocketChatServiceError(
           String.format("Could not login user (%s) in Rocket.Chat", username), ex);
       throw new RocketChatLoginException(ex);
     }
@@ -193,7 +188,7 @@ public class RocketChatCredentialsHelper {
       return response != null && response.getStatusCode() == HttpStatus.OK ? true : false;
 
     } catch (Exception ex) {
-      logService.logRocketChatServiceError(
+      LogService.logRocketChatServiceError(
           String.format("Could not log out user id (%s) from Rocket.Chat", rcUserId), ex);
 
       return false;

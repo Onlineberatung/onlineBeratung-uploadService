@@ -1,5 +1,7 @@
 package de.caritas.cob.uploadservice.api.controller;
 
+import static java.lang.Boolean.parseBoolean;
+
 import de.caritas.cob.uploadservice.api.aspect.TempCleanup;
 import de.caritas.cob.uploadservice.api.container.RocketChatCredentials;
 import de.caritas.cob.uploadservice.api.container.RocketChatUploadParameter;
@@ -12,7 +14,8 @@ import io.swagger.annotations.Api;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,14 +26,16 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-/** Controller for upload requests. */
+/**
+ * Controller for upload requests.
+ */
 @RestController
+@RequiredArgsConstructor
 @Api(tags = "upload-controller")
 public class UploadController implements UploadsApi {
 
-  @Autowired UploadFacade uploadFacade;
-  @Autowired EncryptionService encryptionService;
-  @Autowired LogService logService;
+  private final @NonNull UploadFacade uploadFacade;
+  private final @NonNull EncryptionService encryptionService;
 
   /**
    * Updates the Master-Key Fragment for the en-/decryption of messages.
@@ -43,7 +48,7 @@ public class UploadController implements UploadsApi {
 
     if (!encryptionService.getMasterKey().equals(masterKey.getMasterKey())) {
       encryptionService.updateMasterKey(masterKey.getMasterKey());
-      logService.logInfo("MasterKey updated");
+      LogService.logInfo("MasterKey updated");
       return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -51,7 +56,7 @@ public class UploadController implements UploadsApi {
   }
 
   /**
-   * Upload a file to a Rocket.Chat room with a text message
+   * Upload a file to a Rocket.Chat room with a text message.
    *
    * @param roomId Rocket.Chat room id
    * @param rcToken Rocket.Chat token
@@ -87,13 +92,14 @@ public class UploadController implements UploadsApi {
             .tmId(tmId)
             .build();
 
-    return new ResponseEntity<Void>(
-        uploadFacade.uploadFileToRoom(
-            rocketChatCredentials, rocketChatUploadParameter, Boolean.valueOf(sendNotification)));
+    uploadFacade.uploadFileToRoom(
+        rocketChatCredentials, rocketChatUploadParameter, parseBoolean(sendNotification));
+
+    return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
   /**
-   * Upload a file to a Rocket.Chat feedback room with a text message
+   * Upload a file to a Rocket.Chat feedback room with a text message.
    *
    * @param feedbackRoomId Rocket.Chat feedback room id
    * @param rcToken Rocket.Chat token
@@ -129,8 +135,9 @@ public class UploadController implements UploadsApi {
             .tmId(tmId)
             .build();
 
-    return new ResponseEntity<Void>(
-        uploadFacade.uploadFileToFeedbackRoom(
-            rocketChatCredentials, rocketChatUploadParameter, Boolean.valueOf(sendNotification)));
+    uploadFacade.uploadFileToFeedbackRoom(rocketChatCredentials, rocketChatUploadParameter,
+        parseBoolean(sendNotification));
+
+    return new ResponseEntity<>(HttpStatus.CREATED);
   }
 }

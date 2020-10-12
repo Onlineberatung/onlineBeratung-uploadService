@@ -6,22 +6,31 @@ import static de.caritas.cob.uploadservice.helper.TestConstants.RC_UPLOAD_ERROR_
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.powermock.reflect.Whitebox.setInternalState;
 
 import de.caritas.cob.uploadservice.api.model.rocket.chat.UploadResponseDto;
 import de.caritas.cob.uploadservice.api.service.LogService;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.slf4j.Logger;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JsonStringToObjectConverterTest {
 
-  @Mock private LogService logService;
+  @Mock private Logger logger;
+
+  @Before
+  public void setup() {
+    setInternalState(LogService.class, "LOGGER", logger);
+  }
 
   @Test
   public void convert_Should_ReturnCorrectType() {
@@ -56,16 +65,10 @@ public class JsonStringToObjectConverterTest {
   public void convert_Should_LogOnError() throws NoSuchFieldException, SecurityException {
 
     JsonStringToObjectConverter<UploadResponseDto> jsonStringToObjectConverter =
-        new JsonStringToObjectConverter<UploadResponseDto>();
-
-    FieldSetter.setField(
-        jsonStringToObjectConverter,
-        jsonStringToObjectConverter.getClass().getDeclaredField(FIELD_NAME_LOGSERVICE),
-        logService);
+        new JsonStringToObjectConverter<>();
 
     jsonStringToObjectConverter.convert(INVALID_JSON_BODY, UploadResponseDto.class);
 
-    verify(logService, times(1))
-        .logInternalServerError(Mockito.anyString(), Mockito.any(Exception.class));
+    verify(logger, times(1)).error(anyString(), anyString(), anyString());
   }
 }
