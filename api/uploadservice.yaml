@@ -15,7 +15,7 @@ paths:
       operationId: updateKey
       requestBody:
         content:
-          '*/*':
+          'application/json':
             schema:
               $ref: '#/components/schemas/MasterKeyDto'
         required: true
