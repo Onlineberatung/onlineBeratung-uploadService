@@ -66,7 +66,7 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         .sessionAuthenticationStrategy(sessionAuthenticationStrategy())
         .and()
         .authorizeRequests()
-        .antMatchers(SpringFoxConfig.whiteList)
+        .antMatchers(SpringFoxConfig.WHITE_LIST)
         .permitAll()
         .antMatchers("/uploads/messages/key")
         .hasAuthority(Authority.TECHNICAL_DEFAULT)

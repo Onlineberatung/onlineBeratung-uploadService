@@ -41,13 +41,17 @@
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
 
-    <!-- Swagger dependencies -->
-
-    <!-- Swagger annotations: needed for swagger-codegen-maven-plugin -->
+    <!-- Swagger/OpenApi dependencies -->
     <dependency>
-      <groupId>io.swagger</groupId>
-      <artifactId>swagger-annotations</artifactId>
-      <version>1.5.0</version>
+      <groupId>org.openapitools</groupId>
+      <artifactId>openapi-generator-maven-plugin</artifactId>
+      <version>4.3.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openapitools</groupId>
+      <artifactId>jackson-databind-nullable</artifactId>
+      <version>0.2.1</version>
     </dependency>
     <!-- SpringFox: generate YAML file from POJOs and generate documentation -->
     <dependency>
@@ -132,11 +136,6 @@
       <artifactId>h2</artifactId>
       <scope>runtime</scope>
     </dependency>
-    <dependency>
-      <groupId>net.therore.logback</groupId>
-      <artifactId>therore-logback</artifactId>
-      <version>1.0.0</version>
-    </dependency>
 
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -186,28 +185,26 @@
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
 
-      <!-- Swagger codegen maven plugin: generates api stubs -->
+      <!-- OpenApi codegen maven plugin: generates api stubs -->
       <plugin>
-        <groupId>io.swagger</groupId>
-        <artifactId>swagger-codegen-maven-plugin</artifactId>
-        <version>2.3.1</version>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <version>4.3.1</version>
         <executions>
           <execution>
             <goals>
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/api/uploadservice.yaml</inputSpec>
-              <language>spring</language>
-              <apiPackage>${project.groupId}.${project.artifactId}.generated.api.controller
-              </apiPackage>
-              <modelPackage>${project.groupId}.${project.artifactId}.api.model</modelPackage>
-              <generateModels>false</generateModels>
-              <generateSupportingFiles>false</generateSupportingFiles>
               <configOptions>
                 <interfaceOnly>true</interfaceOnly>
                 <sourceFolder>/</sourceFolder>
               </configOptions>
+              <inputSpec>${project.basedir}/api/uploadservice.yaml</inputSpec>
+              <generatorName>spring</generatorName>
+              <apiPackage>${project.groupId}.${project.artifactId}.generated.api.controller</apiPackage>
+              <modelPackage>${project.groupId}.${project.artifactId}.api.model</modelPackage>
+              <generateSupportingFiles>true</generateSupportingFiles>
               <output>target/generated-sources</output>
             </configuration>
           </execution>

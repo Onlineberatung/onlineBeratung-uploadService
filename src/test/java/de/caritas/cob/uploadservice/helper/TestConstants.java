@@ -138,7 +138,7 @@ public class TestConstants {
   public static final String FORM_PARAM_DESCRIPTION_VALUE = "This is the description";
   public static final String FORM_PARAM_MESSAGE = "msg";
   public static final String FORM_PARAM_MESSAGE_VALUE = "This is the message";
-  public static final String FORM_PARAM_TMID = "tmid";
+  public static final String FORM_PARAM_TMID = "tmId";
   public static final String FORM_PARAM_TMID_VALUE = "This is the tmid";
   public static final String FORM_PARAM_FILE = "file";
   public static final String FILE_NAME_UNSANITIZED = "äöüßÄÖÜt!\"e...~´´`::.jpg;.jpg;st-+_#$1.jpg.doc";

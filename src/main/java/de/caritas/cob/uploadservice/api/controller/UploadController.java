@@ -71,14 +71,14 @@ public class UploadController implements UploadsApi {
   @TempCleanup
   @Override
   public ResponseEntity<Void> uploadFileToRoom(
-      @NotBlank @NotNull @PathVariable("roomId") String roomId,
-      @NotBlank @NotNull @RequestHeader(required = true) String rcToken,
-      @NotBlank @NotNull @RequestHeader(required = true) String rcUserId,
-      @Valid @RequestPart(required = true) MultipartFile file,
-      @Valid @RequestParam(required = true) String sendNotification,
-      @Valid @RequestParam(required = false) String msg,
-      @Valid @RequestParam(required = false) String description,
-      @Valid @RequestParam(required = false) String tmId) {
+      @PathVariable("roomId") String roomId,
+      @RequestHeader String rcToken,
+      @RequestHeader String rcUserId,
+      @RequestPart MultipartFile file,
+      @RequestParam String sendNotification,
+      @RequestParam String msg,
+      @RequestParam String description,
+      @RequestParam String tmId) {
 
     RocketChatCredentials rocketChatCredentials =
         RocketChatCredentials.builder().rocketChatUserId(rcUserId).rocketChatToken(rcToken).build();
@@ -114,14 +114,14 @@ public class UploadController implements UploadsApi {
   @TempCleanup
   @Override
   public ResponseEntity<Void> uploadFileToFeedbackRoom(
-      @NotBlank @NotNull @PathVariable("feedbackRoomId") String feedbackRoomId,
-      @NotBlank @NotNull @RequestHeader(required = true) String rcToken,
-      @NotBlank @NotNull @RequestHeader(required = true) String rcUserId,
-      @Valid @RequestPart(required = true) MultipartFile file,
-      @Valid @RequestParam(required = true) String sendNotification,
-      @Valid @RequestParam(required = false) String msg,
-      @Valid @RequestParam(required = false) String description,
-      @Valid @RequestParam(required = false) String tmId) {
+      @PathVariable("feedbackRoomId") String feedbackRoomId,
+      @RequestHeader String rcToken,
+      @RequestHeader String rcUserId,
+      @RequestPart MultipartFile file,
+      @RequestParam String sendNotification,
+      @RequestParam String msg,
+      @RequestParam String description,
+      @RequestParam String tmId) {
 
     RocketChatCredentials rocketChatCredentials =
         RocketChatCredentials.builder().rocketChatUserId(rcUserId).rocketChatToken(rcToken).build();
