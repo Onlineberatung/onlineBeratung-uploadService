@@ -247,4 +247,34 @@ public class UploadControllerTestIT {
     ObjectMapper mapper = new ObjectMapper();
     return mapper.writeValueAsString(object);
   }
+
+  @Test
+  public void uploadFileToRoom_Should_ReturnOk_When_notRequiredParamsAreMissing() throws Exception {
+
+    MockPart fileToUpload = new MockPart(FORM_PARAM_FILE, "fileToUpload", "content".getBytes());
+
+    mvc.perform(
+        multipart(PATH_UPLOAD_FILE_TO_ROOM + "/" + RC_ROOM_ID)
+            .part(fileToUpload)
+            .param(FORM_PARAM_SEND_NOTIFICATION, FORM_PARAM_SEND_NOTIFICATION_TRUE)
+            .contentType(MediaType.MULTIPART_FORM_DATA)
+            .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
+            .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
+        .andExpect(status().isCreated());
+  }
+
+  @Test
+  public void uploadFileToFeedbackRoom_Should_ReturnOk_When_notRequiredParamsAreMissing() throws Exception {
+
+    MockPart fileToUpload = new MockPart(FORM_PARAM_FILE, "fileToUpload", "content".getBytes());
+
+    mvc.perform(
+        multipart(PATH_UPLOAD_FILE_TO_FEEDBACK_ROOM + "/" + RC_ROOM_ID)
+            .part(fileToUpload)
+            .param(FORM_PARAM_SEND_NOTIFICATION, FORM_PARAM_SEND_NOTIFICATION_TRUE)
+            .contentType(MediaType.MULTIPART_FORM_DATA)
+            .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
+            .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
+        .andExpect(status().isCreated());
+  }
 }

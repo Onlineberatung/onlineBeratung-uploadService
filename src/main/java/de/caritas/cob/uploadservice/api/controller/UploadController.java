@@ -76,9 +76,9 @@ public class UploadController implements UploadsApi {
       @RequestHeader String rcUserId,
       @RequestPart MultipartFile file,
       @RequestParam String sendNotification,
-      @RequestParam String msg,
-      @RequestParam String description,
-      @RequestParam String tmId) {
+      @RequestParam(required = false) String msg,
+      @RequestParam(required = false) String description,
+      @RequestParam(required = false) String tmId) {
 
     RocketChatCredentials rocketChatCredentials =
         RocketChatCredentials.builder().rocketChatUserId(rcUserId).rocketChatToken(rcToken).build();
@@ -119,9 +119,9 @@ public class UploadController implements UploadsApi {
       @RequestHeader String rcUserId,
       @RequestPart MultipartFile file,
       @RequestParam String sendNotification,
-      @RequestParam String msg,
-      @RequestParam String description,
-      @RequestParam String tmId) {
+      @RequestParam(required = false) String msg,
+      @RequestParam(required = false) String description,
+      @RequestParam(required = false) String tmId) {
 
     RocketChatCredentials rocketChatCredentials =
         RocketChatCredentials.builder().rocketChatUserId(rcUserId).rocketChatToken(rcToken).build();
