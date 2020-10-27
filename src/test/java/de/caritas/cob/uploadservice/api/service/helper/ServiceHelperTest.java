@@ -52,8 +52,7 @@ public class ServiceHelperTest {
   }
 
   @Test
-  public void
-  getKeycloakAndCsrfHttpHeaders_Should_Return_HeaderWithCookiePropertyNameFromProperties() {
+  public void getKeycloakAndCsrfHttpHeaders_Should_Return_HeaderWithCookiePropertyNameFromProperties() {
 
     HttpHeaders result = serviceHelper.getKeycloakAndCsrfHttpHeaders();
     assertTrue(result.get("Cookie").toString().startsWith("[" + CSRF_TOKEN_COOKIE_VALUE + "="));
@@ -87,8 +86,7 @@ public class ServiceHelperTest {
   }
 
   @Test
-  public void
-  getKeycloakAndCsrfHttpHeadersWithTokenParam_Should_Return_HeaderWithCookiePropertyNameFromProperties() {
+  public void getKeycloakAndCsrfHttpHeadersWithTokenParam_Should_Return_HeaderWithCookiePropertyNameFromProperties() {
 
     HttpHeaders result = serviceHelper.getKeycloakAndCsrfHttpHeaders(KEYCLOAK_ACCESS_TOKEN);
     assertTrue(result.get("Cookie").toString().startsWith("[" + CSRF_TOKEN_COOKIE_VALUE + "="));
