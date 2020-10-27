@@ -7,39 +7,31 @@ import de.caritas.cob.uploadservice.api.exception.RocketChatPostMarkGroupAsReadE
 import de.caritas.cob.uploadservice.api.exception.httpresponses.InternalServerErrorException;
 import de.caritas.cob.uploadservice.api.helper.RocketChatUploadParameterEncrypter;
 import de.caritas.cob.uploadservice.api.helper.RocketChatUploadParameterSanitizer;
+import de.caritas.cob.uploadservice.api.service.LiveEventNotificationService;
 import de.caritas.cob.uploadservice.api.service.LogService;
 import de.caritas.cob.uploadservice.api.service.RocketChatService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /*
- * Facade to encapsulate the steps for uploading a file with an encrypted message
+ * Facade to encapsulate the steps for uploading a file with an encrypted message.
  */
 @Component
+@RequiredArgsConstructor
 public class UploadFacade {
 
-  private final RocketChatService rocketChatService;
-  private final EmailNotificationFacade emailNotificationFacade;
-  private final RocketChatUploadParameterSanitizer rocketChatUploadParameterSanitizer;
-  private final RocketChatUploadParameterEncrypter rocketChatUploadParameterEncrypter;
-
-  @Autowired
-  public UploadFacade(
-      RocketChatService rocketChatService,
-      EmailNotificationFacade emailNotificationFacade,
-      RocketChatUploadParameterSanitizer rocketChatUploadParameterSanitizer,
-      RocketChatUploadParameterEncrypter rocketChatUploadParameterEncrypter) {
-    this.rocketChatService = rocketChatService;
-    this.emailNotificationFacade = emailNotificationFacade;
-    this.rocketChatUploadParameterSanitizer = rocketChatUploadParameterSanitizer;
-    this.rocketChatUploadParameterEncrypter = rocketChatUploadParameterEncrypter;
-  }
+  private final @NonNull RocketChatService rocketChatService;
+  private final @NonNull EmailNotificationFacade emailNotificationFacade;
+  private final @NonNull RocketChatUploadParameterSanitizer rocketChatUploadParameterSanitizer;
+  private final @NonNull RocketChatUploadParameterEncrypter rocketChatUploadParameterEncrypter;
+  private final @NonNull LiveEventNotificationService liveEventNotificationService;
 
   /**
    * Upload a file with a message to a Rocket.Chat room. The message and the description are
    * encrypted before it is sent to Rocket.Chat.
    *
-   * @param rocketChatCredentials {@link RocketChatCredentials} container
+   * @param rocketChatCredentials     {@link RocketChatCredentials} container
    * @param rocketChatUploadParameter {@link RocketChatUploadParameter} container
    */
   public void uploadFileToRoom(
@@ -49,6 +41,8 @@ public class UploadFacade {
 
     sanitizeAndEncryptParametersAndUploadToRocketChatRoom(
         rocketChatCredentials, rocketChatUploadParameter);
+    this.liveEventNotificationService.sendLiveEvent(rocketChatUploadParameter.getRoomId());
+
     if (sendNotification) {
       emailNotificationFacade.sendEmailNotification(rocketChatUploadParameter.getRoomId());
     }
@@ -68,6 +62,8 @@ public class UploadFacade {
 
     sanitizeAndEncryptParametersAndUploadToRocketChatRoom(
         rocketChatCredentials, rocketChatUploadParameter);
+    this.liveEventNotificationService.sendLiveEvent(rocketChatUploadParameter.getRoomId());
+
     if (sendNotification) {
       emailNotificationFacade.sendFeedbackEmailNotification(rocketChatUploadParameter.getRoomId());
     }

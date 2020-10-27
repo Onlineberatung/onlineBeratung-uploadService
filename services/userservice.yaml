@@ -1,0 +1,1527 @@
+openapi: 3.0.1
+info:
+  title: will be replaced
+  description: This information will be replaced by the SpringFox config information
+  version: 0.0.1
+servers:
+  - url: /
+paths:
+  /users/askers/new:
+    post:
+      tags:
+        - user-controller
+      summary: 'Register a user [Authorization: none]'
+      operationId: registerUser
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/UserDTO'
+        required: true
+      responses:
+        201:
+          description: CREATED - user was created successfully
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/CreateUserResponseDTO'
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        403:
+          description: FORBIDDEN - no/invalid CSRF token
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/askers/consultingType/new:
+    post:
+      tags:
+        - user-controller
+      summary: 'Register a new consulting type for an existing asker [Authorization: Role: user]'
+      operationId: registerNewConsultingType
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/NewRegistrationDto'
+        required: true
+      responses:
+        201:
+          description: CREATED - session was registered successfully
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/NewRegistrationResponseDto'
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        403:
+          description: FORBIDDEN - no/invalid role/authorization or CSRF token
+        409:
+          description: CONFLICT - user is already registered for provided consulting
+            type
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/sessions/{sessionId}/enquiry/new:
+    post:
+      tags:
+        - user-controller
+      summary: 'Create enquiry message for an user [Authorization: Role: user]'
+      operationId: createEnquiryMessage
+      parameters:
+        - name: sessionId
+          in: path
+          description: Session Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: RCToken
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: RCUserId
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/EnquiryMessageDTO'
+        required: true
+      responses:
+        201:
+          description: CREATED - enquriy message was successfully created
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - no/invalid role/authorization or CSRF token
+        409:
+          description: CONFLICT - message already saved for enquiry
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/sessions/new/{sessionId}:
+    put:
+      tags:
+        - user-controller
+      summary: 'Accept an enquiry and assign it to the currently authenticated consultant
+        [Authorization: Role: consultant]'
+      operationId: acceptEnquiry
+      parameters:
+        - name: sessionId
+          in: path
+          description: Session Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: RCUserId
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK - successfull operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - agency doesn't match/isn't assigned to this enquiry
+            or no/invalid CSRF token
+        409:
+          description: CONFLICT - enquiry already accepted by another consultant or
+            agency of session is not assigned to consultant
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/sessions/askers:
+    get:
+      tags:
+        - user-controller
+      summary: 'Returns a list of open session(s) for the currently authenticated
+        user. Note: Either a session or a chat object is provided. [Authorization:
+        Role: user]'
+      operationId: getSessionsForAuthenticatedUser
+      parameters:
+        - name: RCToken
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK - successfull operation
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/UserSessionListResponseDTO'
+        204:
+          description: NO CONTENT - no enquiry sent yet
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - no/invalid role/authorization or CSRF token
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/consultants/absences:
+    put:
+      tags:
+        - user-controller
+      summary: 'Update the absence status and message for a consultant [Authorization:
+        Role: consultant]'
+      operationId: updateAbsence
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/AbsenceDTO'
+        required: true
+      responses:
+        200:
+          description: OK - successfull operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - no/invalid role/authorization or CSRF token
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/data:
+    get:
+      tags:
+        - user-controller
+      summary: 'Returns user (meta)data for the currently authenticated user [Authorization:
+        Role: user/consultant]'
+      operationId: getUserData
+      responses:
+        200:
+          description: OK - successfull operation
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/UserDataResponseDTO'
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - no/invalid role/authorization or CSRF token
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/sessions/consultants:
+    get:
+      tags:
+        - user-controller
+      summary: 'Returns a list of sessions for the currently authenticated consultant.
+        Status 1 returns all enquiries of an agency. Status 2 returns sessions of
+        the calling consultant which are open/in progress. Note: Either a session
+        or a chat object is provided. [Authorization: Role: consultant]'
+      operationId: getSessionsForAuthenticatedConsultant
+      parameters:
+        - name: RCToken
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Session status type
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          description: Number of items where to start in the query (0 = first item)
+          required: true
+          schema:
+            minimum: 0
+            type: integer
+        - name: count
+          in: query
+          description: Number of items which are being returned
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+        - name: filter
+          in: query
+          description: Information on how to filter the list
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ConsultantSessionListResponseDTO'
+        204:
+          description: successful operation, but no content
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - no/invalid role/authorization or CSRF token
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/consultants/import:
+    post:
+      tags:
+        - user-controller
+      summary: 'Imports a list of consultants from a file [Authorization: Role: technical]'
+      operationId: importConsultants
+      responses:
+        200:
+          description: successful operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token (tech user)
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/askers/import:
+    post:
+      tags:
+        - user-controller
+      summary: 'Imports a list of askers from a file [Authorization: Role: technical]'
+      operationId: importAskers
+      responses:
+        200:
+          description: successful operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token (tech user)
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/askersWithoutSession/import:
+    post:
+      tags:
+        - user-controller
+      summary: 'Imports a list of askers without a session from a file [Authorization:
+        Role: technical]'
+      operationId: importAskersWithoutSession
+      responses:
+        200:
+          description: successful operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token (tech user)
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/sessions/teams:
+    get:
+      tags:
+        - user-controller
+      summary: 'Returns a list of team consulting sessions, which were accepted by
+        other consultants of the team, for the currently authenticated consultant
+        [Authorization: Role: consultant]'
+      operationId: getTeamSessionsForAuthenticatedConsultant
+      parameters:
+        - name: RCToken
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: offset
+          in: query
+          description: Number of items where to start in the query (0 = first item)
+          required: true
+          schema:
+            minimum: 0
+            type: integer
+        - name: count
+          in: query
+          description: Number of items which are being returned
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+        - name: filter
+          in: query
+          description: Information on how to filter the list
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ConsultantSessionListResponseDTO'
+        204:
+          description: successful operation, but no content
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - no/invalid role/authorization or CSRF token
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/mails/messages/new:
+    post:
+      tags:
+        - user-controller
+      summary: 'Sends a notification e-mail that a new message/answer has been written
+        [Authorization: Role: user, consultant]'
+      operationId: sendNewMessageNotification
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/NewMessageNotificationDTO'
+        required: true
+      responses:
+        200:
+          description: successful operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - invalid token
+        409:
+          description: CONFLICT - no user e-mail address in db given
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/mails/messages/feedback/new:
+    post:
+      tags:
+        - user-controller
+      summary: 'Sends a notification e-mail that a new feedback message/answer has
+        been written [Authorization: Role: consultant with authority for feedback
+        chat]'
+      operationId: sendNewFeedbackMessageNotification
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/NewMessageNotificationDTO'
+        required: true
+      responses:
+        200:
+          description: successful operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - invalid token
+        409:
+          description: CONFLICT - no user e-mail address in db given
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/sessions/monitoring/{sessionId}:
+    put:
+      tags:
+        - user-controller
+      summary: 'Update the monitoring values of a session [Authorization: Role: consultant]'
+      operationId: updateMonitoring
+      parameters:
+        - name: sessionId
+          in: path
+          description: Session Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/MonitoringDTO'
+        required: true
+      responses:
+        200:
+          description: OK - successfull operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - no/invalid role/authorization or CSRF token
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/consultants:
+    get:
+      tags:
+        - user-controller
+      summary: 'Returns an alphabetically sorted list of consultants depending on
+        the query filter parameters [Authorization: Authority: VIEW_AGENCY_CONSULTANTS]'
+      operationId: getConsultants
+      parameters:
+        - name: agencyId
+          in: query
+          description: Agency Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: successful operation
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConsultantResponseDTO'
+        204:
+          description: successful operation, but no content
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - no/invalid role/authorization or CSRF token
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/sessions/{sessionId}/consultant/{consultantId}:
+    put:
+      tags:
+        - user-controller
+      summary: 'Assign a session to the specified consultant id [Authorization: Authority:
+        ASSIGN_CONSULTANT_TO_ENQUIRY or ASSIGN_CONSULTANT_TO_SESSION]'
+      operationId: assignSession
+      parameters:
+        - name: sessionId
+          in: path
+          description: Session Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: consultantId
+          in: path
+          description: Consultant Id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK - successfull operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - no/invalid role/authorization or CSRF token or
+            agency of session is not assigned to consultant
+        409:
+          description: CONFLICT - session is already assigned to this consultant
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/password/change:
+    put:
+      tags:
+        - user-controller
+      summary: 'Update the (Keycloak) password of a user [Authorization: Role: consultant,
+        user]'
+      operationId: updatePassword
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/PasswordDTO'
+        required: true
+      responses:
+        200:
+          description: OK - successfull operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - no/invalid role/authorization or CSRF token
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/messages/key:
+    post:
+      tags:
+        - user-controller
+      summary: 'Update the master key fragment for the session key [Authorization:
+        Role: technical]'
+      operationId: updateKey
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/MasterKeyDTO'
+        required: true
+      responses:
+        202:
+          description: ACCEPTED - key was successfully inserted
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - no/invalid role/authorization
+        409:
+          description: CONFLICT - there was a key in the service
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/sessions/{sessionId}/monitoring:
+    get:
+      tags:
+        - user-controller
+      summary: 'Returns the monitoring for the given session [Authorization: Role:
+        consultant]'
+      operationId: getMonitoring
+      parameters:
+        - name: sessionId
+          in: path
+          description: Session Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: successful operation
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/MonitoringDTO'
+        204:
+          description: successful operation, but no content
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - no/invalid role/authorization or CSRF token
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/chat/new:
+    post:
+      tags:
+        - user-controller
+      summary: 'Create a new group chat [Authorization: Role: consultant with authority
+        CREATE_NEW_CHAT]'
+      operationId: createChat
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/ChatDTO'
+        required: true
+      responses:
+        201:
+          description: CREATED - group chat was created successfully
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/CreateChatResponseDTO'
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        403:
+          description: FORBIDDEN - no/invalid CSRF token
+        409:
+          description: CONFLICT - group chat with same name already existing
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/chat/{chatId}/update:
+    put:
+      tags:
+        - user-controller
+      summary: 'Update a group chat [Authorization: Role: consultant with authority
+        UPDATE_CHAT]'
+      operationId: updateChat
+      parameters:
+        - name: chatId
+          in: path
+          description: Chat Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/ChatDTO'
+        required: true
+      responses:
+        200:
+          description: OK - successfull operation
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/UpdateChatResponseDTO'
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        403:
+          description: FORBIDDEN - No permission for chat update / Consultant is not
+            owner
+        409:
+          description: CONFLICT - Chat is already startet
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/chat/{chatId}/start:
+    put:
+      tags:
+        - user-controller
+      summary: 'Start a chat [Authorization: Role: consultant with authority START_CHAT]'
+      operationId: startChat
+      parameters:
+        - name: chatId
+          in: path
+          description: Chat Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK - successfull operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - No permission for chat / Consultant is not assigned
+            to chat-agency
+        409:
+          description: CONFLICT - Chat is already startet
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/chat/{chatId}/stop:
+    put:
+      tags:
+        - user-controller
+      summary: 'Stop a chat and delete all users and messages from the Rocket.Chat
+        room (repetitive chat) or delete room (singular chat) [Authorization: Role:
+        consultant with authority STOP_CHAT]'
+      operationId: stopChat
+      parameters:
+        - name: chatId
+          in: path
+          description: Chat Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK - successfull operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - No permission for chat / Consultant is not assigned
+            to chat agency
+        409:
+          description: CONFLICT - Chat is not started/active
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/chat/{chatId}:
+    get:
+      tags:
+        - user-controller
+      summary: 'Returns the information of provided chat (Id) [Authorization: Role:
+        consultant or user]'
+      operationId: getChat
+      parameters:
+        - name: chatId
+          in: path
+          description: Chat Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK - successfull operation
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ChatInfoResponseDTO'
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - No permission for chat
+        404:
+          description: NOT FOUND - Chat not found
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/chat/{chatId}/join:
+    put:
+      tags:
+        - user-controller
+      summary: 'Join a chat [Authorization: Role: consultant or user]'
+      operationId: joinChat
+      parameters:
+        - name: chatId
+          in: path
+          description: Chat Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK - successfull operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - No permission for chat
+        404:
+          description: NOT FOUND - Chat not found
+        409:
+          description: CONFLICT - Chat has not startet yet
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/chat/{chatId}/members:
+    get:
+      tags:
+        - user-controller
+      summary: 'Returns the members of provided chat (Id) [Authorization: Role: consultant
+        or user]'
+      operationId: getChatMembers
+      parameters:
+        - name: chatId
+          in: path
+          description: Chat Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK - successfull operation
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ChatMembersResponseDTO'
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - No permission for chat
+        404:
+          description: NOT FOUND - Chat not found
+        409:
+          description: CONFLICT - Chat has not startet yet
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/chat/{chatId}/leave:
+    put:
+      tags:
+        - user-controller
+      summary: 'Leave a chat [Authorization: Role: consultant or user]'
+      operationId: leaveChat
+      parameters:
+        - name: chatId
+          in: path
+          description: Chat Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK - successfull operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - No permission for chat
+        404:
+          description: NOT FOUND - Chat not found
+        409:
+          description: CONFLICT - Chat has not startet yet
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /liveproxy/send:
+    post:
+      tags:
+        - liveproxy-controller
+      summary: 'Send a live notification event'
+      operationId: sendLiveEvent
+      parameters:
+        - name: rcGroupId
+          in: query
+          description: Rocket Chat group id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK - successfull operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request or query object
+        403:
+          description: FORBIDDEN - no/invalid CSRF token
+        409:
+          description: CONFLICT - group chat with same name already existing
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+components:
+  schemas:
+    UserDTO:
+      type: object
+      required:
+        - username
+        - postcode
+        - agencyId
+        - password
+        - termsAccepted
+        - consultingType
+      properties:
+        username:
+          type: string
+          example: max94
+        postcode:
+          type: string
+          minLength: 1
+          maxLength: 5
+          example: 79098
+        agencyId:
+          type: integer
+          format: int64
+          example: 15
+        password:
+          type: string
+          format: password
+          example: pass@w0rd
+        email:
+          type: string
+          format: email
+          example: max@mustermann.de
+        addictiveDrugs:
+          type: string
+          example: 2,4
+          description: comma separated list of addictive drug IDs
+        relation:
+          type: string
+          example: 2
+        age:
+          type: string
+          example: 17
+        gender:
+          type: string
+          example: 0
+        state:
+          type: string
+          example: 8
+        termsAccepted:
+          type: string
+          example: true
+        consultingType:
+          type: string
+          example: 3
+
+    CreateUserResponseDTO:
+      type: object
+      required:
+        - usernameAvailable
+        - emailAvailable
+      properties:
+        usernameAvailable:
+          type: integer
+          example: 0
+        emailAvailable:
+          type: integer
+          example: 1
+
+    ConsultantSessionListResponseDTO:
+      type: object
+      required:
+        - sessions
+        - offset
+        - count
+        - total
+      properties:
+        sessions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConsultantSessionResponseDTO'
+        offset:
+          type: integer
+          description: Session value where to start from in the query (0 = first item)
+        count:
+          type: integer
+          description: Number of sessions which are being returned
+        total:
+          type: integer
+          description: Total amount of sessions the consultant has
+
+    ConsultantSessionResponseDTO:
+      type: object
+      required:
+        - SessionDTO
+        - UserChatDTO
+      properties:
+        session:
+          $ref: '#/components/schemas/SessionDTO'
+        chat:
+          $ref: '#/components/schemas/UserChatDTO'
+        user:
+          $ref: '#/components/schemas/SessionUserDTO'
+        consultant:
+          $ref: '#/components/schemas/SessionConsultantForConsultantDTO'
+        latestMessage:
+          $ref: '#/components/schemas/Date'
+
+    Date:
+      type: object
+      writeOnly: true
+
+    SessionDTO:
+      type: object
+      required:
+        - id
+        - agencyId
+        - consultingType
+        - status
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 153918
+        agencyId:
+          type: integer
+          format: int64
+          example: 100
+        consultingType:
+          type: integer
+          example: 1
+        status:
+          type: integer
+          example: 0
+        postcode:
+          type: string
+          minLength: 1
+          maxLength: 5
+          example: 79098
+        groupId:
+          type: string
+          example: xGklslk2JJKK
+          description: Rocket.Chat room ID
+        feedbackGroupId:
+          type: string
+          example: 8ertjlasdKJA
+          description: Rocket.Chat feedback room ID
+        askerRcId:
+          type: string
+          example: 8ertjlasdKJA
+          description: asker Rocket.Chat ID
+        lastMessage:
+          type: string
+          example: Thanks for the answer
+        messageDate:
+          type: integer
+          format: int64
+          example: 1539184948
+        messagesRead:
+          type: boolean
+          example: false
+        feedbackRead:
+          type: boolean
+          example: true
+        isTeamSession:
+          type: boolean
+          example: false
+        monitoring:
+          type: boolean
+          example: true
+        attachment:
+          $ref: '#/components/schemas/SessionAttachmentDTO'
+
+    SessionAttachmentDTO:
+      type: object
+      properties:
+        fileType:
+          type: string
+          example: image/png
+        imagePreview:
+          type: string
+          example: /9j/2wBDAAYEBQYFBAYGBQY
+        fileReceived:
+          type: boolean
+          example: true
+
+    UserChatDTO:
+      type: object
+      required:
+        - id
+        - topic
+        - startDate
+        - startTime
+        - duration
+        - repetitive
+        - active
+        - consultingType
+        - groupId
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 153918
+        topic:
+          type: string
+          example: Drugs
+        startDate:
+          type: string
+          format: date
+          example: 2019-10-23
+        startTime:
+          type: string
+          format: time
+          example: 12:05
+        duration:
+          type: integer
+          example: 120
+        repetitive:
+          type: boolean
+          example: false
+        active:
+          type: boolean
+          example: false
+        consultingType:
+          type: integer
+          example: 0
+        lastMessage:
+          type: string
+          example: Thanks for the answer
+        messageDate:
+          type: integer
+          format: int64
+          example: 1539184948
+        messagesRead:
+          type: boolean
+          example: false
+        groupId:
+          type: string
+          example: xGklslk2JJKK
+        attachment:
+          $ref: '#/components/schemas/SessionAttachmentDTO'
+        subscribed:
+          type: boolean
+          example: false
+        moderators:
+          type: array
+          items:
+            type: string
+        startDateWithTime:
+          type: string
+          format: date-time
+          writeOnly: true
+
+    SessionUserDTO:
+      type: object
+      properties:
+        username:
+          type: string
+          example: max94
+        sessionData:
+          type: string
+          description: LinkedHashMap<String, Object>
+          additionalProperties:
+            type: object
+
+    SessionConsultantForConsultantDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 153918
+        firstName:
+          type: string
+          example: Max
+        lastName:
+          type: string
+          example: Mustermann
+
+    UserSessionListResponseDTO:
+      type: object
+      properties:
+        sessions:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserSessionResponseDTO'
+
+    UserSessionResponseDTO:
+      type: object
+      properties:
+        session:
+          $ref: '#/components/schemas/SessionDTO'
+        chat:
+          $ref: '#/components/schemas/UserChatDTO'
+        agency:
+          $ref: '#/components/schemas/AgencyDTO'
+        consultant:
+          $ref: '#/components/schemas/SessionConsultantForUserDTO'
+        latestMessage:
+          $ref: '#/components/schemas/Date'
+
+    SessionConsultantForUserDTO:
+      type: object
+      properties:
+        username:
+          type: string
+          example: beraterXYZ
+        isAbsent:
+          type: boolean
+          example: true
+        absenceMessage:
+          type: string
+          example: Bin nicht da
+
+    EnquiryMessageDTO:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: Lorem ipsum dolor sit amet, consetetur...
+
+    AbsenceDTO:
+      type: object
+      required:
+        - absent
+      properties:
+        absent:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Ich bin abwesend vom...bis.
+
+    UserDataResponseDTO:
+      type: object
+      properties:
+        userId:
+          type: string
+          example: ajsd89-sdf9-sadk-as8j-asdf8jo
+        userName:
+          type: string
+          example: max.muster
+        firstName:
+          type: string
+          example: Max
+        lastName:
+          type: string
+          example: Mustermann
+        email:
+          type: string
+          format: email
+          example: maxmuster@mann.com
+        isAbsent:
+          type: boolean
+          example: false
+        isFormalLanguage:
+          type: boolean
+          example: true
+        absenceMessage:
+          type: string
+          example: Bin mal weg...
+        isInTeamAgency:
+          type: boolean
+          example: true
+        agencies:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgencyDTO"
+        userRoles:
+          type: array
+          items:
+            type: string
+        grantedAuthorities:
+          type: array
+          items:
+            type: string
+        consultingTypes:
+          $ref: "#/components/schemas/ConsultingTypeMap"
+
+    ConsultingTypeMap:
+      type: object
+      properties:
+        value:
+          type: object
+
+    AgencyDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 153918
+        name:
+          type: string
+          example: Alkohol-Beratung
+        postcode:
+          type: string
+          example: 53113
+        city:
+          type: string
+          example: Bonn
+        description:
+          type: string
+          example: Our agency provides help for the following topics..
+        teamAgency:
+          type: boolean
+          example: false
+        offline:
+          type: boolean
+          example: false
+        consultingType:
+          $ref: '#/components/schemas/ConsultingType'
+
+    ConsultingType:
+      type: object
+
+    MonitoringDTO:
+      type: object
+      properties:
+        additionalProperties:
+          $ref: "#/components/schemas/Properties"
+
+    Properties:
+      type: object
+      properties:
+        value:
+          type: object
+
+    ConsultantResponseDTO:
+      type: object
+      properties:
+        consultantId:
+          type: string
+          example: aadc0ecf-c048-4bfc-857d-8c9b2e425500
+        firstName:
+          type: string
+          example: Max
+        lastName:
+          type: string
+          example: Mustermann
+
+    PasswordDTO:
+      type: object
+      required:
+        - oldPassword
+        - newPassword
+      properties:
+        oldPassword:
+          type: string
+          example: oldpass@w0rd
+        newPassword:
+          type: string
+          example: newpass@w0rd
+
+    ChatDTO:
+      type: object
+      required:
+        - topic
+        - startDate
+        - startTime
+        - duration
+        - repetitive
+      properties:
+        topic:
+          type: string
+          example: Wöchentliche Drogenberatung
+        startDate:
+          type: string
+          format: date
+          example: 2019-10-23
+        startTime:
+          type: string
+          format: time
+          example: 12:05
+        duration:
+          type: integer
+          example: 120
+        repetitive:
+          type: boolean
+          example: false
+
+    CreateChatResponseDTO:
+      type: object
+      required:
+        - groupId
+        - chatLink
+      properties:
+        groupId:
+          type: string
+          example: WCET6GWir78pNMyyD
+        chatLink:
+          type: string
+          example: http://{baseUrl}}/{consultingTypeName}/GEYDA
+
+    ChatInfoResponseDTO:
+      type: object
+      required:
+        - id
+        - groupId
+        - active
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 153918
+        groupId:
+          type: string
+          example: xGklslk2JJKK
+        active:
+          type: boolean
+          example: false
+
+    ChatMembersResponseDTO:
+      type: object
+      properties:
+        members:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChatMemberResponseDTO"
+
+    ChatMemberResponseDTO:
+      type: object
+      properties:
+        _id:
+          type: string
+        status:
+          type: string
+        username:
+          type: string
+        name:
+          type: string
+        utcOffset:
+          type: string
+
+    UpdateChatResponseDTO:
+      type: object
+      required:
+        - groupId
+        - chatLink
+      properties:
+        groupId:
+          type: string
+          example: WCET6GWir78pNMyyD
+        chatLink:
+          type: string
+          example: http://{baseUrl}}/{consultingTypeName}/GEYDA
+
+    NewRegistrationDto:
+      type: object
+      required:
+        - postcode
+        - agencyId
+        - consultingType
+      properties:
+        postcode:
+          type: string
+          minLength: 1
+          maxLength: 5
+          example: 79098
+        agencyId:
+          type: integer
+          format: int64
+          example: 232
+        consultingType:
+          type: string
+          example: 1
+
+    NewRegistrationResponseDto:
+      type: object
+      properties:
+        sessionId:
+          type: integer
+          format: int64
+        status:
+          $ref: "#/components/schemas/HttpStatus"
+
+    HttpStatus:
+      type: object
+      writeOnly: true
+
+    MasterKeyDTO:
+      type: object
+      required:
+        - masterKey
+      properties:
+        masterKey:
+          type: string
+          example: "sdj8wnFNASj324!ksldf9"
+
+    NewMessageNotificationDTO:
+      type: object
+      required:
+        - rcGroupId
+      properties:
+        rcGroupId:
+          type: string
+          example: fR2Rz7dmWmHdXE8uz
+
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      name: Authorization
+      in: header
