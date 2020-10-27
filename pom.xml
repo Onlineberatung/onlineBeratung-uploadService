@@ -202,10 +202,36 @@
               </configOptions>
               <inputSpec>${project.basedir}/api/uploadservice.yaml</inputSpec>
               <generatorName>spring</generatorName>
-              <apiPackage>${project.groupId}.${project.artifactId}.generated.api.controller</apiPackage>
+              <apiPackage>${project.groupId}.${project.artifactId}.generated.api.controller
+              </apiPackage>
               <modelPackage>${project.groupId}.${project.artifactId}.api.model</modelPackage>
               <generateSupportingFiles>true</generateSupportingFiles>
               <output>target/generated-sources</output>
+            </configuration>
+          </execution>
+          <!-- Generate client API for user service -->
+          <execution>
+            <id>userservice-client-model</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <configOptions>
+                <sourceFolder>/</sourceFolder>
+                <library>resttemplate</library>
+                <dateLibrary>java8</dateLibrary>
+              </configOptions>
+              <inputSpec>${project.basedir}/services/userservice.yaml</inputSpec>
+              <generatorName>java</generatorName>
+              <generateApis>true</generateApis>
+              <generateApiTests>false</generateApiTests>
+              <generateModelTests>false</generateModelTests>
+              <apiPackage>${project.groupId}.${project.artifactId}.userservice.generated.web
+              </apiPackage>
+              <modelPackage>
+                ${project.groupId}.${project.artifactId}.userservice.generated.web.model
+              </modelPackage>
             </configuration>
           </execution>
         </executions>

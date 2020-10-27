@@ -18,6 +18,8 @@ public class TestConstants {
 
   /* Keycloak */
   public static final String KEYCLOAK_ACCESS_TOKEN = "jklsfljkeiouwi34jklfsjlksfjlkf";
+  public static final String AUTHORIZATION = "Authorization";
+  public static final String BEARER = "Bearer ";
 
   /* Master Key */
   public static final String MASTER_KEY_1 = "key1";

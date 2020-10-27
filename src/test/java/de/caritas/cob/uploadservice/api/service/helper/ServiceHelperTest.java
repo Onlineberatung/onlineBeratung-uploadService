@@ -1,9 +1,16 @@
 package de.caritas.cob.uploadservice.api.service.helper;
 
+import static de.caritas.cob.uploadservice.helper.FieldConstants.CSRF_TOKEN_COOKIE_VALUE;
+import static de.caritas.cob.uploadservice.helper.FieldConstants.CSRF_TOKEN_HEADER_VALUE;
+import static de.caritas.cob.uploadservice.helper.FieldConstants.FIELD_NAME_CSRF_TOKEN_COOKIE_PROPERTY;
+import static de.caritas.cob.uploadservice.helper.FieldConstants.FIELD_NAME_CSRF_TOKEN_HEADER_PROPERTY;
+import static de.caritas.cob.uploadservice.helper.TestConstants.AUTHORIZATION;
+import static de.caritas.cob.uploadservice.helper.TestConstants.BEARER;
 import static de.caritas.cob.uploadservice.helper.TestConstants.KEYCLOAK_ACCESS_TOKEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import de.caritas.cob.uploadservice.api.helper.AuthenticatedUser;
 import org.junit.Before;
@@ -18,12 +25,6 @@ import org.springframework.http.MediaType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ServiceHelperTest {
-
-  private static final String FIELD_NAME_CSRF_TOKEN_HEADER_PROPERTY = "csrfHeaderProperty";
-  private static final String FIELD_NAME_CSRF_TOKEN_COOKIE_PROPERTY = "csrfCookieProperty";
-  private static final String CSRF_TOKEN_HEADER_VALUE = "X-CSRF-TOKEN";
-  private static final String CSRF_TOKEN_COOKIE_VALUE = "CSRF-TOKEN";
-  private static final String AUTHORIZATION = "Authorization";
 
   @Mock private AuthenticatedUser authenticatedUser;
   @InjectMocks private ServiceHelper serviceHelper;
@@ -40,9 +41,46 @@ public class ServiceHelperTest {
         CSRF_TOKEN_COOKIE_VALUE);
   }
 
-  /** Tests for method: getKeycloakAndCsrfHttpHeaders */
+  /**
+   * Tests for method: getKeycloakAndCsrfHttpHeaders()
+   */
   @Test
   public void getKeycloakAndCsrfHttpHeaders_Should_Return_HeaderWithCorrectContentType() {
+
+    HttpHeaders result = serviceHelper.getKeycloakAndCsrfHttpHeaders();
+    assertEquals(MediaType.APPLICATION_JSON_UTF8, result.getContentType());
+  }
+
+  @Test
+  public void
+  getKeycloakAndCsrfHttpHeaders_Should_Return_HeaderWithCookiePropertyNameFromProperties() {
+
+    HttpHeaders result = serviceHelper.getKeycloakAndCsrfHttpHeaders();
+    assertTrue(result.get("Cookie").toString().startsWith("[" + CSRF_TOKEN_COOKIE_VALUE + "="));
+  }
+
+  @Test
+  public void getKeycloakAndCsrfHttpHeaders_Should_Return_HeaderWithPropertyNameFromProperties() {
+
+    HttpHeaders result = serviceHelper.getKeycloakAndCsrfHttpHeaders();
+    assertNotNull(result.get(CSRF_TOKEN_HEADER_VALUE));
+  }
+
+  @Test
+  public void getKeycloakAndCsrfHttpHeaders_Should_Return_HeaderWithBearerTokenForCurrentlyAuthenticatedUser() {
+
+    when(authenticatedUser.getAccessToken()).thenReturn(KEYCLOAK_ACCESS_TOKEN);
+
+    HttpHeaders result = serviceHelper.getKeycloakAndCsrfHttpHeaders();
+    assertNotNull(result.get(AUTHORIZATION));
+    assertEquals(BEARER + KEYCLOAK_ACCESS_TOKEN, result.get(AUTHORIZATION).get(0));
+  }
+
+  /**
+   * Test for method: getKeycloakAndCsrfHttpHeaders(String accessToken)
+   */
+  @Test
+  public void getKeycloakAndCsrfHttpHeadersWithTokenParam_Should_Return_HeaderWithCorrectContentType() {
 
     HttpHeaders result = serviceHelper.getKeycloakAndCsrfHttpHeaders(KEYCLOAK_ACCESS_TOKEN);
     assertEquals(MediaType.APPLICATION_JSON_UTF8, result.getContentType());
@@ -50,23 +88,24 @@ public class ServiceHelperTest {
 
   @Test
   public void
-      getKeycloakAndCsrfHttpHeaders_Should_Return_HeaderWithCookiePropertyNameFromProperties() {
+  getKeycloakAndCsrfHttpHeadersWithTokenParam_Should_Return_HeaderWithCookiePropertyNameFromProperties() {
 
     HttpHeaders result = serviceHelper.getKeycloakAndCsrfHttpHeaders(KEYCLOAK_ACCESS_TOKEN);
     assertTrue(result.get("Cookie").toString().startsWith("[" + CSRF_TOKEN_COOKIE_VALUE + "="));
   }
 
   @Test
-  public void getKeycloakAndCsrfHttpHeaders_Should_Return_HeaderWithPropertyNameFromProperties() {
+  public void getKeycloakAndCsrfHttpHeadersWithTokenParam_Should_Return_HeaderWithPropertyNameFromProperties() {
 
     HttpHeaders result = serviceHelper.getKeycloakAndCsrfHttpHeaders(KEYCLOAK_ACCESS_TOKEN);
     assertNotNull(result.get(CSRF_TOKEN_HEADER_VALUE));
   }
 
   @Test
-  public void getKeycloakAndCsrfHttpHeaders_Should_Return_HeaderWithBearerAuthorization() {
+  public void getKeycloakAndCsrfHttpHeadersWithTokenParam_Should_Return_HeaderWithBearerTokenForCurrentlyAuthenticatedUser() {
 
     HttpHeaders result = serviceHelper.getKeycloakAndCsrfHttpHeaders(KEYCLOAK_ACCESS_TOKEN);
     assertNotNull(result.get(AUTHORIZATION));
+    assertEquals(BEARER + KEYCLOAK_ACCESS_TOKEN, result.get(AUTHORIZATION).get(0));
   }
 }

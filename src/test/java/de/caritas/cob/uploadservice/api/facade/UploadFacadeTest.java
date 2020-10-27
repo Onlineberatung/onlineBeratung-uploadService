@@ -17,6 +17,7 @@ import de.caritas.cob.uploadservice.api.exception.RocketChatPostMarkGroupAsReadE
 import de.caritas.cob.uploadservice.api.exception.httpresponses.InternalServerErrorException;
 import de.caritas.cob.uploadservice.api.helper.RocketChatUploadParameterEncrypter;
 import de.caritas.cob.uploadservice.api.helper.RocketChatUploadParameterSanitizer;
+import de.caritas.cob.uploadservice.api.service.LiveEventNotificationService;
 import de.caritas.cob.uploadservice.api.service.RocketChatService;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +38,8 @@ public class UploadFacadeTest {
   RocketChatUploadParameterSanitizer rocketChatUploadParameterSanitizer;
   @Mock
   RocketChatUploadParameterEncrypter rocketChatUploadParameterEncrypter;
+  @Mock
+  private LiveEventNotificationService liveEventNotificationService;
   @InjectMocks
   UploadFacade uploadFacade;
 
@@ -114,6 +117,35 @@ public class UploadFacadeTest {
     verify(rocketChatUploadParameterSanitizer, times(1)).sanitize(rocketChatUploadParameter);
   }
 
+  @Test
+  public void uploadFileToRoom_Should_sendLiveNotification_When_UploadSucceeds() {
+
+    uploadFacade.uploadFileToRoom(rocketChatCredentials, rocketChatUploadParameter, false);
+
+    verify(this.liveEventNotificationService, times(1))
+        .sendLiveEvent(rocketChatUploadParameter.getRoomId());
+  }
+
+  @Test(expected = InternalServerErrorException.class)
+  public void uploadFileToRoom_Should_ThrowInternalServerErrorException_WhenCustomCryptoExceptionIsThrown()
+      throws Exception {
+
+    when(rocketChatUploadParameterEncrypter.encrypt(any()))
+        .thenThrow(mock(CustomCryptoException.class));
+
+    uploadFacade.uploadFileToRoom(rocketChatCredentials, rocketChatUploadParameter, false);
+  }
+
+  @Test(expected = InternalServerErrorException.class)
+  public void uploadFileToRoom_Should_ThrowInternalServerErrorException_WheRocketChatPostMarkGroupAsReadExceptionIsThrown()
+      throws Exception {
+
+    doThrow(mock(RocketChatPostMarkGroupAsReadException.class)).when(rocketChatService)
+        .markGroupAsReadForSystemUser(anyString());
+
+    uploadFacade.uploadFileToRoom(rocketChatCredentials, rocketChatUploadParameter, false);
+  }
+
   /**
    * Method: uploadFileToFeedbackRoom
    */
@@ -181,23 +213,12 @@ public class UploadFacadeTest {
     verify(rocketChatUploadParameterSanitizer, times(1)).sanitize(rocketChatUploadParameter);
   }
 
-  @Test(expected = InternalServerErrorException.class)
-  public void uploadFileToRoom_Should_ThrowInternalServerErrorException_WhenCustomCryptoExceptionIsThrown()
-      throws Exception {
+  @Test
+  public void uploadFileToFeedbackRoom_Should_sendLiveNotification_When_UploadSucceeds() {
 
-    when(rocketChatUploadParameterEncrypter.encrypt(any()))
-        .thenThrow(mock(CustomCryptoException.class));
+    uploadFacade.uploadFileToFeedbackRoom(rocketChatCredentials, rocketChatUploadParameter, false);
 
-    uploadFacade.uploadFileToRoom(rocketChatCredentials, rocketChatUploadParameter, false);
-  }
-
-  @Test(expected = InternalServerErrorException.class)
-  public void uploadFileToRoom_Should_ThrowInternalServerErrorException_WheRocketChatPostMarkGroupAsReadExceptionIsThrown()
-      throws Exception {
-
-    doThrow(mock(RocketChatPostMarkGroupAsReadException.class)).when(rocketChatService)
-        .markGroupAsReadForSystemUser(anyString());
-
-    uploadFacade.uploadFileToRoom(rocketChatCredentials, rocketChatUploadParameter, false);
+    verify(this.liveEventNotificationService, times(1))
+        .sendLiveEvent(rocketChatUploadParameter.getRoomId());
   }
 }

@@ -32,7 +32,6 @@ paths:
           description: INTERNAL SERVER ERROR - server encountered unexpected condition
       security:
         - Bearer: []
-      x-codegen-request-body-name: key
   /uploads/new/{roomId}:
     post:
       tags:
