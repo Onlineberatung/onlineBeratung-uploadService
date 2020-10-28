@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.2](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.2.1...v1.2.2) (2020-10-28)
+
+### [1.1.1](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.1.0...v1.1.1) (2020-10-12)
+
+## [1.1.0](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.0.1...v1.1.0) (2020-10-12)
+
+### [1.2.1](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.2.0...v1.2.1) (2020-10-28)
+
+## [1.2.0](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.0.1...v1.2.0) (2020-10-28)
+
+
+### Features
+
+* add live event trigger for new messages ([cb9ea86](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/cb9ea86600de3b042aa5a61e0dc4e2fdc07b4ee5))
+* add live event trigger for new messages ([74c5a42](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/74c5a429c669b3e00ed947239e4445c642af15c5))
+* minor optimizations ([37ebedb](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/37ebedbd420c5d1a52276bd331caf1d0c1c3187a))
+* remove special chars except +-# from upload file name ([d52c658](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/d52c65858fe5079c24046b770da10d0311f8fc3d))
+* updated swagger to openapi ([9ab4405](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/9ab44055d86a68da77b7c108eb226146ff469e33))
+
+
+### Bug Fixes
+
+* explicity set unrequired request params ([8189c09](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/8189c09d754be54dbd966a555c766d6557167488))
+
 ### [1.1.1](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.1.0...v1.1.1) (2020-10-12)
 
 ## [1.1.0](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.0.1...v1.1.0) (2020-10-12)
