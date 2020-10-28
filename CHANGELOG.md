@@ -18,12 +18,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-* added file name length limitation ([7b48fc1](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/7b48fc1d8b3205870da45acc19a3f7781462b1c3))
-* added trim and check for whitespace only to filename validation ([092da31](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/092da31b8716a3d7c149753ea531181cd3e4da12))
 * explicity set unrequired request params ([8189c09](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/8189c09d754be54dbd966a555c766d6557167488))
-* fixed version ([938f07b](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/938f07b721b0c3c620168b99b0af6c43aca1167c))
-* fixed version ([5e73a76](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/5e73a768a5bfb11d719727f892647798a0d97327))
-* remove obsolete logging tests ([698b7b3](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/698b7b30a9ab4167c99943a75bfd115ca0ce167f))
 
 ### [1.1.1](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.1.0...v1.1.1) (2020-10-12)
 
