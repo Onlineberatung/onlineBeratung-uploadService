@@ -1,6 +1,9 @@
 name: Release action
 
-on: [push]
+on:
+  push:
+    branches:
+      - release**
 
 jobs:
   build:
@@ -15,13 +18,11 @@ jobs:
           node-version: 10
       - run: npm i
       - name: Bump version
-        if: startsWith(env.BRANCH,'release') == true
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           npm run release
       - name: Push changes
-        if: startsWith(env.BRANCH,'release') == true
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
