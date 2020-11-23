@@ -1,9 +1,10 @@
 package de.caritas.cob.uploadservice.api.helper;
 
+import de.caritas.cob.uploadservice.api.exception.httpresponses.InternalServerErrorException;
+import de.caritas.cob.uploadservice.api.service.LogService;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import javax.ws.rs.InternalServerErrorException;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document.OutputSettings;
@@ -30,7 +31,7 @@ public class Helper {
     try {
       text = Jsoup.clean(text, StringUtils.EMPTY, Whitelist.none(), outputSettings);
     } catch (Exception exception) {
-      throw new InternalServerErrorException("Error while removing HTML from text", exception);
+      throw new InternalServerErrorException("Error while removing HTML from text", exception, LogService::logInternalServerError);
     }
     return text;
   }

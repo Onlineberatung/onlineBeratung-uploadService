@@ -1,6 +1,9 @@
 name: Release action
 
-on: [push]
+on:
+  push:
+    branches:
+      - release**
 
 jobs:
   build:
@@ -8,20 +11,19 @@ jobs:
     if: "!contains(github.event.head_commit.author, 'action@github.com')"
     runs-on: ubuntu-latest
     steps:
-      - run: echo ::set-env name=BRANCH::$(echo -n "${GITHUB_REF#refs/heads/}")
+      - name: set env
+        run: echo BRANCH=$(echo -n "${GITHUB_REF#refs/heads/}") >> $GITHUB_ENV
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
         with:
           node-version: 10
       - run: npm i
       - name: Bump version
-        if: startsWith(env.BRANCH,'release') == true
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           npm run release
       - name: Push changes
-        if: startsWith(env.BRANCH,'release') == true
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
