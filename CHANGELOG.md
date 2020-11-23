@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.2.2...v1.3.0) (2020-11-23)
+
+
+### Features
+
+* restrict release action to branches starting with release ([31fffe2](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/31fffe2ed75ee5c8f3defd5944941990a18d0b0b))
+* update keycloak to version 11.0.2 ([f42dc03](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/f42dc03511a5b768ee36cc97e572cb93fe416b1f))
+* update spring boot and dependencies ([a24a821](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/a24a821664a4a88085a277a2ea2137d5109b8d59))
+
+
+### Bug Fixes
+
+* update deprecated logging property ([ef328eb](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/ef328eb6bc0111af847bc4bde2f74475193f7ecf))
+
 ### [1.2.2](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.2.1...v1.2.2) (2020-10-28)
 
 ### [1.1.1](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.1.0...v1.1.1) (2020-10-12)
