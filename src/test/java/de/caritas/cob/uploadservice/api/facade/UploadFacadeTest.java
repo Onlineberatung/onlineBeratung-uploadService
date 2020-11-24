@@ -19,6 +19,7 @@ import de.caritas.cob.uploadservice.api.helper.RocketChatUploadParameterEncrypte
 import de.caritas.cob.uploadservice.api.helper.RocketChatUploadParameterSanitizer;
 import de.caritas.cob.uploadservice.api.service.LiveEventNotificationService;
 import de.caritas.cob.uploadservice.api.service.RocketChatService;
+import de.caritas.cob.uploadservice.api.service.UploadTrackingService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,23 +31,32 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class UploadFacadeTest {
 
-  @Mock
-  RocketChatService rocketChatService;
-  @Mock
-  EmailNotificationFacade emailNotificationFacade;
-  @Mock
-  RocketChatUploadParameterSanitizer rocketChatUploadParameterSanitizer;
-  @Mock
-  RocketChatUploadParameterEncrypter rocketChatUploadParameterEncrypter;
-  @Mock
-  private LiveEventNotificationService liveEventNotificationService;
   @InjectMocks
   UploadFacade uploadFacade;
 
   @Mock
+  RocketChatService rocketChatService;
+
+  @Mock
+  EmailNotificationFacade emailNotificationFacade;
+
+  @Mock
+  RocketChatUploadParameterSanitizer rocketChatUploadParameterSanitizer;
+
+  @Mock
+  RocketChatUploadParameterEncrypter rocketChatUploadParameterEncrypter;
+
+  @Mock
+  private LiveEventNotificationService liveEventNotificationService;
+
+  @Mock
   RocketChatCredentials rocketChatCredentials;
+
   @Mock
   RocketChatUploadParameter rocketChatUploadParameter;
+
+  @Mock
+  private UploadTrackingService uploadTrackingService;
 
   /**
    * Method: uploadFileToRoom
@@ -72,6 +82,8 @@ public class UploadFacadeTest {
         eq(rocketChatUploadParameter));
     verify(rocketChatService, times(1)).markGroupAsReadForSystemUser(
         eq(rocketChatUploadParameter.getRoomId()));
+    verify(uploadTrackingService, times(1)).validateUploadLimit();
+    verify(uploadTrackingService, times(1)).trackUploadedFileForUser();
   }
 
   @Test
@@ -162,6 +174,8 @@ public class UploadFacadeTest {
         eq(rocketChatUploadParameter));
     verify(rocketChatService, times(1)).markGroupAsReadForSystemUser(
         eq(rocketChatUploadParameter.getRoomId()));
+    verify(uploadTrackingService, times(1)).validateUploadLimit();
+    verify(uploadTrackingService, times(1)).trackUploadedFileForUser();
   }
 
   @Test
