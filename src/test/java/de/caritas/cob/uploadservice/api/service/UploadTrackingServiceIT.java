@@ -4,7 +4,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.powermock.reflect.Whitebox.setInternalState;
 
 import de.caritas.cob.uploadservice.UploadServiceApplication;
 import de.caritas.cob.uploadservice.api.exception.httpresponses.QuotaReachedException;
@@ -15,6 +19,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
@@ -38,9 +44,13 @@ public class UploadTrackingServiceIT {
   @MockBean
   private AuthenticatedUser authenticatedUser;
 
+  @Mock
+  private Logger logger;
+
   @Before
   public void setup() {
     when(this.authenticatedUser.getUserId()).thenReturn("userId");
+    setInternalState(LogService.class, "LOGGER", logger);
   }
 
   @After
@@ -89,6 +99,24 @@ public class UploadTrackingServiceIT {
     trackUploadedFile(7);
 
     this.uploadTrackingService.validateUploadLimit();
+  }
+
+  @Test
+  public void cleanUpFileLimits_Should_deleteAllTrackingEntries() {
+    trackUploadedFile(10);
+
+    assertThat(this.uploadByUserRepository.count(), is(10L));
+
+    this.uploadTrackingService.cleanUpFileLimits();
+
+    assertThat(this.uploadByUserRepository.count(), is(0L));
+  }
+
+  @Test
+  public void cleanUpFileLimits_Should_logExpectedInfoMessage() {
+    this.uploadTrackingService.cleanUpFileLimits();
+
+    verify(this.logger, times(1)).info(eq("File restrictions are reset!"));
   }
 
 }

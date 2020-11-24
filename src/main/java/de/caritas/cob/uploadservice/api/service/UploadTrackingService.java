@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 /**
@@ -46,6 +47,15 @@ public class UploadTrackingService {
         .build();
 
     this.uploadByUserRepository.save(uploadByUser);
+  }
+
+  /**
+   * Cleans all stored file limits.
+   */
+  @Scheduled(cron = "${upload.file.cleanup.cron}")
+  public void cleanUpFileLimits() {
+    this.uploadByUserRepository.deleteAll();
+    LogService.logInfo("File restrictions are reset!");
   }
 
 }
