@@ -8,6 +8,11 @@ public abstract class CustomHttpStatusException extends RuntimeException {
 
   private final Consumer<Exception> loggingMethod;
 
+  CustomHttpStatusException(Consumer<Exception> loggingMethod) {
+    super();
+    this.loggingMethod = loggingMethod;
+  }
+
   CustomHttpStatusException(Exception exception, Consumer<Exception> loggingMethod) {
     super(exception);
     this.loggingMethod = loggingMethod;

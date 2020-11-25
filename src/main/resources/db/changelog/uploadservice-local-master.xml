@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.2.xsd">
+
+	<!-- The base changeset contains the database state when liquibase was added to the project -->
+	<include file="db/changelog/changeset/0001_initsql/initSql.xml"/>
+</databaseChangeLog>

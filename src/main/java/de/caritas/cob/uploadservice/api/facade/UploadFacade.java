@@ -10,6 +10,7 @@ import de.caritas.cob.uploadservice.api.helper.RocketChatUploadParameterSanitize
 import de.caritas.cob.uploadservice.api.service.LiveEventNotificationService;
 import de.caritas.cob.uploadservice.api.service.LogService;
 import de.caritas.cob.uploadservice.api.service.RocketChatService;
+import de.caritas.cob.uploadservice.api.service.UploadTrackingService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,7 @@ public class UploadFacade {
   private final @NonNull RocketChatUploadParameterSanitizer rocketChatUploadParameterSanitizer;
   private final @NonNull RocketChatUploadParameterEncrypter rocketChatUploadParameterEncrypter;
   private final @NonNull LiveEventNotificationService liveEventNotificationService;
+  private final @NonNull UploadTrackingService uploadTrackingService;
 
   /**
    * Upload a file with a message to a Rocket.Chat room. The message and the description are
@@ -39,9 +41,12 @@ public class UploadFacade {
       RocketChatUploadParameter rocketChatUploadParameter,
       boolean sendNotification) {
 
+    this.uploadTrackingService.validateUploadLimit();
+
     sanitizeAndEncryptParametersAndUploadToRocketChatRoom(
         rocketChatCredentials, rocketChatUploadParameter);
     this.liveEventNotificationService.sendLiveEvent(rocketChatUploadParameter.getRoomId());
+    this.uploadTrackingService.trackUploadedFileForUser();
 
     if (sendNotification) {
       emailNotificationFacade.sendEmailNotification(rocketChatUploadParameter.getRoomId());
@@ -60,9 +65,11 @@ public class UploadFacade {
       RocketChatUploadParameter rocketChatUploadParameter,
       boolean sendNotification) {
 
+    this.uploadTrackingService.validateUploadLimit();
     sanitizeAndEncryptParametersAndUploadToRocketChatRoom(
         rocketChatCredentials, rocketChatUploadParameter);
     this.liveEventNotificationService.sendLiveEvent(rocketChatUploadParameter.getRoomId());
+    this.uploadTrackingService.trackUploadedFileForUser();
 
     if (sendNotification) {
       emailNotificationFacade.sendFeedbackEmailNotification(rocketChatUploadParameter.getRoomId());
