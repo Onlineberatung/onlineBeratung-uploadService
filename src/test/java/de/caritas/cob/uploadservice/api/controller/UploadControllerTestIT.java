@@ -75,9 +75,6 @@ public class UploadControllerTestIT {
   @MockBean
   private RoleAuthorizationAuthorityMapper roleAuthorizationAuthorityMapper;
 
-  /**
-   * 404 - Not found
-   */
   @Test
   public void uploadFileToRoom_Should_ReturnNotFound_WhenRoomIdIsMissing() throws Exception {
 
@@ -115,9 +112,6 @@ public class UploadControllerTestIT {
         .andExpect(status().isNotFound());
   }
 
-  /**
-   * 400 - Bad Request tests
-   */
   @Test
   public void uploadFileToRoom_Should_ReturnBadRequest_WhenFileIsMissing() throws Exception {
 
@@ -185,9 +179,6 @@ public class UploadControllerTestIT {
         .andExpect(status().isBadRequest());
   }
 
-  /**
-   * 200 - OK & 201 CREATED tests
-   */
   @Test
   public void uploadFileToRoom_Should_ReturnOk_WhenValidRequest() throws Exception {
 
@@ -224,11 +215,8 @@ public class UploadControllerTestIT {
         .andExpect(status().isCreated());
   }
 
-  /**
-   * 202 - Accepted Test
-   */
   @Test
-  public void updateKey_Should_ReturnAccepted_WhenProvidedWithNewKey() throws Exception {
+  public void updateKey_Should_ReturnOk_WhenProvidedWithNewKey() throws Exception {
 
     when(encryptionService.getMasterKey()).thenReturn(MASTER_KEY_1);
 
@@ -240,9 +228,6 @@ public class UploadControllerTestIT {
         .andExpect(status().isOk());
   }
 
-  /**
-   * 409 - Conflict test
-   */
   @Test
   public void updateKey_Should_ReturnConflict_WhenProvidedWithSameKey() throws Exception {
 
@@ -254,14 +239,6 @@ public class UploadControllerTestIT {
             .content(MASTER_KEY_DTO_KEY_1)
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isConflict());
-  }
-
-  /**
-   * Helper methods
-   */
-  private String convertObjectToJson(Object object) throws JsonProcessingException {
-    ObjectMapper mapper = new ObjectMapper();
-    return mapper.writeValueAsString(object);
   }
 
   @Test
@@ -316,5 +293,10 @@ public class UploadControllerTestIT {
             .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
         .andExpect(status().isForbidden())
         .andExpect(header().string("Reason", "quota reached"));
+  }
+
+  private String convertObjectToJson(Object object) throws JsonProcessingException {
+    ObjectMapper mapper = new ObjectMapper();
+    return mapper.writeValueAsString(object);
   }
 }

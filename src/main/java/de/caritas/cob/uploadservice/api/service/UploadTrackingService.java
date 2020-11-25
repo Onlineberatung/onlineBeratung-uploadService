@@ -51,8 +51,9 @@ public class UploadTrackingService {
 
   /**
    * Cleans all stored file limits.
+   * Cron is execuded daily at 00:00 to ensure daily cleanup. Please do not change cron definition!
    */
-  @Scheduled(cron = "${upload.file.cleanup.cron}")
+  @Scheduled(cron = "0 0 0 * * *")
   public void cleanUpFileLimits() {
     this.uploadByUserRepository.deleteAll();
     LogService.logInfo("File restrictions are reset!");
