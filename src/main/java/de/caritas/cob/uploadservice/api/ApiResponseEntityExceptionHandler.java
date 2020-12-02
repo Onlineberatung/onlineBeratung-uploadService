@@ -1,5 +1,7 @@
 package de.caritas.cob.uploadservice.api;
 
+import static de.caritas.cob.uploadservice.api.exception.cutomheader.CustomHttpHeader.QUOTA_REACHED;
+
 import de.caritas.cob.uploadservice.api.exception.InvalidFileTypeException;
 import de.caritas.cob.uploadservice.api.exception.KeycloakException;
 import de.caritas.cob.uploadservice.api.exception.httpresponses.InternalServerErrorException;
@@ -218,9 +220,8 @@ public class ApiResponseEntityExceptionHandler extends ResponseEntityExceptionHa
       final WebRequest request) {
     ex.executeLogging();
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("Reason", "quota reached");
-    return handleExceptionInternal(null, null, headers, HttpStatus.FORBIDDEN, request);
+    return handleExceptionInternal(null, null, QUOTA_REACHED.buildHeader(), HttpStatus.FORBIDDEN,
+        request);
   }
 
 }

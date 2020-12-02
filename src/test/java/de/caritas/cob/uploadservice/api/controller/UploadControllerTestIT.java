@@ -292,7 +292,7 @@ public class UploadControllerTestIT {
             .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
             .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
         .andExpect(status().isForbidden())
-        .andExpect(header().string("Reason", "quota reached"));
+        .andExpect(header().string("X-Reason", "QUOTA_REACHED"));
   }
 
   private String convertObjectToJson(Object object) throws JsonProcessingException {
