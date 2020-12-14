@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.3.0...v1.4.0) (2020-12-14)
+
+
+### Features
+
+* added javadocs ([c8b11f1](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/c8b11f1f465cd41db833641bcbe0f8a81afc2258))
+* create database table for uploads ([09d6460](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/09d64602baa04b2b464f893973140cc51efaedbe))
+* integrate trackingservice for file uploads ([b8f2167](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/b8f2167947440a6bf35c4b04e8687db2011da2d4))
+* minot optimizations ([197949a](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/197949a796200bab338caaad2e379ea3020a3ccd))
+* optimize quota reached header ([6f4e05b](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/6f4e05b6a5d13709c951655ad948748c06b77021))
+* provide cron for clean up of file limits ([4740ee8](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/4740ee85d7f303c2f093adcd3174afbc4d5aae80))
+
 ## [1.3.0](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.2.2...v1.3.0) (2020-11-23)
 
 
