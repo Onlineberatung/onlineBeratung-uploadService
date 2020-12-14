@@ -1,5 +1,7 @@
 package de.caritas.cob.uploadservice;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+
 import de.caritas.cob.uploadservice.api.exception.KeycloakException;
 import de.caritas.cob.uploadservice.api.helper.AuthenticatedUser;
 import java.util.Map;
@@ -13,9 +15,6 @@ import org.keycloak.representations.AccessToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -30,12 +29,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 
-@SpringBootApplication(
-    exclude = {
-      DataSourceAutoConfiguration.class,
-      DataSourceTransactionManagerAutoConfiguration.class,
-      HibernateJpaAutoConfiguration.class
-    })
+@SpringBootApplication
 @EnableScheduling
 @EnableAsync
 public class UploadServiceApplication {
@@ -44,7 +38,7 @@ public class UploadServiceApplication {
   private int threadCorePoolSize;
 
   @Value("${thread.executor.maxPoolSize}")
-  private int ThreadMaxPoolSize;
+  private int threadMaxPoolSize;
 
   @Value("${thread.executor.queueCapacity}")
   private int threadQueueCapacity;
@@ -52,8 +46,8 @@ public class UploadServiceApplication {
   @Value("${thread.executor.threadNamePrefix}")
   private String threadNamePrefix;
 
-  private final String claimNameUserId = "userId";
-  private final String claimNameUsername = "username";
+  private static final String CLAIM_NAME_USER_ID = "userId";
+  private static final String CLAIM_NAME_USERNAME = "username";
 
   public static void main(String[] args) {
     SpringApplication.run(UploadServiceApplication.class, args);
@@ -72,21 +66,21 @@ public class UploadServiceApplication {
   }
 
   /**
-   * Returns the @KeycloakSecurityContext
+   * Returns the @KeycloakSecurityContext.
    *
    * @return KeycloakSecurityContext
    */
   @Bean
   @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
   public KeycloakSecurityContext getKeycloakSecurityContext() {
-    return (KeycloakSecurityContext)
-        ((KeycloakAuthenticationToken) getRequest().getUserPrincipal())
-            .getAccount()
-            .getKeycloakSecurityContext();
+    return ((KeycloakAuthenticationToken) getRequest()
+        .getUserPrincipal())
+        .getAccount()
+        .getKeycloakSecurityContext();
   }
 
   /**
-   * Returns the Keycloak user id of the authenticated user
+   * Returns the Keycloak user id of the authenticated user.
    *
    * @return {@link AuthenticatedUser}
    */
@@ -104,14 +98,14 @@ public class UploadServiceApplication {
 
     AuthenticatedUser authenticatedUser = new AuthenticatedUser();
 
-    if (claimMap.containsKey(claimNameUserId)) {
-      authenticatedUser.setUserId(claimMap.get(claimNameUserId).toString());
+    if (claimMap.containsKey(CLAIM_NAME_USER_ID)) {
+      authenticatedUser.setUserId(claimMap.get(CLAIM_NAME_USER_ID).toString());
     } else {
-      throw new KeycloakException("Keycloak user attribute '" + claimNameUserId + "' not found.");
+      throw new KeycloakException("Keycloak user attribute '" + CLAIM_NAME_USER_ID + "' not found.");
     }
 
-    if (claimMap.containsKey(claimNameUsername)) {
-      authenticatedUser.setUsername(claimMap.get(claimNameUsername).toString());
+    if (claimMap.containsKey(CLAIM_NAME_USERNAME)) {
+      authenticatedUser.setUsername(claimMap.get(CLAIM_NAME_USERNAME).toString());
     }
 
     // Set user roles
@@ -122,20 +116,19 @@ public class UploadServiceApplication {
             .getToken()
             .getRealmAccess();
     Set<String> roles = realmAccess.getRoles();
-    if (roles != null && roles.size() > 0) {
+    if (isNotEmpty(roles)) {
       authenticatedUser.setRoles(roles);
     } else {
       throw new KeycloakException(
           "Keycloak roles null or not set for user: " + authenticatedUser.getUserId() != null
-              ? authenticatedUser.getUserId()
-              : "unknown");
+              ? authenticatedUser.getUserId() : "unknown");
     }
 
     // Set granted authorities
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     authenticatedUser.setGrantedAuthorities(
         authentication.getAuthorities().stream()
-            .map(authority -> authority.toString())
+            .map(Object::toString)
             .collect(Collectors.toSet()));
 
     // Set Keycloak token to authenticated user object
@@ -162,7 +155,7 @@ public class UploadServiceApplication {
      * and will go till 15. Then will throw TaskRejected Exception.
      */
     executor.setCorePoolSize(threadCorePoolSize);
-    executor.setMaxPoolSize(ThreadMaxPoolSize);
+    executor.setMaxPoolSize(threadMaxPoolSize);
     executor.setQueueCapacity(threadQueueCapacity);
     executor.setThreadNamePrefix(threadNamePrefix);
     executor.initialize();

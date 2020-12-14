@@ -1,8 +1,11 @@
 package de.caritas.cob.uploadservice.api;
 
+import static de.caritas.cob.uploadservice.api.exception.cutomheader.CustomHttpHeader.QUOTA_REACHED;
+
 import de.caritas.cob.uploadservice.api.exception.InvalidFileTypeException;
 import de.caritas.cob.uploadservice.api.exception.KeycloakException;
 import de.caritas.cob.uploadservice.api.exception.httpresponses.InternalServerErrorException;
+import de.caritas.cob.uploadservice.api.exception.httpresponses.QuotaReachedException;
 import de.caritas.cob.uploadservice.api.service.LogService;
 import java.net.UnknownHostException;
 import javax.validation.ConstraintViolationException;
@@ -175,11 +178,11 @@ public class ApiResponseEntityExceptionHandler extends ResponseEntityExceptionHa
    */
   @ExceptionHandler(
       value = {
-        NullPointerException.class,
-        IllegalArgumentException.class,
-        IllegalStateException.class,
-        KeycloakException.class,
-        UnknownHostException.class
+          NullPointerException.class,
+          IllegalArgumentException.class,
+          IllegalStateException.class,
+          KeycloakException.class,
+          UnknownHostException.class
       })
   public ResponseEntity<Object> handleInternal(
       final RuntimeException ex, final WebRequest request) {
@@ -204,4 +207,21 @@ public class ApiResponseEntityExceptionHandler extends ResponseEntityExceptionHa
     return handleExceptionInternal(
         null, null, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
   }
+
+  /**
+   * 403 - Forbidden.
+   *
+   * @param ex ForbiddenException
+   * @param request WebRequest
+   * @return a ResponseEntity instance
+   */
+  @ExceptionHandler(QuotaReachedException.class)
+  public ResponseEntity<Object> handleInternal(final QuotaReachedException ex,
+      final WebRequest request) {
+    ex.executeLogging();
+
+    return handleExceptionInternal(null, null, QUOTA_REACHED.buildHeader(), HttpStatus.FORBIDDEN,
+        request);
+  }
+
 }

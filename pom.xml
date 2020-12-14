@@ -120,6 +120,17 @@
       <version>1.10.2</version>
     </dependency>
 
+    <!-- Liquibase -->
+    <dependency>
+      <groupId>org.liquibase</groupId>
+      <artifactId>liquibase-maven-plugin</artifactId>
+      <version>4.1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mariadb.jdbc</groupId>
+      <artifactId>mariadb-java-client</artifactId>
+    </dependency>
+
     <!-- Test scope dependencies -->
     <dependency>
       <groupId>com.h2database</groupId>
