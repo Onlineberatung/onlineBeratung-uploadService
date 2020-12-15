@@ -30,6 +30,9 @@ public class UploadByUser {
   @Column(name = "user_id", nullable = false)
   private String userId;
 
+  @Column(name = "session_id", nullable = false)
+  private String sessionId;
+
   @Column(name = "create_date", nullable = false)
   private LocalDateTime createDate;
 

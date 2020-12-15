@@ -5,4 +5,6 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.2.xsd">
   <include file="db/changelog/changeset/0001_initsql/initSql.xml"/>
+  <include
+    file="db/changelog/changeset/0002_alter_upload_by_user_add_session_id/0002_changeSet.xml"/>
 </databaseChangeLog>
