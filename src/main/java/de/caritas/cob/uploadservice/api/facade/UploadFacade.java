@@ -41,12 +41,12 @@ public class UploadFacade {
       RocketChatUploadParameter rocketChatUploadParameter,
       boolean sendNotification) {
 
-    this.uploadTrackingService.validateUploadLimit();
+    this.uploadTrackingService.validateUploadLimit(rocketChatUploadParameter.getRoomId());
 
     sanitizeAndEncryptParametersAndUploadToRocketChatRoom(
         rocketChatCredentials, rocketChatUploadParameter);
     this.liveEventNotificationService.sendLiveEvent(rocketChatUploadParameter.getRoomId());
-    this.uploadTrackingService.trackUploadedFileForUser();
+    this.uploadTrackingService.trackUploadedFileForUser(rocketChatUploadParameter.getRoomId());
 
     if (sendNotification) {
       emailNotificationFacade.sendEmailNotification(rocketChatUploadParameter.getRoomId());
@@ -65,11 +65,11 @@ public class UploadFacade {
       RocketChatUploadParameter rocketChatUploadParameter,
       boolean sendNotification) {
 
-    this.uploadTrackingService.validateUploadLimit();
+    this.uploadTrackingService.validateUploadLimit(rocketChatUploadParameter.getRoomId());
     sanitizeAndEncryptParametersAndUploadToRocketChatRoom(
         rocketChatCredentials, rocketChatUploadParameter);
     this.liveEventNotificationService.sendLiveEvent(rocketChatUploadParameter.getRoomId());
-    this.uploadTrackingService.trackUploadedFileForUser();
+    this.uploadTrackingService.trackUploadedFileForUser(rocketChatUploadParameter.getRoomId());
 
     if (sendNotification) {
       emailNotificationFacade.sendFeedbackEmailNotification(rocketChatUploadParameter.getRoomId());

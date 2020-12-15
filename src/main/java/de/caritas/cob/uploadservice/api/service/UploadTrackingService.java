@@ -25,12 +25,15 @@ public class UploadTrackingService {
   private final @NonNull AuthenticatedUser authenticatedUser;
 
   /**
-   * Validates the upload limit of files for given user and throws a
-   * {@link QuotaReachedException} if limit for day is reached.
+   * Validates the upload limit of files for given user and throws a {@link QuotaReachedException}
+   * if limit for day is reached.
+   *
+   * @param sessionId the id for the current session
    */
-  public void validateUploadLimit() {
+  public void validateUploadLimit(String sessionId) {
     String userId = this.authenticatedUser.getUserId();
-    Integer uploadCount = this.uploadByUserRepository.countAllByUserId(userId);
+    Integer uploadCount = this.uploadByUserRepository
+        .countAllByUserIdAndSessionId(userId, sessionId);
     if (uploadCount >= this.uploadLimit) {
       throw new QuotaReachedException(LogService::logWarning);
     }
@@ -38,11 +41,14 @@ public class UploadTrackingService {
 
   /**
    * Stores an {@link UploadByUser} entry for given user.
+   *
+   * @param sessionId the id for the current session
    */
-  public void trackUploadedFileForUser() {
+  public void trackUploadedFileForUser(String sessionId) {
     String userId = this.authenticatedUser.getUserId();
     UploadByUser uploadByUser = UploadByUser.builder()
         .userId(userId)
+        .sessionId(sessionId)
         .createDate(LocalDateTime.now())
         .build();
 
@@ -50,8 +56,8 @@ public class UploadTrackingService {
   }
 
   /**
-   * Cleans all stored file limits.
-   * Cron is execuded daily at 00:00 to ensure daily cleanup. Please do not change cron definition!
+   * Cleans all stored file limits. Cron is execuded daily at 00:00 to ensure daily cleanup. Please
+   * do not change cron definition!
    */
   @Scheduled(cron = "0 0 0 * * *")
   public void cleanUpFileLimits() {
