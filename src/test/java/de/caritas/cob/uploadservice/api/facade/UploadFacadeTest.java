@@ -82,8 +82,8 @@ public class UploadFacadeTest {
         eq(rocketChatUploadParameter));
     verify(rocketChatService, times(1)).markGroupAsReadForSystemUser(
         eq(rocketChatUploadParameter.getRoomId()));
-    verify(uploadTrackingService, times(1)).validateUploadLimit();
-    verify(uploadTrackingService, times(1)).trackUploadedFileForUser();
+    verify(uploadTrackingService, times(1)).validateUploadLimit(any());
+    verify(uploadTrackingService, times(1)).trackUploadedFileForUser(any());
   }
 
   @Test
@@ -174,8 +174,8 @@ public class UploadFacadeTest {
         eq(rocketChatUploadParameter));
     verify(rocketChatService, times(1)).markGroupAsReadForSystemUser(
         eq(rocketChatUploadParameter.getRoomId()));
-    verify(uploadTrackingService, times(1)).validateUploadLimit();
-    verify(uploadTrackingService, times(1)).trackUploadedFileForUser();
+    verify(uploadTrackingService, times(1)).validateUploadLimit(any());
+    verify(uploadTrackingService, times(1)).trackUploadedFileForUser(any());
   }
 
   @Test

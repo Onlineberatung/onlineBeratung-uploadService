@@ -71,7 +71,7 @@ public class UploadTrackingServiceIT {
 
   private void trackUploadedFile(Integer amount) {
     for (int i = 0; i < amount; i++) {
-      this.uploadTrackingService.trackUploadedFileForUser();
+      this.uploadTrackingService.trackUploadedFileForUser("sessionId");
     }
   }
 
@@ -80,7 +80,8 @@ public class UploadTrackingServiceIT {
     trackUploadedFile(10);
 
     assertThat(this.uploadByUserRepository.count(), is(10L));
-    assertThat(this.uploadByUserRepository.countAllByUserId("userId"), is(10));
+    assertThat(this.uploadByUserRepository.countAllByUserIdAndSessionId("userId", "sessionId"),
+        is(10));
   }
 
   @Test
@@ -88,7 +89,7 @@ public class UploadTrackingServiceIT {
     trackUploadedFile(5);
 
     try {
-      this.uploadTrackingService.validateUploadLimit();
+      this.uploadTrackingService.validateUploadLimit("sessionId");
     } catch (QuotaReachedException e) {
       fail("Exception should not be thrown");
     }
@@ -98,7 +99,18 @@ public class UploadTrackingServiceIT {
   public void validateUploadLimit_Should_throwQuotaReachedException_When_limitIsReached() {
     trackUploadedFile(7);
 
-    this.uploadTrackingService.validateUploadLimit();
+    this.uploadTrackingService.validateUploadLimit("sessionId");
+  }
+
+  @Test
+  public void validateUploadLimit_Should_notThrowQuotaException_When_limitIsNotReachedForGivenSession() {
+    trackUploadedFile(7);
+
+    try {
+      this.uploadTrackingService.validateUploadLimit("otherSessionId");
+    } catch (QuotaReachedException e) {
+      fail("Exception should not be thrown");
+    }
   }
 
   @Test

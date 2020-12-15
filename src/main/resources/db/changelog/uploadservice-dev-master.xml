@@ -7,4 +7,6 @@
                       
     <!-- The base changeset contains the database state when liquibase was added to the project -->
 	<include file="db/changelog/changeset/0001_initsql/initSql.xml"/>
+	<include
+		file="db/changelog/changeset/0002_alter_upload_by_user_add_session_id/0002_changeSet.xml"/>
 </databaseChangeLog>
