@@ -35,7 +35,7 @@ public class UploadTrackingService {
     Integer uploadCount = this.uploadByUserRepository
         .countAllByUserIdAndSessionId(userId, sessionId);
     if (uploadCount >= this.uploadLimit) {
-      throw new QuotaReachedException(LogService::logWarning);
+      throw new QuotaReachedException(LogService::logInfo);
     }
   }
 

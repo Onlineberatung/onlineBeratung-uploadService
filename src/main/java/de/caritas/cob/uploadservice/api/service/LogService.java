@@ -6,20 +6,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
-/** Service for logging */
+/**
+ * Service for logging.
+ */
 public class LogService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LogService.class);
 
   private static final String RC_SERVICE_ERROR = "Rocket.Chat service error: ";
   private static final String RC_ENCRYPTION_SERVICE_ERROR = "Encryption service error: ";
-  private static final String RC_ENCRYPTION_BAD_KEY_SERVICE_ERROR =
-      "Encryption service error - possible bad key error: ";
   private static final String USERSERVICE_HELPER_ERROR = "UserServiceHelper error: ";
   private static final String RC_BAD_REQUEST_ERROR = "Rocket.Chat Bad Request service error: ";
   private static final String INTERNAL_SERVER_ERROR_TEXT = "Internal Server Error: ";
   private static final String BAD_REQUEST_TEXT = "Bad Request: ";
   private static final String UPLOAD_SERVICE_API_TEXT = "UploadService API: {}";
+
+  private LogService() {
+  }
 
   /**
    * Logs a Rocket.Chat service error.
@@ -42,7 +45,7 @@ public class LogService {
   /**
    * Logs a Rocket.Chat service error.
    *
-   * @param message the message to be logged
+   * @param message   the message to be logged
    * @param exception the exception to be logged
    */
   public static void logRocketChatServiceError(String message, Exception exception) {
@@ -87,9 +90,18 @@ public class LogService {
   }
 
   /**
+   * Logs a Info exception.
+   *
+   * @param exception The exception to be logged
+   */
+  public static void logInfo(Exception exception) {
+    LOGGER.info(getStackTrace(exception));
+  }
+
+  /**
    * Logs an Internal Server Error/Exception.
    *
-   * @param message the message to be logged
+   * @param message   the message to be logged
    * @param exception the exception to be logged
    */
   public static void logInternalServerError(String message, Exception exception) {
@@ -129,7 +141,7 @@ public class LogService {
    * Logs an Warning.
    *
    * @param httpStatus an status to be logged
-   * @param exception the exception to be logged
+   * @param exception  the exception to be logged
    */
   public static void logWarning(HttpStatus httpStatus, Exception exception) {
     LOGGER.warn("UploadService API: {}: {}", httpStatus.getReasonPhrase(),
