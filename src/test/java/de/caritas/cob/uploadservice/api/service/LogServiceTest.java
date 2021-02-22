@@ -1,5 +1,6 @@
 package de.caritas.cob.uploadservice.api.service;
 
+import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -81,6 +82,16 @@ public class LogServiceTest {
 
     LogService.logInfo(ERROR_MESSAGE);
     verify(logger, times(1)).info(eq(ERROR_MESSAGE));
+  }
+
+  /**
+   * Tests for method: logInfo
+   */
+  @Test
+  public void logInfo_Should_LogExcetionStackTrace() {
+
+    LogService.logInfo(exception);
+    verify(logger, times(1)).info(eq(getStackTrace(exception)));
   }
 
   /**
