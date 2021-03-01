@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.4.0...v1.5.0) (2021-03-01)
+
+
+### Features
+
+* set logging of quota reached exception to info ([2d8b20e](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/2d8b20ed4f43f7921cb66b5574e3cdfcb36be7af))
+
+
+### Bug Fixes
+
+* provide session as condition for upload limit ([9ada75c](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/9ada75cc9bb77707ec2939043ca57ff38df2487d))
+
 ## [1.4.0](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.3.0...v1.4.0) (2020-12-14)
 
 
