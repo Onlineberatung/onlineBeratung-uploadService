@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk-alpine
+FROM openjdk:11.0.10-jre-slim-buster
 VOLUME ["/tmp","/log"]
 EXPOSE 8080
 ARG JAR_FILE
