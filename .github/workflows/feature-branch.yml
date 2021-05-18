@@ -1,4 +1,4 @@
-name: Feature Branch 
+name: Feature Branch
 
 on:
   push:
@@ -9,20 +9,20 @@ on:
 
 jobs:
   test:
-    name: Build and run unit tests 
+    name: Build and run unit tests
     runs-on: ubuntu-latest
     steps:
-    
+
     - name: Checkout
       uses: actions/checkout@v2
-      
+
     - name: Setup JVM
       uses: actions/setup-java@v1
       with:
-        java-version: 1.8.0.181
+        java-version: 11.0.10
         java-package: jdk
         architecture: x64
-    
+
     - name: Caching maven dependencies
       uses: actions/cache@v1
       env:
@@ -30,7 +30,7 @@ jobs:
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/pom.xml') }}
-    
+
     - name: Maven Package
       run: mvn -B -Pprod  clean package -DskipTests
     - name: Maven Verify

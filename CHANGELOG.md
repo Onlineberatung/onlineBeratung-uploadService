@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.5.0...v1.6.0) (2021-04-12)
+
+
+### Features
+
+* switched java version for docker build, github actions and maven build ([01387e8](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/01387e853e663112b83850253a0ec21a90839b0f))
+
 ## [1.5.0](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.4.0...v1.5.0) (2021-03-01)
 
 
