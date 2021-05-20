@@ -1,6 +1,6 @@
 package de.caritas.cob.uploadservice.config;
 
-import de.caritas.cob.uploadservice.api.authorization.Authority;
+import de.caritas.cob.uploadservice.api.authorization.Authorities.Authority;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
@@ -21,8 +21,7 @@ public class GlobalMethodSecurityConfig extends GlobalMethodSecurityConfiguratio
 
   @Override
   protected AccessDecisionManager accessDecisionManager() {
-    List<AccessDecisionVoter<? extends Object>> decisionVoters =
-        new ArrayList<AccessDecisionVoter<? extends Object>>();
+    List<AccessDecisionVoter<?>> decisionVoters = new ArrayList<>();
     ExpressionBasedPreInvocationAdvice expressionAdvice = new ExpressionBasedPreInvocationAdvice();
     expressionAdvice.setExpressionHandler(getExpressionHandler());
     RoleVoter roleVoter = new RoleVoter();
