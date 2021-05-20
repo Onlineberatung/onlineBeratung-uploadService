@@ -1,6 +1,6 @@
 package de.caritas.cob.uploadservice.config;
 
-import de.caritas.cob.uploadservice.api.authorization.Authorities.Authority;
+import de.caritas.cob.uploadservice.api.authorization.Authority.AuthorityValue;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
@@ -33,6 +33,6 @@ public class GlobalMethodSecurityConfig extends GlobalMethodSecurityConfiguratio
 
   @Bean
   public GrantedAuthorityDefaults grantedAuthorityDefaults() {
-    return new GrantedAuthorityDefaults(Authority.PREFIX);
+    return new GrantedAuthorityDefaults(AuthorityValue.PREFIX);
   }
 }

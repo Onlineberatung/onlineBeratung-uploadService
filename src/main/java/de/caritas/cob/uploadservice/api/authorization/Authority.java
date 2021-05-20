@@ -1,10 +1,10 @@
 package de.caritas.cob.uploadservice.api.authorization;
 
-import static de.caritas.cob.uploadservice.api.authorization.Authorities.Authority.ANONYMOUS_DEFAULT;
-import static de.caritas.cob.uploadservice.api.authorization.Authorities.Authority.CONSULTANT_DEFAULT;
-import static de.caritas.cob.uploadservice.api.authorization.Authorities.Authority.TECHNICAL_DEFAULT;
-import static de.caritas.cob.uploadservice.api.authorization.Authorities.Authority.USER_DEFAULT;
-import static de.caritas.cob.uploadservice.api.authorization.Authorities.Authority.USE_FEEDBACK;
+import static de.caritas.cob.uploadservice.api.authorization.Authority.AuthorityValue.ANONYMOUS_DEFAULT;
+import static de.caritas.cob.uploadservice.api.authorization.Authority.AuthorityValue.CONSULTANT_DEFAULT;
+import static de.caritas.cob.uploadservice.api.authorization.Authority.AuthorityValue.TECHNICAL_DEFAULT;
+import static de.caritas.cob.uploadservice.api.authorization.Authority.AuthorityValue.USER_DEFAULT;
+import static de.caritas.cob.uploadservice.api.authorization.Authority.AuthorityValue.USE_FEEDBACK;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
@@ -19,7 +19,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum Authorities {
+public enum Authority {
 
   USER(UserRole.USER, singletonList(USER_DEFAULT)),
   CONSULTANT(UserRole.CONSULTANT, singletonList(CONSULTANT_DEFAULT)),
@@ -37,7 +37,7 @@ public enum Authorities {
    * @return the related authorities
    */
   public static List<String> getAuthoritiesByUserRole(UserRole userRole) {
-    Optional<Authorities> authorityByUserRole = Stream.of(values())
+    Optional<Authority> authorityByUserRole = Stream.of(values())
         .filter(authority -> authority.userRole.equals(userRole))
         .findFirst();
 
@@ -45,9 +45,9 @@ public enum Authorities {
         : emptyList();
   }
 
-  public static final class Authority {
+  public static final class AuthorityValue {
 
-    private Authority() {
+    private AuthorityValue() {
     }
 
     public static final String PREFIX = "AUTHORIZATION_";

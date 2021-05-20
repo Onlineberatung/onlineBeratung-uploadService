@@ -1,10 +1,10 @@
 package de.caritas.cob.uploadservice.config;
 
-import static de.caritas.cob.uploadservice.api.authorization.Authorities.Authority.ANONYMOUS_DEFAULT;
-import static de.caritas.cob.uploadservice.api.authorization.Authorities.Authority.CONSULTANT_DEFAULT;
-import static de.caritas.cob.uploadservice.api.authorization.Authorities.Authority.TECHNICAL_DEFAULT;
-import static de.caritas.cob.uploadservice.api.authorization.Authorities.Authority.USER_DEFAULT;
-import static de.caritas.cob.uploadservice.api.authorization.Authorities.Authority.USE_FEEDBACK;
+import static de.caritas.cob.uploadservice.api.authorization.Authority.AuthorityValue.ANONYMOUS_DEFAULT;
+import static de.caritas.cob.uploadservice.api.authorization.Authority.AuthorityValue.CONSULTANT_DEFAULT;
+import static de.caritas.cob.uploadservice.api.authorization.Authority.AuthorityValue.TECHNICAL_DEFAULT;
+import static de.caritas.cob.uploadservice.api.authorization.Authority.AuthorityValue.USER_DEFAULT;
+import static de.caritas.cob.uploadservice.api.authorization.Authority.AuthorityValue.USE_FEEDBACK;
 
 import de.caritas.cob.uploadservice.api.authorization.RoleAuthorizationAuthorityMapper;
 import de.caritas.cob.uploadservice.filter.StatelessCsrfFilter;

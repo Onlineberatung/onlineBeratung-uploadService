@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import de.caritas.cob.uploadservice.api.authorization.Authorities.Authority;
+import de.caritas.cob.uploadservice.api.authorization.Authority.AuthorityValue;
 import de.caritas.cob.uploadservice.api.facade.UploadFacade;
 import de.caritas.cob.uploadservice.api.service.EncryptionService;
 import de.caritas.cob.uploadservice.api.service.RocketChatService;
@@ -79,7 +79,7 @@ public class UploadControllerAuthorizationTestIT {
   }
 
   @Test
-  @WithMockUser(authorities = {Authority.CONSULTANT_DEFAULT, Authority.USER_DEFAULT})
+  @WithMockUser(authorities = {AuthorityValue.CONSULTANT_DEFAULT, AuthorityValue.USER_DEFAULT})
   public void updateKey_Should_ReturnForbiddenAndCallNoMethods_WhenNoTechnicalDefaultAuthority()
       throws Exception {
 
@@ -95,7 +95,7 @@ public class UploadControllerAuthorizationTestIT {
   }
 
   @Test
-  @WithMockUser(authorities = {Authority.TECHNICAL_DEFAULT})
+  @WithMockUser(authorities = {AuthorityValue.TECHNICAL_DEFAULT})
   public void updateKey_Should_ReturnForbiddenAndCallNoMethods_WhenNoCsrfTokens() throws Exception {
 
     mvc.perform(
@@ -141,7 +141,7 @@ public class UploadControllerAuthorizationTestIT {
   }
 
   @Test
-  @WithMockUser(authorities = {Authority.CONSULTANT_DEFAULT, Authority.USER_DEFAULT})
+  @WithMockUser(authorities = {AuthorityValue.CONSULTANT_DEFAULT, AuthorityValue.USER_DEFAULT})
   public void uploadFileToRoom_Should_ReturnForbiddenAndCallNoMethods_WhenNoCsrfTokens()
       throws Exception {
 
@@ -189,7 +189,7 @@ public class UploadControllerAuthorizationTestIT {
   }
 
   @Test
-  @WithMockUser(authorities = {Authority.CONSULTANT_DEFAULT, Authority.USER_DEFAULT})
+  @WithMockUser(authorities = {AuthorityValue.CONSULTANT_DEFAULT, AuthorityValue.USER_DEFAULT})
   public void uploadFileToFeedbackRoom_Should_ReturnForbiddenAndCallNoMethods_WhenNoCsrfTokens()
       throws Exception {
 
@@ -204,7 +204,7 @@ public class UploadControllerAuthorizationTestIT {
   }
 
   @Test
-  @WithMockUser(authorities = {Authority.ANONYMOUS_DEFAULT})
+  @WithMockUser(authorities = {AuthorityValue.ANONYMOUS_DEFAULT})
   public void uploadFileToRoom_Should_ReturnCreated_When_AnonymousAuthority()
       throws Exception {
     MockMultipartFile file = new MockMultipartFile("file", "filename", "text/plain",
