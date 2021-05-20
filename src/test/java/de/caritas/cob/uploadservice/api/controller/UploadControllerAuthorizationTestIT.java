@@ -173,8 +173,7 @@ public class UploadControllerAuthorizationTestIT {
 
   @Test
   @WithMockUser
-  public void
-  uploadFileToFeedbackRoom_Should_Return403AndCallNoMethods_WhenNoUserOrConsultantAuthority()
+  public void uploadFileToFeedbackRoom_Should_Return403AndCallNoMethods_WhenNoUserOrConsultantAuthority()
       throws Exception {
 
     mvc.perform(
