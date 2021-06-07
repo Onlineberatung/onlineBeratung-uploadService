@@ -3,8 +3,6 @@ info:
   title: will be replaced
   description: This information will be replaced by the SpringFox config information
   version: 0.0.1
-servers:
-  - url: /
 paths:
   /users/askers/new:
     post:
@@ -21,14 +19,12 @@ paths:
       responses:
         201:
           description: CREATED - user was created successfully
-          content:
-            'application/json':
-              schema:
-                $ref: '#/components/schemas/CreateUserResponseDTO'
         400:
           description: BAD REQUEST - invalid/incomplete request or body object
         403:
           description: FORBIDDEN - no/invalid CSRF token
+        409:
+          description: CONFLICT - invalid/unavailable username
         500:
           description: INTERNAL SERVER ERROR - server encountered unexpected condition
       security:
@@ -39,6 +35,17 @@ paths:
         - user-controller
       summary: 'Register a new consulting type for an existing asker [Authorization: Role: user]'
       operationId: registerNewConsultingType
+      parameters:
+        - name: RCToken
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: RCUserId
+          in: header
+          required: true
+          schema:
+            type: string
       requestBody:
         content:
           'application/json':
@@ -108,6 +115,41 @@ paths:
           description: INTERNAL SERVER ERROR - server encountered unexpected condition
       security:
         - Bearer: [ ]
+  /users/sessions/{sessionId}/data:
+    put:
+      tags:
+        - user-controller
+      summary: 'Update the (user) information of a session [Authorization: Role: user]'
+      operationId: updateSessionData
+      parameters:
+        - name: sessionId
+          in: path
+          description: session ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/SessionDataDTO'
+        required: true
+      responses:
+        200:
+          description: OK - successfull operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - no/invalid role/authorization or CSRF token
+        404:
+          description: NOT FOUND - Session not found
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
   /users/sessions/new/{sessionId}:
     put:
       tags:
@@ -151,7 +193,7 @@ paths:
         - user-controller
       summary: 'Returns a list of open session(s) for the currently authenticated
         user. Note: Either a session or a chat object is provided. [Authorization:
-        Role: user]'
+        Role: user, anonymous]'
       operationId: getSessionsForAuthenticatedUser
       parameters:
         - name: RCToken
@@ -209,7 +251,7 @@ paths:
       tags:
         - user-controller
       summary: 'Returns user (meta)data for the currently authenticated user [Authorization:
-        Role: user/consultant]'
+        Role: user, anonymous, consultant]'
       operationId: getUserData
       responses:
         200:
@@ -224,6 +266,88 @@ paths:
           description: UNAUTHORIZED - no/invalid Keycloak token
         403:
           description: FORBIDDEN - no/invalid role/authorization or CSRF token
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+    put:
+      tags:
+        - user-controller
+      summary: 'Sets or updates the email, first and lastname of authorized consultant account
+      [Authorization:  Role: consultant]'
+      operationId: updateConsultantData
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/UpdateConsultantDTO'
+        required: true
+      responses:
+        200:
+          description: OK - successfull operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - no/invalid role/authorization or CSRF token
+        409:
+          description: CONFLICT - invalid/unavailable email
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/email:
+    put:
+      tags:
+        - user-controller
+      summary: 'Sets or updates the email address of the authorized user account [Authorization:
+          Role: asker/consultant]'
+      operationId: updateEmailAddress
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: string
+        required: true
+      responses:
+        200:
+          description: OK - successfull operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - no/invalid role/authorization or CSRF token
+        409:
+          description: CONFLICT - invalid/unavailable email
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /users/mobiletoken:
+    put:
+      tags:
+        - user-controller
+      summary: 'Sets or updates the mobile registration token of the authorized asker account.
+      This token is used to send push notifications to native mobile applications on android and
+      ios. [Authorization: Role: asker]'
+      operationId: updateMobileToken
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/MobileTokenDTO'
+        required: true
+      responses:
+        200:
+          description: OK - successfull operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - no/invalid role/authorization
         500:
           description: INTERNAL SERVER ERROR - server encountered unexpected condition
       security:
@@ -633,6 +757,40 @@ paths:
           description: INTERNAL SERVER ERROR - server encountered unexpected condition
       security:
         - Bearer: [ ]
+  /users/consultants/sessions/{sessionId}:
+    get:
+      tags:
+        - user-controller
+      summary: 'Returns the session data for the given session id [Authorization: Role:
+            consultant]'
+      operationId: fetchSessionForConsultant
+      parameters:
+        - name: sessionId
+          in: path
+          description: Session id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: successful operation
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ConsultantSessionDTO'
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - no/invalid role/authorization, CSRF token or consultant without permission for given session
+        404:
+          description: NOT FOUND - Session not found
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
   /users/chat/new:
     post:
       tags:
@@ -896,6 +1054,32 @@ paths:
           description: INTERNAL SERVER ERROR - server encountered unexpected condition
       security:
         - Bearer: [ ]
+  /users/account:
+    delete:
+      tags:
+        - user-controller
+      summary: 'Flags an asker account for deletion. The account will be deactivated and deleted
+       within 48 hours. [Authorization: Role: user]'
+      operationId: deactivateAndFlagUserAccountForDeletion
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/DeleteUserAccountDTO'
+        required: true
+      responses:
+        200:
+          description: OK - successfull operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request resp. provided password is wrong
+        401:
+          description: UNAUTHORIZED - no/invalid Keycloak token
+        403:
+          description: FORBIDDEN - no/invalid role/authorization or CSRF token
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
   /liveproxy/send:
     post:
       tags:
@@ -925,6 +1109,8 @@ paths:
 components:
   schemas:
     UserDTO:
+      allOf:
+        - $ref: '#/components/schemas/MandatorySessionDataDTO'
       type: object
       required:
         - username
@@ -950,26 +1136,6 @@ components:
           type: string
           format: password
           example: pass@w0rd
-        email:
-          type: string
-          format: email
-          example: max@mustermann.de
-        addictiveDrugs:
-          type: string
-          example: 2,4
-          description: comma separated list of addictive drug IDs
-        relation:
-          type: string
-          example: 2
-        age:
-          type: string
-          example: 17
-        gender:
-          type: string
-          example: 0
-        state:
-          type: string
-          example: 8
         termsAccepted:
           type: string
           example: true
@@ -977,18 +1143,33 @@ components:
           type: string
           example: 3
 
-    CreateUserResponseDTO:
+    SessionDataDTO:
+      allOf:
+        - $ref: '#/components/schemas/MandatorySessionDataDTO'
       type: object
-      required:
-        - usernameAvailable
-        - emailAvailable
       properties:
-        usernameAvailable:
-          type: integer
+        addictiveDrugs:
+          type: string
+          example: 2,4
+          description: comma separated list of addictive drug IDs
+        relation:
+          type: string
+          example: 2
+        gender:
+          type: string
           example: 0
-        emailAvailable:
-          type: integer
-          example: 1
+
+    MandatorySessionDataDTO:
+      type: object
+      properties:
+        age:
+          type: string
+          example: 17
+          description: mandatory depending on the consulting type
+        state:
+          type: string
+          example: 8
+          description: mandatory depending on the consulting type
 
     ConsultantSessionListResponseDTO:
       type: object
@@ -1040,6 +1221,7 @@ components:
         - agencyId
         - consultingType
         - status
+        - registrationType
       properties:
         id:
           type: integer
@@ -1055,6 +1237,7 @@ components:
         status:
           type: integer
           example: 0
+          description: "0 = INITIAL, 1 = NEW, 2 = IN PROGRESS, 3 = DONE"
         postcode:
           type: string
           minLength: 1
@@ -1091,8 +1274,16 @@ components:
         monitoring:
           type: boolean
           example: true
+        registrationType:
+          type: string
+          example: ANONYMOUS
+        createDate:
+          type: string
+          example: 2021-05-11T15:29:37
         attachment:
           $ref: '#/components/schemas/SessionAttachmentDTO'
+        videoCallMessageDTO:
+          $ref: '#/components/schemas/VideoCallMessageDTO'
 
     SessionAttachmentDTO:
       type: object
@@ -1104,6 +1295,121 @@ components:
           type: string
           example: /9j/2wBDAAYEBQYFBAYGBQY
         fileReceived:
+          type: boolean
+          example: true
+
+    AliasMessageDTO:
+      type: object
+      properties:
+        forwardMessageDTO:
+          $ref: '#/components/schemas/ForwardMessageDTO'
+        videoCallMessageDTO:
+          $ref: '#/components/schemas/VideoCallMessageDTO'
+        messageType:
+          $ref: '#/components/schemas/MessageType'
+
+    ForwardMessageDTO:
+      type: object
+      required:
+        - message
+        - timestamp
+        - username
+        - rcUserId
+      properties:
+        message:
+          type: string
+          example: "Lorem ipsum dolor sit amet, consetetur..."
+        timestamp:
+          type: string
+          description: "Full qualified timestamp"
+          example: "2018-11-15T09:33:00.057Z"
+        username:
+          type: string
+          example: "asker23"
+        rcUserId:
+          type: string
+          example: "ag89h3tjkerg94t"
+
+    VideoCallMessageDTO:
+      type: object
+      required:
+        - eventType
+        - initiatorUserName
+        - initiatorRcUserId
+      properties:
+        eventType:
+          type: string
+          enum:
+            - "IGNORED_CALL"
+        initiatorUserName:
+          type: string
+          example: "consultant23"
+        initiatorRcUserId:
+          type: string
+          example: "ag89h3tjkerg94t"
+
+    MessageType:
+      type: string
+      enum:
+        - "FURTHER_STEPS"
+        - "UPDATE_SESSION_DATA"
+        - "FORWARD"
+        - "VIDEOCALL"
+
+    ConsultantSessionDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 153918
+        agencyId:
+          type: integer
+          format: int64
+          example: 100
+        consultingType:
+          type: integer
+          example: 1
+        status:
+          type: integer
+          example: 0
+        postcode:
+          type: string
+          minLength: 1
+          maxLength: 5
+          example: 79098
+        groupId:
+          type: string
+          example: xGklslk2JJKK
+          description: Rocket.Chat room ID
+        feedbackGroupId:
+          type: string
+          example: 8ertjlasdKJA
+          description: Rocket.Chat feedback room ID
+        consultantId:
+          type: string
+          example: 926b9777-4eef-443d-925a-4aa534797bd7
+          description: keycloak id of assigned consultant
+        consultantRcId:
+          type: string
+          example: 8ertjlasdKJA
+          description: Rocket.Chat ID of assigned consultant
+        askerId:
+          type: string
+          example: 926b9777-4eef-443d-925a-4aa534797bd7
+          description: asker keycloak id
+        askerRcId:
+          type: string
+          example: 8ertjlasdKJA
+          description: asker Rocket.Chat ID
+        askerUserName:
+          type: string
+          example: asker123
+          description: asker username
+        isTeamSession:
+          type: boolean
+          example: false
+        isMonitoring:
           type: boolean
           example: true
 
@@ -1301,6 +1607,28 @@ components:
         consultingTypes:
           $ref: "#/components/schemas/ConsultingTypeMap"
 
+    UpdateConsultantDTO:
+      type: object
+      required:
+        - firstname
+        - lastname
+        - email
+      properties:
+        firstname:
+          type: string
+          example: "Max"
+          minLength: 1
+          maxLength: 255
+        lastname:
+          type: string
+          example: "Mustermann"
+          minLength: 1
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          example: "maxmuster@mann.com"
+
     ConsultingTypeMap:
       type: object
       properties:
@@ -1333,10 +1661,15 @@ components:
           type: boolean
           example: false
         consultingType:
-          $ref: '#/components/schemas/ConsultingType'
+          type: integer
+          example: 1
 
-    ConsultingType:
+    MobileTokenDTO:
       type: object
+      properties:
+        token:
+          type: string
+          example: "8cc2058"
 
     MonitoringDTO:
       type: object
@@ -1414,7 +1747,7 @@ components:
           example: WCET6GWir78pNMyyD
         chatLink:
           type: string
-          example: http://{baseUrl}}/{consultingTypeName}/GEYDA
+          example: https://{baseUrl}}/{consultingTypeName}/GEYDA
 
     ChatInfoResponseDTO:
       type: object
@@ -1467,7 +1800,7 @@ components:
           example: WCET6GWir78pNMyyD
         chatLink:
           type: string
-          example: http://{baseUrl}}/{consultingTypeName}/GEYDA
+          example: https://{baseUrl}}/{consultingTypeName}/GEYDA
 
     NewRegistrationDto:
       type: object
@@ -1519,6 +1852,15 @@ components:
         rcGroupId:
           type: string
           example: fR2Rz7dmWmHdXE8uz
+
+    DeleteUserAccountDTO:
+      type: object
+      required:
+        - password
+      properties:
+        password:
+          type: string
+          example: p@ssw0rd
 
   securitySchemes:
     Bearer:
