@@ -1,6 +1,11 @@
 package de.caritas.cob.uploadservice.config;
 
-import de.caritas.cob.uploadservice.api.authorization.Authority;
+import static de.caritas.cob.uploadservice.api.authorization.Authority.AuthorityValue.ANONYMOUS_DEFAULT;
+import static de.caritas.cob.uploadservice.api.authorization.Authority.AuthorityValue.CONSULTANT_DEFAULT;
+import static de.caritas.cob.uploadservice.api.authorization.Authority.AuthorityValue.TECHNICAL_DEFAULT;
+import static de.caritas.cob.uploadservice.api.authorization.Authority.AuthorityValue.USER_DEFAULT;
+import static de.caritas.cob.uploadservice.api.authorization.Authority.AuthorityValue.USE_FEEDBACK;
+
 import de.caritas.cob.uploadservice.api.authorization.RoleAuthorizationAuthorityMapper;
 import de.caritas.cob.uploadservice.filter.StatelessCsrfFilter;
 import org.keycloak.adapters.KeycloakConfigResolver;
@@ -25,7 +30,9 @@ import org.springframework.security.web.authentication.session.NullAuthenticated
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.csrf.CsrfFilter;
 
-/** Provides the Keycloak/Spring Security configuration. */
+/**
+ * Provides the Keycloak/Spring Security configuration.
+ */
 @KeycloakConfiguration
 public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
@@ -37,13 +44,12 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
   @Value("${csrf.header.property}")
   private String csrfHeaderProperty;
 
-  @Autowired private Environment environment;
+  @Autowired
+  private Environment environment;
 
   /**
    * Processes HTTP requests and checks for a valid spring security authentication for the
    * (Keycloak) principal (authorization header).
-   *
-   * @param keycloakClientRequestFactory
    */
   public SecurityConfig(KeycloakClientRequestFactory keycloakClientRequestFactory) {
     this.keycloakClientRequestFactory = keycloakClientRequestFactory;
@@ -69,11 +75,11 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         .antMatchers(SpringFoxConfig.WHITE_LIST)
         .permitAll()
         .antMatchers("/uploads/messages/key")
-        .hasAuthority(Authority.TECHNICAL_DEFAULT)
+        .hasAuthority(TECHNICAL_DEFAULT)
         .antMatchers("/uploads/new/{roomId:[0-9A-Za-z]+}")
-        .hasAnyAuthority(Authority.USER_DEFAULT, Authority.CONSULTANT_DEFAULT)
+        .hasAnyAuthority(USER_DEFAULT, CONSULTANT_DEFAULT, ANONYMOUS_DEFAULT)
         .antMatchers("/uploads/feedback/new/{feedbackRoomId:[0-9A-Za-z]+}")
-        .hasAnyAuthority(Authority.USE_FEEDBACK)
+        .hasAnyAuthority(USE_FEEDBACK)
         .anyRequest()
         .denyAll();
   }
@@ -81,15 +87,15 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
   /**
    * Use the KeycloakSpringBootConfigResolver to be able to save the Keycloak settings in the spring
    * application properties.
-   *
-   * @return
    */
   @Bean
-  public KeycloakConfigResolver KeyCloakConfigResolver() {
+  public KeycloakConfigResolver keyCloakConfigResolver() {
     return new KeycloakSpringBootConfigResolver();
   }
 
-  /** Change springs authentication strategy to be stateless (no session is being created). */
+  /**
+   * Change springs authentication strategy to be stateless (no session is being created).
+   */
   @Bean
   @Override
   protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
@@ -100,10 +106,6 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
    * Change the default AuthenticationProvider to KeycloakAuthenticationProvider and register it in
    * the spring security context. Set the GrantedAuthoritiesMapper to map the Keycloak roles to the
    * granted authorities.
-   *
-   * @param auth
-   * @param authorityMapper
-   * @throws Exception
    */
   @Autowired
   public void configureGlobal(
@@ -122,9 +124,6 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
    * <p>https://github.com/keycloak/keycloak-documentation/blob/master/securing_apps/topics/oidc/java/spring-security-adapter.adoc
    *
    * <p>{@link package.class label}
-   *
-   * @param filter
-   * @return
    */
   @SuppressWarnings({"rawtypes", "unchecked"})
   @Bean
@@ -136,12 +135,8 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
   }
 
   /**
-   * see above:
-   * {@link SecurityConfig#keycloakAuthenticationProcessingFilterRegistrationBean
+   * see above: {@link SecurityConfig#keycloakAuthenticationProcessingFilterRegistrationBean
    * (KeycloakAuthenticationProcessingFilter)
-   *
-   * @param filter
-   * @return
    */
   @SuppressWarnings({"rawtypes", "unchecked"})
   @Bean
@@ -153,12 +148,8 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
   }
 
   /**
-   * see above:
-   * {@link SecurityConfig#keycloakAuthenticationProcessingFilterRegistrationBean
+   * see above: {@link SecurityConfig#keycloakAuthenticationProcessingFilterRegistrationBean
    * (KeycloakAuthenticationProcessingFilter)
-   *
-   * @param filter
-   * @return
    */
   @SuppressWarnings({"rawtypes", "unchecked"})
   @Bean
@@ -170,12 +161,8 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
   }
 
   /**
-   * see above:
-   * {@link SecurityConfig#keycloakAuthenticationProcessingFilterRegistrationBean
+   * see above: {@link SecurityConfig#keycloakAuthenticationProcessingFilterRegistrationBean
    * (KeycloakAuthenticationProcessingFilter)
-   *
-   * @param filter
-   * @return
    */
   @SuppressWarnings({"rawtypes", "unchecked"})
   @Bean
