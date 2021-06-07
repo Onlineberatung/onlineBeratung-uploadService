@@ -3,8 +3,6 @@ info:
   title: will be replaced
   description: This information will be replaced by the SpringFox config information
   version: 0.0.1
-servers:
-  - url: /
 paths:
   /uploads/messages/key:
     post:
