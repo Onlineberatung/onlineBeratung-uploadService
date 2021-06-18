@@ -3,8 +3,6 @@ info:
   title: will be replaced
   description: This information will be replaced by the SpringFox config information
   version: 0.0.1
-servers:
-  - url: /
 paths:
   /uploads/messages/key:
     post:
@@ -37,7 +35,7 @@ paths:
       tags:
         - upload-controller
       summary: 'Upload a file and send a message to a Rocket.Chat room [Authorization:
-        Role: user, consultant]'
+        Role: user, anonymous, consultant]'
       operationId: uploadFileToRoom
       parameters:
         - name: roomId
