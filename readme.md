@@ -1,8 +1,13 @@
 # Caritas Online-Beratung UploadService
-This is the repository containing all logic for the Caritas Online-Beratung UploadService.
+
+The UploadService acts as a middleman between the client and Rocket.Chat to upload files to Rocket.Chat.
+It was introduced because the Rocket.Chat API also allows to send a message within the same file upload call and therefore the de- and encryption of this message needs to be done with the same routine the MessageService does.
+
+Furthermore you can limit the number of uploads and the files types that can be uploaded with the help of the UploadService.
 
 ## Help and Documentation
 In the project [documentation](https://caritasdeutschland.github.io/documentation/docs/setup/setup-backend) you'll find information for setting up and running the project.
+You can find some detailled information of the service architecture and its processes in the repository [documentation](https://github.com/CaritasDeutschland/caritas-onlineBeratung-uploadService/tree/master/documentation).
 
 ## License
 The project is licensed under the AGPLv3 which you'll find [here](LICENSE.md).
