@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.7.0](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.6.0...v1.7.0) (2021-06-18)
+
+
+### Features
+
+* adapt new keycloak version ([dd03f78](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/dd03f7838a7022f3ae1eb5cfb6cf53640e282383))
+* integrate anonymous authority ([62d1a6c](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/62d1a6c7614d086de20340bf243662c0bce44d4b))
+
 ## [1.6.0](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.5.0...v1.6.0) (2021-04-12)
 
 
