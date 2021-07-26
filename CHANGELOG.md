@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.7.0...v1.8.0) (2021-07-26)
+
+
+### Features
+
+* adapt documentation ([35555a9](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/35555a99dfd75feb23aa7b3796e47153596a5b67))
+
 ## [1.7.0](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.6.0...v1.7.0) (2021-06-18)
 
 
