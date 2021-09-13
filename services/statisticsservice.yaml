@@ -47,7 +47,6 @@ components:
       enum:
         - "ASSIGN_SESSION"
         - "CREATE_MESSAGE"
-        - "UPLOAD_FILE"
 
     StatisticsEventMessage:
       type: object
@@ -86,6 +85,7 @@ components:
       required:
         - rcUserId
         - rcGroupId
+        - hasAttachment
         - timestamp
       allOf:
         - $ref: '#/components/schemas/StatisticsEventMessage'
@@ -99,29 +99,10 @@ components:
           type: string
           description: The Rocket.Chat id of the group from the session
           example: hzt766asas
-        timestamp:
-          type: string
-          description: "Full qualified timestamp"
-          example: "2018-11-15T09:33:00.057Z"
-
-    UploadFileStatisticsEventMessage:
-      type: object
-      required:
-        - rcUserId
-        - rcGroupId
-        - timestamp
-      allOf:
-        - $ref: '#/components/schemas/StatisticsEventMessage'
-        - type: object
-      properties:
-        consultantId:
-          type: string
-          description: The keycloak id of the consultant
-          example: d63f4cc0-215d-40e2-a866-2d3e910f0590
-        rcGroupId:
-          type: string
-          description: The Rocket.Chat id of the group from the session
-          example: hzt766asas
+        hasAttachment:
+          type: boolean
+          description: indicates whether the message has an attachment
+          example: true
         timestamp:
           type: string
           description: "Full qualified timestamp"
