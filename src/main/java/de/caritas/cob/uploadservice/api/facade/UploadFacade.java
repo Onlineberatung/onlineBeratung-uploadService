@@ -14,7 +14,7 @@ import de.caritas.cob.uploadservice.api.service.LogService;
 import de.caritas.cob.uploadservice.api.service.RocketChatService;
 import de.caritas.cob.uploadservice.api.service.UploadTrackingService;
 import de.caritas.cob.uploadservice.api.statistics.StatisticsService;
-import de.caritas.cob.uploadservice.api.statistics.event.UploadFileStatisticsEvent;
+import de.caritas.cob.uploadservice.api.statistics.event.CreateMessageStatisticsEvent;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -63,7 +63,9 @@ public class UploadFacade {
 
     if (AuthenticatedUserHelper.isConsultant(authenticatedUser)) {
       statisticsService.fireEvent(
-          new UploadFileStatisticsEvent(authenticatedUser.getUserId(), rocketChatUploadParameter.getRoomId()));
+          new CreateMessageStatisticsEvent(authenticatedUser.getUserId(),
+              rocketChatUploadParameter.getRoomId(),
+              true));
     }
 
   }

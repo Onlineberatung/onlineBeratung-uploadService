@@ -25,7 +25,7 @@ import de.caritas.cob.uploadservice.api.service.LiveEventNotificationService;
 import de.caritas.cob.uploadservice.api.service.RocketChatService;
 import de.caritas.cob.uploadservice.api.service.UploadTrackingService;
 import de.caritas.cob.uploadservice.api.statistics.StatisticsService;
-import de.caritas.cob.uploadservice.api.statistics.event.UploadFileStatisticsEvent;
+import de.caritas.cob.uploadservice.api.statistics.event.CreateMessageStatisticsEvent;
 import java.util.Objects;
 import org.apache.commons.collections4.SetUtils;
 import org.hamcrest.Matchers;
@@ -122,10 +122,10 @@ public class UploadFacadeTest {
     uploadFacade.uploadFileToRoom(rocketChatCredentials, rocketChatUploadParameter, true);
 
     verify(statisticsService, times(1))
-        .fireEvent(any(UploadFileStatisticsEvent.class));
+        .fireEvent(any(CreateMessageStatisticsEvent.class));
 
-    ArgumentCaptor<UploadFileStatisticsEvent> captor = ArgumentCaptor.forClass(
-        UploadFileStatisticsEvent.class);
+    ArgumentCaptor<CreateMessageStatisticsEvent> captor = ArgumentCaptor.forClass(
+        CreateMessageStatisticsEvent.class);
     verify(statisticsService, times(1)).fireEvent(captor.capture());
     String consultantId = Objects.requireNonNull(
         ReflectionTestUtils.getField(captor.getValue(), "consultantId")).toString();

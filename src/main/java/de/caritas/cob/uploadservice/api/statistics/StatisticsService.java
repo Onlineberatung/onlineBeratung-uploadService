@@ -38,7 +38,7 @@ public class StatisticsService {
                   amqpTemplate.convertAndSend(
                       rabbitMqExchangeName, statisticsEvent.getEventType().toString(), payload),
               () ->
-                  LogService.logStatisticsWarning(
+                  LogService.logStatisticsEventWarning(
                       String.format(
                           "Empty statistics event message payload for type %s received",
                           statisticsEvent.getClass().getSimpleName())));

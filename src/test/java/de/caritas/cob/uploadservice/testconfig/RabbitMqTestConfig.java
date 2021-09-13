@@ -16,7 +16,7 @@ public class RabbitMqTestConfig {
 
   public static final String STATISTICS_EXCHANGE_NAME = "statistics.topic";
   private static final String QUEUE_PREFIX = "statistics.";
-  public static final String QUEUE_NAME_ASSIGN_SESSION = QUEUE_PREFIX + EventType.UPLOAD_FILE;
+  public static final String QUEUE_NAME_CREATE_MESSAGE = QUEUE_PREFIX + EventType.CREATE_MESSAGE;
 
   @Bean ConnectionFactory connectionFactory() {
     return new CachingConnectionFactory(new MockConnectionFactory());
@@ -24,7 +24,7 @@ public class RabbitMqTestConfig {
 
   @Bean
   public Declarables topicBindings() {
-    Queue assignSessionStatisticEventQueue = new Queue(QUEUE_NAME_ASSIGN_SESSION, true);
+    Queue assignSessionStatisticEventQueue = new Queue(QUEUE_NAME_CREATE_MESSAGE, true);
 
     TopicExchange topicExchange = new TopicExchange(STATISTICS_EXCHANGE_NAME, true, false);
 
@@ -34,6 +34,6 @@ public class RabbitMqTestConfig {
         BindingBuilder
             .bind(assignSessionStatisticEventQueue)
             .to(topicExchange).with(
-                EventType.UPLOAD_FILE));
+                EventType.CREATE_MESSAGE));
   }
 }

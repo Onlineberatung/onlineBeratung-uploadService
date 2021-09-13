@@ -8,9 +8,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.caritas.cob.uploadservice.UploadServiceApplication;
-import de.caritas.cob.uploadservice.api.statistics.event.UploadFileStatisticsEvent;
+import de.caritas.cob.uploadservice.api.statistics.event.CreateMessageStatisticsEvent;
+import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.CreateMessageStatisticsEventMessage;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.EventType;
-import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.UploadFileStatisticsEventMessage;
 import de.caritas.cob.uploadservice.testconfig.RabbitMqTestConfig;
 import java.io.IOException;
 import java.util.Objects;
@@ -45,29 +45,30 @@ public class StatisticsServiceIT {
   public void fireEvent_Should_Send_ExpectedUploadFileStatisticsEventMessageToQueue()
       throws IOException {
 
-    UploadFileStatisticsEvent uploadFileStatisticsEvent =
-        new UploadFileStatisticsEvent(CONSULTANT_ID, RC_ROOM_ID);
+    CreateMessageStatisticsEvent createMessageStatisticsEvent =
+        new CreateMessageStatisticsEvent(CONSULTANT_ID, RC_ROOM_ID, true);
     String staticTimestamp =
         Objects.requireNonNull(
                 ReflectionTestUtils.getField(
-                    uploadFileStatisticsEvent,
-                    UploadFileStatisticsEvent.class,
+                    createMessageStatisticsEvent,
+                    CreateMessageStatisticsEvent.class,
                     TIMESTAMP_FIELD_NAME))
             .toString();
-    UploadFileStatisticsEventMessage uploadFileStatisticsEventMessage =
-        new UploadFileStatisticsEventMessage()
-            .eventType(EventType.UPLOAD_FILE)
+    CreateMessageStatisticsEventMessage createMessageStatisticsEventMessage =
+        new CreateMessageStatisticsEventMessage()
+            .eventType(EventType.CREATE_MESSAGE)
             .consultantId(CONSULTANT_ID)
             .rcGroupId(RC_ROOM_ID)
+            .hasAttachment(true)
             .timestamp(staticTimestamp);
 
-    statisticsService.fireEvent(uploadFileStatisticsEvent);
+    statisticsService.fireEvent(createMessageStatisticsEvent);
     Message message =
-        amqpTemplate.receive(RabbitMqTestConfig.QUEUE_NAME_ASSIGN_SESSION, MAX_TIMEOUT_MILLIS);
+        amqpTemplate.receive(RabbitMqTestConfig.QUEUE_NAME_CREATE_MESSAGE, MAX_TIMEOUT_MILLIS);
     assert message != null;
     assertThat(
         extractBodyFromAmpQMessage(message),
-        jsonEquals(new ObjectMapper().writeValueAsString(uploadFileStatisticsEventMessage)));
+        jsonEquals(new ObjectMapper().writeValueAsString(createMessageStatisticsEventMessage)));
   }
 
   private String extractBodyFromAmpQMessage(Message message) throws IOException {

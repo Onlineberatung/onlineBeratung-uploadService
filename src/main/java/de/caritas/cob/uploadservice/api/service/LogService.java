@@ -18,7 +18,9 @@ public class LogService {
   private static final String INTERNAL_SERVER_ERROR_TEXT = "Internal Server Error: ";
   private static final String BAD_REQUEST_TEXT = "Bad Request: ";
   private static final String UPLOAD_SERVICE_API_TEXT = "UploadService API: {}";
-  private static final String STATISTICS_WARNING = "Statistics: {}";
+  private static final String STATISTICS_EVENT_PROCESSING_ERROR = "StatisticsEventProcessing error: ";
+  private static final String STATISTICS_EVENT_PROCESSING_WARNING = "StatisticsEventProcessing warning: ";
+
 
   private LogService() {}
 
@@ -165,11 +167,22 @@ public class LogService {
   }
 
   /**
-   * Logs an statistics warning.
+   * Error while processing statistics event.
    *
-   * @param message the message to be logged
+   * @param exception Exception
    */
-  public static void logStatisticsWarning(String message) {
-    LOGGER.warn(STATISTICS_WARNING, message);
+  public static void logStatisticsEventError(Exception exception) {
+    LOGGER.error("{}{}", STATISTICS_EVENT_PROCESSING_ERROR, getStackTrace(exception));
   }
+
+  /**
+   * Warning while processing statistics event.
+   *
+   * @param message error message
+   */
+  public static void logStatisticsEventWarning(String message) {
+    LOGGER.warn("{}{}", STATISTICS_EVENT_PROCESSING_WARNING, message);
+  }
+
+
 }

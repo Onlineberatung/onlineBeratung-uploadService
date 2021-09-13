@@ -16,20 +16,20 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UploadFileStatisticsEventTest {
+public class CreateMessageStatisticsEventTest {
 
   private static final String TIMESTAMP_FIELD_NAME = "TIMESTAMP";
-  private UploadFileStatisticsEvent uploadFileStatisticsEvent;
+  private CreateMessageStatisticsEvent createMessageStatisticsEvent;
   private String staticTimestamp;
 
   @Before
   public void setup() throws NoSuchFieldException, IllegalAccessException {
-    uploadFileStatisticsEvent = new UploadFileStatisticsEvent(CONSULTANT_ID, RC_ROOM_ID);
+    createMessageStatisticsEvent = new CreateMessageStatisticsEvent(CONSULTANT_ID, RC_ROOM_ID, true);
     staticTimestamp =
         Objects.requireNonNull(
                 ReflectionTestUtils.getField(
-                    uploadFileStatisticsEvent,
-                    UploadFileStatisticsEvent.class,
+                    createMessageStatisticsEvent,
+                    CreateMessageStatisticsEvent.class,
                     TIMESTAMP_FIELD_NAME))
             .toString();
   }
@@ -37,7 +37,7 @@ public class UploadFileStatisticsEventTest {
   @Test
   public void getEventType_Should_ReturnEventTypeCreateMessage() {
 
-    assertThat(this.uploadFileStatisticsEvent.getEventType(), is(EventType.UPLOAD_FILE));
+    assertThat(this.createMessageStatisticsEvent.getEventType(), is(EventType.CREATE_MESSAGE));
   }
 
   @Test
@@ -55,11 +55,12 @@ public class UploadFileStatisticsEventTest {
             + staticTimestamp
             + "\","
             + "  \"eventType\":\""
-            + EventType.UPLOAD_FILE
-            + "\""
+            + EventType.CREATE_MESSAGE
+            + "\","
+            + "  \"hasAttachment\": true"
             + "}";
 
-    Optional<String> result = uploadFileStatisticsEvent.getPayload();
+    Optional<String> result = createMessageStatisticsEvent.getPayload();
 
     assertThat(result.isPresent(), is(true));
     assertThat(result.get(), jsonEquals(expectedJson));

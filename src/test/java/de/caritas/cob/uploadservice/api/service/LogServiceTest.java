@@ -25,7 +25,8 @@ public class LogServiceTest {
   private static final String RC_SERVICE_ERROR_TEXT = "Rocket.Chat service error: ";
   private static final String INTERNAL_SERVER_ERROR_TEXT = "Internal Server Error: ";
   private static final String BAD_REQUEST_TEXT = "Bad Request: ";
-  private static final String STATISTICS_WARNING = "Statistics: {}";
+  private static final String STATISTICS_EVENT_PROCESSING_ERROR = "StatisticsEventProcessing error: ";
+  private static final String STATISTICS_EVENT_PROCESSING_WARNING = "StatisticsEventProcessing warning: ";
 
   @Mock
   Exception exception;
@@ -155,13 +156,6 @@ public class LogServiceTest {
   }
 
   @Test
-  public void logStatisticsWarning_Should_LogMessage() {
-
-    LogService.logStatisticsWarning(ERROR_MESSAGE);
-    verify(logger, times(1)).warn(STATISTICS_WARNING, ERROR_MESSAGE);
-  }
-
-  @Test
   public void logWarning_Should_LogMessageAndStatus() {
 
     LogService.logWarning(HttpStatus.ACCEPTED, exception);
@@ -183,5 +177,22 @@ public class LogServiceTest {
 
     LogService.logDebug(ERROR_MESSAGE);
     verify(logger, times(1)).debug(anyString(), eq(ERROR_MESSAGE));
+  }
+
+  @Test
+  public void logStatisticEventError_Should_LogExceptionStackTraceAndErrorMessage() {
+
+    LogService.logStatisticsEventError(exception);
+    verify(logger, times(1))
+        .error(anyString(), eq(STATISTICS_EVENT_PROCESSING_ERROR), anyString());
+    verify(exception, atLeastOnce()).printStackTrace(any(PrintWriter.class));
+  }
+
+  @Test
+  public void logStatisticEventWarning_Should_LogErrorMessageAsWarning() {
+
+    LogService.logStatisticsEventWarning(ERROR_MESSAGE);
+    verify(logger, times(1))
+        .warn(anyString(), eq(STATISTICS_EVENT_PROCESSING_WARNING), eq(ERROR_MESSAGE));
   }
 }
