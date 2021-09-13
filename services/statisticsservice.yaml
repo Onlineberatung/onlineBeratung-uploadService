@@ -1,0 +1,134 @@
+openapi: 3.0.1
+info:
+  title: will be replaced
+  description: This information will be replaced by the SpringFox config information
+  version: 0.0.1
+paths:
+  /statistics/consultant:
+    get:
+      tags:
+        - statistics-controller
+      summary: 'Returns statistical data for a consultant. [Authorization: consultant]'
+      operationId: getConsultantStatistics
+      responses:
+        200:
+          description: OK - successfull operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        403:
+          description: FORBIDDEN - no/invalid CSRF token
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /statistics/consultant/csv:
+    get:
+      tags:
+        - statistics-controller
+      summary: 'Returns statistical data for a consultant as csv file. [Authorization: consultant]'
+      operationId: getConsultantStatisticsCsv
+      responses:
+        200:
+          description: OK - successfull operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        403:
+          description: FORBIDDEN - no/invalid CSRF token
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+
+components:
+  schemas:
+
+    EventType:
+      type: string
+      enum:
+        - "ASSIGN_SESSION"
+        - "CREATE_MESSAGE"
+        - "UPLOAD_FILE"
+
+    StatisticsEventMessage:
+      type: object
+      required:
+        - eventType
+      properties:
+        eventType:
+          $ref: '#/components/schemas/EventType'
+
+    AssignSessionStatisticsEventMessage:
+      type: object
+      required:
+        - consultantId
+        - sessionId
+        - timestamp
+      allOf:
+        - $ref: '#/components/schemas/StatisticsEventMessage'
+        - type: object
+      properties:
+        consultantId:
+          type: string
+          description: The keycloak id of the consultant
+          example: d63f4cc0-215d-40e2-a866-2d3e910f0590
+        sessionId:
+          type: integer
+          format: int64
+          description: The id of the session
+          example: 12345
+        timestamp:
+          type: string
+          description: "Full qualified timestamp"
+          example: "2018-11-15T09:33:00.057Z"
+
+    CreateMessageStatisticsEventMessage:
+      type: object
+      required:
+        - rcUserId
+        - rcGroupId
+        - timestamp
+      allOf:
+        - $ref: '#/components/schemas/StatisticsEventMessage'
+        - type: object
+      properties:
+        consultantId:
+          type: string
+          description: The keycloak id of the consultant
+          example: d63f4cc0-215d-40e2-a866-2d3e910f0590
+        rcGroupId:
+          type: string
+          description: The Rocket.Chat id of the group from the session
+          example: hzt766asas
+        timestamp:
+          type: string
+          description: "Full qualified timestamp"
+          example: "2018-11-15T09:33:00.057Z"
+
+    UploadFileStatisticsEventMessage:
+      type: object
+      required:
+        - rcUserId
+        - rcGroupId
+        - timestamp
+      allOf:
+        - $ref: '#/components/schemas/StatisticsEventMessage'
+        - type: object
+      properties:
+        consultantId:
+          type: string
+          description: The keycloak id of the consultant
+          example: d63f4cc0-215d-40e2-a866-2d3e910f0590
+        rcGroupId:
+          type: string
+          description: The Rocket.Chat id of the group from the session
+          example: hzt766asas
+        timestamp:
+          type: string
+          description: "Full qualified timestamp"
+          example: "2018-11-15T09:33:00.057Z"
+
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      name: Authorization
+      in: header
