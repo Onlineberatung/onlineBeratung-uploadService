@@ -6,13 +6,13 @@ import static net.javacrumbs.jsonunit.JsonMatchers.jsonEquals;
 import static org.apache.commons.codec.CharEncoding.UTF_8;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.caritas.cob.uploadservice.UploadServiceApplication;
 import de.caritas.cob.uploadservice.api.statistics.event.CreateMessageStatisticsEvent;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.CreateMessageStatisticsEventMessage;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.EventType;
 import de.caritas.cob.uploadservice.testconfig.RabbitMqTestConfig;
 import java.io.IOException;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -47,13 +47,12 @@ public class StatisticsServiceIT {
 
     CreateMessageStatisticsEvent createMessageStatisticsEvent =
         new CreateMessageStatisticsEvent(CONSULTANT_ID, RC_ROOM_ID, true);
-    String staticTimestamp =
-        Objects.requireNonNull(
+    OffsetDateTime staticTimestamp =
+        (OffsetDateTime) Objects.requireNonNull(
                 ReflectionTestUtils.getField(
                     createMessageStatisticsEvent,
                     CreateMessageStatisticsEvent.class,
-                    TIMESTAMP_FIELD_NAME))
-            .toString();
+                    TIMESTAMP_FIELD_NAME));
     CreateMessageStatisticsEventMessage createMessageStatisticsEventMessage =
         new CreateMessageStatisticsEventMessage()
             .eventType(EventType.CREATE_MESSAGE)
@@ -66,9 +65,27 @@ public class StatisticsServiceIT {
     Message message =
         amqpTemplate.receive(RabbitMqTestConfig.QUEUE_NAME_CREATE_MESSAGE, MAX_TIMEOUT_MILLIS);
     assert message != null;
+
+    String expectedJson =
+        "{"
+            + "  \"rcGroupId\":\""
+            + RC_ROOM_ID
+            + "\","
+            + "  \"consultantId\":\""
+            + CONSULTANT_ID
+            + "\","
+            + "  \"timestamp\":\""
+            + staticTimestamp
+            + "\","
+            + "  \"eventType\":\""
+            + EventType.CREATE_MESSAGE
+            + "\","
+            + "  \"hasAttachment\": true"
+            + "}";
+
     assertThat(
         extractBodyFromAmpQMessage(message),
-        jsonEquals(new ObjectMapper().writeValueAsString(createMessageStatisticsEventMessage)));
+        jsonEquals(expectedJson));
   }
 
   private String extractBodyFromAmpQMessage(Message message) throws IOException {

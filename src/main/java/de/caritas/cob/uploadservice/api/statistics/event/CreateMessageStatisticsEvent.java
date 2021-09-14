@@ -1,22 +1,21 @@
 package de.caritas.cob.uploadservice.api.statistics.event;
 
-import de.caritas.cob.uploadservice.api.helper.CustomLocalDateTime;
 import de.caritas.cob.uploadservice.api.helper.JsonHelper;
 import de.caritas.cob.uploadservice.api.service.LogService;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.CreateMessageStatisticsEventMessage;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.EventType;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Optional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-
-
 
 /** Upload file statistics event. */
 @RequiredArgsConstructor
 public class CreateMessageStatisticsEvent implements StatisticsEvent {
 
   private static final EventType EVENT_TYPE = EventType.CREATE_MESSAGE;
-  private static final String TIMESTAMP = CustomLocalDateTime.nowAsFullQualifiedTimestamp();
+  private static final OffsetDateTime TIMESTAMP = OffsetDateTime.now(ZoneOffset.UTC);
 
   private @NonNull String consultantId;
   private @NonNull String rcGroupId;
@@ -25,7 +24,7 @@ public class CreateMessageStatisticsEvent implements StatisticsEvent {
   /** {@inheritDoc} */
   @Override
   public Optional<String> getPayload() {
-    return JsonHelper.serialize(
+    return JsonHelper.serializeWithOffsetDateTimeAsString(
         createCreateMessageStatisticsEventMessage(), LogService::logStatisticsEventError);
   }
 

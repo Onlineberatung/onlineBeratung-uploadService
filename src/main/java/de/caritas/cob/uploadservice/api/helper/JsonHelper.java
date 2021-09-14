@@ -2,6 +2,10 @@ package de.caritas.cob.uploadservice.api.helper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import de.caritas.cob.uploadservice.api.helper.json.OffsetDateTimeToStringSerializer;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -11,18 +15,32 @@ public class JsonHelper {
   private JsonHelper() {}
 
   /**
-   * Serialize a object.
+   * Serialize a object with specific json serializers.
    *
-   * @param o an object to serialize
+   * @param object an object to serialize
    * @param loggingMethod the method being used to log errors
    * @return {@link Optional} of serialized object as {@link String}
    */
-  public static Optional<String> serialize(Object o, Consumer<Exception> loggingMethod) {
+  public static Optional<String> serializeWithOffsetDateTimeAsString(
+      Object object, Consumer<Exception> loggingMethod) {
     try {
-      return Optional.of(new ObjectMapper().writeValueAsString(o));
+      return Optional.of(buildObjectMapper().writeValueAsString(object));
     } catch (JsonProcessingException jsonProcessingException) {
       loggingMethod.accept(jsonProcessingException);
     }
     return Optional.empty();
+  }
+
+  private static ObjectMapper buildObjectMapper() {
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.registerModule(new JavaTimeModule());
+    objectMapper.registerModule(buildSimpleModule());
+    return objectMapper;
+  }
+
+  private static SimpleModule buildSimpleModule() {
+    return new SimpleModule()
+        .addSerializer(OffsetDateTime.class, new OffsetDateTimeToStringSerializer());
   }
 }

@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.caritas.cob.uploadservice.api.service.LogService;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.CreateMessageStatisticsEventMessage;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.EventType;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -18,7 +19,9 @@ import org.mockito.Mockito;
 public class JsonHelperTest {
 
   @Test
-  public void serialize_Should_returnOptionalWithSerializedObject() throws JsonProcessingException {
+  public void serializeWithOffsetDateTimeAsString_Should_returnOptionalWithSerializedObject() {
+
+    OffsetDateTime offsetDateTime = CustomOffsetDateTime.nowInUtc();
 
     CreateMessageStatisticsEventMessage createMessageStatisticsEventMessage =
         new CreateMessageStatisticsEventMessage()
@@ -26,13 +29,32 @@ public class JsonHelperTest {
             .rcGroupId(RC_ROOM_ID)
             .consultantId(CONSULTANT_ID)
             .hasAttachment(true)
-            .timestamp(CustomLocalDateTime.nowAsFullQualifiedTimestamp());
+            .timestamp(offsetDateTime);
 
     Optional<String> result =
-        JsonHelper.serialize(createMessageStatisticsEventMessage, LogService::logStatisticsEventError);
+        JsonHelper.serializeWithOffsetDateTimeAsString(createMessageStatisticsEventMessage,
+            LogService::logStatisticsEventError);
 
     assertThat(result.isPresent(), is(true));
-    assertThat(result.get(), jsonEquals(new ObjectMapper().writeValueAsString(createMessageStatisticsEventMessage)));
+
+    String expectedJson =
+        "{"
+            + "  \"rcGroupId\":\""
+            + RC_ROOM_ID
+            + "\","
+            + "  \"consultantId\":\""
+            + CONSULTANT_ID
+            + "\","
+            + "  \"timestamp\":\""
+            + offsetDateTime
+            + "\","
+            + "  \"eventType\":\""
+            + EventType.CREATE_MESSAGE
+            + "\","
+            + "  \"hasAttachment\": true"
+            + "}";
+
+    assertThat(result.get(), jsonEquals(expectedJson));
 
   }
 
@@ -44,7 +66,8 @@ public class JsonHelperTest {
     Mockito.when(om.writeValueAsString(Object.class)).thenThrow(new JsonProcessingException("") {});
 
     Optional<String> result =
-        JsonHelper.serialize(new Object(), LogService::logInternalServerError);
+        JsonHelper.serializeWithOffsetDateTimeAsString(new Object(),
+            LogService::logInternalServerError);
 
     assertThat(result.isPresent(), is(false));
   }

@@ -7,6 +7,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.EventType;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.Optional;
 import org.junit.Before;
@@ -20,18 +21,17 @@ public class CreateMessageStatisticsEventTest {
 
   private static final String TIMESTAMP_FIELD_NAME = "TIMESTAMP";
   private CreateMessageStatisticsEvent createMessageStatisticsEvent;
-  private String staticTimestamp;
+  private OffsetDateTime staticTimestamp;
 
   @Before
   public void setup() throws NoSuchFieldException, IllegalAccessException {
     createMessageStatisticsEvent = new CreateMessageStatisticsEvent(CONSULTANT_ID, RC_ROOM_ID, true);
     staticTimestamp =
-        Objects.requireNonNull(
+        (OffsetDateTime) Objects.requireNonNull(
                 ReflectionTestUtils.getField(
                     createMessageStatisticsEvent,
                     CreateMessageStatisticsEvent.class,
-                    TIMESTAMP_FIELD_NAME))
-            .toString();
+                    TIMESTAMP_FIELD_NAME));
   }
 
   @Test
@@ -52,7 +52,7 @@ public class CreateMessageStatisticsEventTest {
             + CONSULTANT_ID
             + "\","
             + "  \"timestamp\":\""
-            + staticTimestamp
+            + staticTimestamp.toString()
             + "\","
             + "  \"eventType\":\""
             + EventType.CREATE_MESSAGE

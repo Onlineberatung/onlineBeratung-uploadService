@@ -52,49 +52,44 @@ components:
       type: object
       required:
         - eventType
+        - consultantId
+        - timestamp
       properties:
         eventType:
           $ref: '#/components/schemas/EventType'
-
-    AssignSessionStatisticsEventMessage:
-      type: object
-      required:
-        - consultantId
-        - sessionId
-        - timestamp
-      allOf:
-        - $ref: '#/components/schemas/StatisticsEventMessage'
-        - type: object
-      properties:
         consultantId:
           type: string
           description: The keycloak id of the consultant
           example: d63f4cc0-215d-40e2-a866-2d3e910f0590
+        timestamp:
+          type: string
+          format: date-time
+          description: "Timestamp of event"
+          example: "2021-01-30T08:30:00Z"
+
+    AssignSessionStatisticsEventMessage:
+      type: object
+      required:
+        - sessionId
+      allOf:
+        - $ref: '#/components/schemas/StatisticsEventMessage'
+        - type: object
+      properties:
         sessionId:
           type: integer
           format: int64
           description: The id of the session
           example: 12345
-        timestamp:
-          type: string
-          description: "Full qualified timestamp"
-          example: "2018-11-15T09:33:00.057Z"
 
     CreateMessageStatisticsEventMessage:
       type: object
       required:
-        - rcUserId
         - rcGroupId
         - hasAttachment
-        - timestamp
       allOf:
         - $ref: '#/components/schemas/StatisticsEventMessage'
         - type: object
       properties:
-        consultantId:
-          type: string
-          description: The keycloak id of the consultant
-          example: d63f4cc0-215d-40e2-a866-2d3e910f0590
         rcGroupId:
           type: string
           description: The Rocket.Chat id of the group from the session
@@ -103,10 +98,6 @@ components:
           type: boolean
           description: indicates whether the message has an attachment
           example: true
-        timestamp:
-          type: string
-          description: "Full qualified timestamp"
-          example: "2018-11-15T09:33:00.057Z"
 
   securitySchemes:
     Bearer:
