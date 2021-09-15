@@ -12,6 +12,7 @@ import de.caritas.cob.uploadservice.api.service.LogService;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.CreateMessageStatisticsEventMessage;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.EventType;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -21,13 +22,15 @@ public class JsonHelperTest {
   @Test
   public void serializeWithOffsetDateTimeAsString_Should_returnOptionalWithSerializedObject() {
 
+    OffsetDateTime offsetDateTime = CustomOffsetDateTime.nowInUtc();
+
     CreateMessageStatisticsEventMessage createMessageStatisticsEventMessage =
         new CreateMessageStatisticsEventMessage()
             .eventType(EventType.CREATE_MESSAGE)
             .rcGroupId(RC_ROOM_ID)
             .consultantId(CONSULTANT_ID)
             .hasAttachment(true)
-            .timestamp(CustomOffsetDateTime.nowInUtc());
+            .timestamp(offsetDateTime);
 
     Optional<String> result =
         JsonHelper.serializeWithOffsetDateTimeAsString(createMessageStatisticsEventMessage,
@@ -44,7 +47,7 @@ public class JsonHelperTest {
             + CONSULTANT_ID
             + "\","
             + "  \"timestamp\":\""
-            + CustomOffsetDateTime.nowInUtc()
+            + offsetDateTime.format(DateTimeFormatter.ISO_DATE_TIME)
             + "\","
             + "  \"eventType\":\""
             + EventType.CREATE_MESSAGE
@@ -52,7 +55,7 @@ public class JsonHelperTest {
             + "  \"hasAttachment\": true"
             + "}";
 
-    assertThat(result.get(), jsonEquals(expectedJson).whenIgnoringPaths("timestamp"));
+    assertThat(result.get(), jsonEquals(expectedJson));
 
   }
 
