@@ -1,11 +1,10 @@
 package de.caritas.cob.uploadservice.api.statistics.event;
 
+import de.caritas.cob.uploadservice.api.helper.CustomOffsetDateTime;
 import de.caritas.cob.uploadservice.api.helper.JsonHelper;
 import de.caritas.cob.uploadservice.api.service.LogService;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.CreateMessageStatisticsEventMessage;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.EventType;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.Optional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 public class CreateMessageStatisticsEvent implements StatisticsEvent {
 
   private static final EventType EVENT_TYPE = EventType.CREATE_MESSAGE;
-  private static final OffsetDateTime TIMESTAMP = OffsetDateTime.now(ZoneOffset.UTC);
 
   private @NonNull String consultantId;
   private @NonNull String rcGroupId;
@@ -41,6 +39,6 @@ public class CreateMessageStatisticsEvent implements StatisticsEvent {
         .consultantId(consultantId)
         .rcGroupId(rcGroupId)
         .hasAttachment(hasAttachment)
-        .timestamp(TIMESTAMP);
+        .timestamp(CustomOffsetDateTime.nowInUtc());
   }
 }

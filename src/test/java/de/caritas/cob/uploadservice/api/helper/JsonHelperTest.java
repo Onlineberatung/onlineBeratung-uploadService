@@ -21,15 +21,13 @@ public class JsonHelperTest {
   @Test
   public void serializeWithOffsetDateTimeAsString_Should_returnOptionalWithSerializedObject() {
 
-    OffsetDateTime offsetDateTime = CustomOffsetDateTime.nowInUtc();
-
     CreateMessageStatisticsEventMessage createMessageStatisticsEventMessage =
         new CreateMessageStatisticsEventMessage()
             .eventType(EventType.CREATE_MESSAGE)
             .rcGroupId(RC_ROOM_ID)
             .consultantId(CONSULTANT_ID)
             .hasAttachment(true)
-            .timestamp(offsetDateTime);
+            .timestamp(CustomOffsetDateTime.nowInUtc());
 
     Optional<String> result =
         JsonHelper.serializeWithOffsetDateTimeAsString(createMessageStatisticsEventMessage,
@@ -46,7 +44,7 @@ public class JsonHelperTest {
             + CONSULTANT_ID
             + "\","
             + "  \"timestamp\":\""
-            + offsetDateTime
+            + CustomOffsetDateTime.nowInUtc()
             + "\","
             + "  \"eventType\":\""
             + EventType.CREATE_MESSAGE
@@ -54,7 +52,7 @@ public class JsonHelperTest {
             + "  \"hasAttachment\": true"
             + "}";
 
-    assertThat(result.get(), jsonEquals(expectedJson));
+    assertThat(result.get(), jsonEquals(expectedJson).whenIgnoringPaths("timestamp"));
 
   }
 

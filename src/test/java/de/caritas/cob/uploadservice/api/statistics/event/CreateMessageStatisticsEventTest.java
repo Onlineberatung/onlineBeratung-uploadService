@@ -6,6 +6,7 @@ import static net.javacrumbs.jsonunit.JsonMatchers.jsonEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import de.caritas.cob.uploadservice.api.helper.CustomOffsetDateTime;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.EventType;
 import java.time.OffsetDateTime;
 import java.util.Objects;
@@ -19,19 +20,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 @RunWith(MockitoJUnitRunner.class)
 public class CreateMessageStatisticsEventTest {
 
-  private static final String TIMESTAMP_FIELD_NAME = "TIMESTAMP";
   private CreateMessageStatisticsEvent createMessageStatisticsEvent;
-  private OffsetDateTime staticTimestamp;
 
   @Before
   public void setup() throws NoSuchFieldException, IllegalAccessException {
     createMessageStatisticsEvent = new CreateMessageStatisticsEvent(CONSULTANT_ID, RC_ROOM_ID, true);
-    staticTimestamp =
-        (OffsetDateTime) Objects.requireNonNull(
-                ReflectionTestUtils.getField(
-                    createMessageStatisticsEvent,
-                    CreateMessageStatisticsEvent.class,
-                    TIMESTAMP_FIELD_NAME));
   }
 
   @Test
@@ -52,7 +45,7 @@ public class CreateMessageStatisticsEventTest {
             + CONSULTANT_ID
             + "\","
             + "  \"timestamp\":\""
-            + staticTimestamp.toString()
+            + CustomOffsetDateTime.nowInUtc()
             + "\","
             + "  \"eventType\":\""
             + EventType.CREATE_MESSAGE
@@ -63,6 +56,6 @@ public class CreateMessageStatisticsEventTest {
     Optional<String> result = createMessageStatisticsEvent.getPayload();
 
     assertThat(result.isPresent(), is(true));
-    assertThat(result.get(), jsonEquals(expectedJson));
+    assertThat(result.get(), jsonEquals(expectedJson).whenIgnoringPaths("timestamp"));
   }
 }
