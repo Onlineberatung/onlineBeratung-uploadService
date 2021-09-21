@@ -5,6 +5,7 @@ import de.caritas.cob.uploadservice.api.helper.JsonHelper;
 import de.caritas.cob.uploadservice.api.service.LogService;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.CreateMessageStatisticsEventMessage;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.EventType;
+import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.UserRole;
 import java.util.Optional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,8 @@ public class CreateMessageStatisticsEvent implements StatisticsEvent {
 
   private static final EventType EVENT_TYPE = EventType.CREATE_MESSAGE;
 
-  private @NonNull String consultantId;
+  private @NonNull String userId;
+  private @NonNull UserRole userRole;
   private @NonNull String rcGroupId;
   private @NonNull Boolean hasAttachment;
 
@@ -36,7 +38,8 @@ public class CreateMessageStatisticsEvent implements StatisticsEvent {
       createCreateMessageStatisticsEventMessage() {
     return new CreateMessageStatisticsEventMessage()
         .eventType(EVENT_TYPE)
-        .consultantId(consultantId)
+        .userId(userId)
+        .userRole(userRole)
         .rcGroupId(rcGroupId)
         .hasAttachment(hasAttachment)
         .timestamp(CustomOffsetDateTime.nowInUtc());

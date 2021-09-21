@@ -9,12 +9,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import de.caritas.cob.uploadservice.UploadServiceApplication;
 import de.caritas.cob.uploadservice.api.helper.CustomOffsetDateTime;
 import de.caritas.cob.uploadservice.api.statistics.event.CreateMessageStatisticsEvent;
-import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.CreateMessageStatisticsEventMessage;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.EventType;
+import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.UserRole;
 import de.caritas.cob.uploadservice.testconfig.RabbitMqTestConfig;
 import java.io.IOException;
-import java.time.OffsetDateTime;
-import java.util.Objects;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,14 +44,11 @@ public class StatisticsServiceIT {
       throws IOException {
 
     CreateMessageStatisticsEvent createMessageStatisticsEvent =
-        new CreateMessageStatisticsEvent(CONSULTANT_ID, RC_ROOM_ID, true);
-    CreateMessageStatisticsEventMessage createMessageStatisticsEventMessage =
-        new CreateMessageStatisticsEventMessage()
-            .eventType(EventType.CREATE_MESSAGE)
-            .consultantId(CONSULTANT_ID)
-            .rcGroupId(RC_ROOM_ID)
-            .hasAttachment(true)
-            .timestamp(CustomOffsetDateTime.nowInUtc());
+        new CreateMessageStatisticsEvent(
+            CONSULTANT_ID,
+            UserRole.CONSULTANT,
+            RC_ROOM_ID,
+            true);
 
     statisticsService.fireEvent(createMessageStatisticsEvent);
     Message message =
@@ -65,8 +60,11 @@ public class StatisticsServiceIT {
             + "  \"rcGroupId\":\""
             + RC_ROOM_ID
             + "\","
-            + "  \"consultantId\":\""
+            + "  \"userId\":\""
             + CONSULTANT_ID
+            + "\","
+            + "  \"userRole\":\""
+            + UserRole.CONSULTANT
             + "\","
             + "  \"timestamp\":\""
             + CustomOffsetDateTime.nowInUtc()

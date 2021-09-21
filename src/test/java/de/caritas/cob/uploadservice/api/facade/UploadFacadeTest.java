@@ -127,9 +127,12 @@ public class UploadFacadeTest {
     ArgumentCaptor<CreateMessageStatisticsEvent> captor = ArgumentCaptor.forClass(
         CreateMessageStatisticsEvent.class);
     verify(statisticsService, times(1)).fireEvent(captor.capture());
-    String consultantId = Objects.requireNonNull(
-        ReflectionTestUtils.getField(captor.getValue(), "consultantId")).toString();
-    assertThat(consultantId, Matchers.is(CONSULTANT_ID));
+    String userId = Objects.requireNonNull(
+        ReflectionTestUtils.getField(captor.getValue(), "userId")).toString();
+    assertThat(userId, Matchers.is(CONSULTANT_ID));
+    String userRole = Objects.requireNonNull(
+        ReflectionTestUtils.getField(captor.getValue(), "userRole")).toString();
+    assertThat(userRole, Matchers.is(UserRole.CONSULTANT.toString()));
     String rcGroupId = Objects.requireNonNull(
         ReflectionTestUtils.getField(captor.getValue(), "rcGroupId")).toString();
     assertThat(rcGroupId, Matchers.is(RC_ROOM_ID));

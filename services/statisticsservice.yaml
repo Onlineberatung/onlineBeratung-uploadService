@@ -48,19 +48,28 @@ components:
         - "ASSIGN_SESSION"
         - "CREATE_MESSAGE"
 
+    UserRole:
+      type: string
+      enum:
+        - "CONSULTANT"
+        - "ASKER"
+
     StatisticsEventMessage:
       type: object
       required:
         - eventType
-        - consultantId
+        - userId
+        - userRole
         - timestamp
       properties:
         eventType:
           $ref: '#/components/schemas/EventType'
-        consultantId:
+        userId:
           type: string
           description: The keycloak id of the consultant
           example: d63f4cc0-215d-40e2-a866-2d3e910f0590
+        userRole:
+          $ref: '#/components/schemas/UserRole'
         timestamp:
           type: string
           format: date-time

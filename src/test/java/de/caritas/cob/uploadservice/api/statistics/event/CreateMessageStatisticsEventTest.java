@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.is;
 
 import de.caritas.cob.uploadservice.api.helper.CustomOffsetDateTime;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.EventType;
+import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.UserRole;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,7 +16,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateMessageStatisticsEventTest {
@@ -24,7 +24,12 @@ public class CreateMessageStatisticsEventTest {
 
   @Before
   public void setup() throws NoSuchFieldException, IllegalAccessException {
-    createMessageStatisticsEvent = new CreateMessageStatisticsEvent(CONSULTANT_ID, RC_ROOM_ID, true);
+    createMessageStatisticsEvent =
+        new CreateMessageStatisticsEvent(
+            CONSULTANT_ID,
+            UserRole.CONSULTANT,
+            RC_ROOM_ID,
+            true);
   }
 
   @Test
@@ -41,8 +46,11 @@ public class CreateMessageStatisticsEventTest {
             + "  \"rcGroupId\":\""
             + RC_ROOM_ID
             + "\","
-            + "  \"consultantId\":\""
+            + "  \"userId\":\""
             + CONSULTANT_ID
+            + "\","
+            + "  \"userRole\":\""
+            + UserRole.CONSULTANT
             + "\","
             + "  \"timestamp\":\""
             + CustomOffsetDateTime.nowInUtc()

@@ -15,6 +15,7 @@ import de.caritas.cob.uploadservice.api.service.RocketChatService;
 import de.caritas.cob.uploadservice.api.service.UploadTrackingService;
 import de.caritas.cob.uploadservice.api.statistics.StatisticsService;
 import de.caritas.cob.uploadservice.api.statistics.event.CreateMessageStatisticsEvent;
+import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.UserRole;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -39,7 +40,7 @@ public class UploadFacade {
    * Upload a file with a message to a Rocket.Chat room. The message and the description are
    * encrypted before it is sent to Rocket.Chat.
    *
-   * If the statistics function is enabled, the assignment of the enquired is processed as
+   * <p>If the statistics function is enabled, the assignment of the enquired is processed as
    * statistical event.
    *
    * @param rocketChatCredentials {@link RocketChatCredentials} container
@@ -61,13 +62,18 @@ public class UploadFacade {
       emailNotificationFacade.sendEmailNotification(rocketChatUploadParameter.getRoomId());
     }
 
-    if (AuthenticatedUserHelper.isConsultant(authenticatedUser)) {
-      statisticsService.fireEvent(
-          new CreateMessageStatisticsEvent(authenticatedUser.getUserId(),
-              rocketChatUploadParameter.getRoomId(),
-              true));
-    }
+    statisticsService.fireEvent(
+        new CreateMessageStatisticsEvent(
+            authenticatedUser.getUserId(),
+            resolveUserRole(authenticatedUser),
+            rocketChatUploadParameter.getRoomId(),
+            true));
+  }
 
+  private UserRole resolveUserRole(AuthenticatedUser authenticatedUser) {
+    return (AuthenticatedUserHelper.isConsultant(authenticatedUser))
+        ? UserRole.CONSULTANT
+        : UserRole.ASKER;
   }
 
   /**
@@ -100,8 +106,8 @@ public class UploadFacade {
     rocketChatUploadParameterSanitizer.sanitize(rocketChatUploadParameter);
     RocketChatUploadParameter encryptedRocketChatUploadParameter;
     try {
-      encryptedRocketChatUploadParameter = rocketChatUploadParameterEncrypter
-          .encrypt(rocketChatUploadParameter);
+      encryptedRocketChatUploadParameter =
+          rocketChatUploadParameterEncrypter.encrypt(rocketChatUploadParameter);
     } catch (CustomCryptoException e) {
       throw new InternalServerErrorException(e, LogService::logEncryptionServiceError);
     }

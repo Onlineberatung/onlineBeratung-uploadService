@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.caritas.cob.uploadservice.api.service.LogService;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.CreateMessageStatisticsEventMessage;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.EventType;
+import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.UserRole;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -28,7 +29,8 @@ public class JsonHelperTest {
         new CreateMessageStatisticsEventMessage()
             .eventType(EventType.CREATE_MESSAGE)
             .rcGroupId(RC_ROOM_ID)
-            .consultantId(CONSULTANT_ID)
+            .userId(CONSULTANT_ID)
+            .userRole(UserRole.CONSULTANT)
             .hasAttachment(true)
             .timestamp(offsetDateTime);
 
@@ -43,8 +45,11 @@ public class JsonHelperTest {
             + "  \"rcGroupId\":\""
             + RC_ROOM_ID
             + "\","
-            + "  \"consultantId\":\""
+            + "  \"userId\":\""
             + CONSULTANT_ID
+            + "\","
+            + "  \"userRole\":\""
+            + UserRole.CONSULTANT
             + "\","
             + "  \"timestamp\":\""
             + offsetDateTime.format(DateTimeFormatter.ISO_DATE_TIME)

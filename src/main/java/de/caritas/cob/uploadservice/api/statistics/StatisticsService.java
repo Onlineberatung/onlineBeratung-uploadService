@@ -2,9 +2,12 @@ package de.caritas.cob.uploadservice.api.statistics;
 
 import de.caritas.cob.uploadservice.api.service.LogService;
 import de.caritas.cob.uploadservice.api.statistics.event.StatisticsEvent;
+import java.nio.charset.StandardCharsets;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.core.MessageBuilder;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -36,7 +39,11 @@ public class StatisticsService {
           .ifPresentOrElse(
               payload ->
                   amqpTemplate.convertAndSend(
-                      rabbitMqExchangeName, statisticsEvent.getEventType().toString(), payload),
+                      rabbitMqExchangeName,
+                      statisticsEvent.getEventType().toString(),
+                      MessageBuilder.withBody(payload.getBytes(StandardCharsets.UTF_8))
+                          .setContentType(MessageProperties.CONTENT_TYPE_JSON)
+                          .build()),
               () ->
                   LogService.logStatisticsEventWarning(
                       String.format(

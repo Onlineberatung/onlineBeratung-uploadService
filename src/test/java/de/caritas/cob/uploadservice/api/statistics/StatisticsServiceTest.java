@@ -11,6 +11,7 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 import de.caritas.cob.uploadservice.api.service.LogService;
 import de.caritas.cob.uploadservice.api.statistics.event.CreateMessageStatisticsEvent;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.EventType;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,6 +22,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.core.MessageBuilder;
+import org.springframework.amqp.core.MessageProperties;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StatisticsServiceTest {
@@ -62,7 +65,7 @@ public class StatisticsServiceTest {
 
     statisticsService.fireEvent(createMessageStatisticsEvent);
     verify(amqpTemplate, times(1))
-        .convertAndSend(eq(RABBIT_EXCHANGE_NAME), anyString(), anyString());
+        .convertAndSend(eq(RABBIT_EXCHANGE_NAME), anyString(), eq(buildPayloadMessage()));
   }
 
   @Test
@@ -80,6 +83,12 @@ public class StatisticsServiceTest {
     setField(statisticsService, FIELD_NAME_STATISTICS_ENABLED, true);
     statisticsService.fireEvent(createMessageStatisticsEvent);
     verify(amqpTemplate, times(1))
-        .convertAndSend(RABBIT_EXCHANGE_NAME, eventType.toString(), PAYLOAD);
+        .convertAndSend(RABBIT_EXCHANGE_NAME, eventType.toString(), buildPayloadMessage());
+  }
+
+  private org.springframework.amqp.core.Message buildPayloadMessage() {
+    return MessageBuilder.withBody(PAYLOAD.getBytes(StandardCharsets.UTF_8))
+        .setContentType(MessageProperties.CONTENT_TYPE_JSON)
+        .build();
   }
 }
