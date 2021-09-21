@@ -85,6 +85,10 @@ public class UploadFacadeTest {
         .thenReturn(rocketChatUploadParameter);
     when(rocketChatUploadParameterEncrypter.encrypt(rocketChatUploadParameter))
         .thenReturn(rocketChatUploadParameter);
+    when(authenticatedUser.getRoles())
+        .thenReturn(SetUtils.unmodifiableSet(UserRole.CONSULTANT.getValue()));
+    when(authenticatedUser.getUserId())
+        .thenReturn(CONSULTANT_ID);
   }
 
   @Test
@@ -113,11 +117,6 @@ public class UploadFacadeTest {
 
   @Test
   public void uploadFileToRoom_Should_FireUploadFileStatisticsEvent() {
-
-    when(authenticatedUser.getRoles())
-        .thenReturn(SetUtils.unmodifiableSet(UserRole.CONSULTANT.getValue()));
-    when(authenticatedUser.getUserId())
-        .thenReturn(CONSULTANT_ID);
 
     uploadFacade.uploadFileToRoom(rocketChatCredentials, rocketChatUploadParameter, true);
 
