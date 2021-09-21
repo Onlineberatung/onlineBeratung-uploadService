@@ -7,7 +7,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.when;
 import static org.powermock.reflect.Whitebox.setInternalState;
 
 import de.caritas.cob.uploadservice.api.service.helper.ServiceHelper;
