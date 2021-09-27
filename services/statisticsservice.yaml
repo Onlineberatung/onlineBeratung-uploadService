@@ -47,6 +47,8 @@ components:
       enum:
         - "ASSIGN_SESSION"
         - "CREATE_MESSAGE"
+        - "START_VIDEO_CALL"
+        - "STOP_VIDEO_CALL"
 
     UserRole:
       type: string
@@ -107,6 +109,38 @@ components:
           type: boolean
           description: indicates whether the message has an attachment
           example: true
+
+    StartVideoCallStatisticsEventMessage:
+      type: object
+      required:
+        - sessionId
+        - videoCallUuid
+      allOf:
+        - $ref: '#/components/schemas/StatisticsEventMessage'
+        - type: object
+      properties:
+        sessionId:
+          type: integer
+          format: int64
+          description: The id of the session
+          example: 12345
+        videoCallUuid:
+          type: string
+          description: The uuid of the video call
+          example: 123e4567-e89b-12d3-a456-556642440000
+
+    StopVideoCallStatisticsEventMessage:
+      type: object
+      required:
+        - videoCallUuid
+      allOf:
+        - $ref: '#/components/schemas/StatisticsEventMessage'
+        - type: object
+      properties:
+        videoCallUuid:
+          type: string
+          description: The uuid of the video call
+          example: 123e4567-e89b-12d3-a456-556642440000
 
   securitySchemes:
     Bearer:
