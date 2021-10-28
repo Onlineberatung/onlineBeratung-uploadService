@@ -38,6 +38,7 @@ public class TestConstants {
   public static final String ENCODING_PREFIX = "enc.";
   public static final String USERNAME_ENCODED = ENCODING_PREFIX + "OVZWK4TOMFWWK...";
   public static final String USERNAME_DECODED = "username";
+  public static final String CONSULTANT_ID = "d63f4cc0-215d-40e2-a866-2d3e910f0590";
 
   /* Rocket.Chat */
   public static final String RC_ROOM_ID = "yhZt736Kalh";

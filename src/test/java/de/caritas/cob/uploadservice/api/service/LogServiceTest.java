@@ -25,6 +25,8 @@ public class LogServiceTest {
   private static final String RC_SERVICE_ERROR_TEXT = "Rocket.Chat service error: ";
   private static final String INTERNAL_SERVER_ERROR_TEXT = "Internal Server Error: ";
   private static final String BAD_REQUEST_TEXT = "Bad Request: ";
+  private static final String STATISTICS_EVENT_PROCESSING_ERROR = "StatisticsEventProcessing error: ";
+  private static final String STATISTICS_EVENT_PROCESSING_WARNING = "StatisticsEventProcessing warning: ";
 
   @Mock
   Exception exception;
@@ -51,16 +53,16 @@ public class LogServiceTest {
   public void logRocketChatServiceError_Should_LogErrorMessage() {
 
     LogService.logRocketChatServiceError(ERROR_MESSAGE);
-    verify(logger, times(1)).error(eq(RC_SERVICE_ERROR_TEXT + "{}"),
-        eq(ERROR_MESSAGE));
+    verify(logger, times(1)).error(RC_SERVICE_ERROR_TEXT + "{}",
+        ERROR_MESSAGE);
   }
 
   @Test
   public void logRocketChatServiceError_Should_LogErrorMessageAndExceptionStackTrace() {
 
     LogService.logRocketChatServiceError(ERROR_MESSAGE, exception);
-    verify(logger, times(1)).error(eq(RC_SERVICE_ERROR_TEXT + "{}"),
-        eq(ERROR_MESSAGE));
+    verify(logger, times(1)).error(RC_SERVICE_ERROR_TEXT + "{}",
+        ERROR_MESSAGE);
     verify(exception, atLeastOnce()).printStackTrace(any(PrintWriter.class));
   }
 
@@ -81,17 +83,17 @@ public class LogServiceTest {
   public void logInfo_Should_LogMessage() {
 
     LogService.logInfo(ERROR_MESSAGE);
-    verify(logger, times(1)).info(eq(ERROR_MESSAGE));
+    verify(logger, times(1)).info(ERROR_MESSAGE);
   }
 
   /**
    * Tests for method: logInfo
    */
   @Test
-  public void logInfo_Should_LogExcetionStackTrace() {
+  public void logInfo_Should_LogExceptionStackTrace() {
 
     LogService.logInfo(exception);
-    verify(logger, times(1)).info(eq(getStackTrace(exception)));
+    verify(logger, times(1)).info(getStackTrace(exception));
   }
 
   /**
@@ -141,8 +143,8 @@ public class LogServiceTest {
   public void logBadRequest_Should_LogMessage() {
 
     LogService.logBadRequest(ERROR_MESSAGE);
-    verify(logger, times(1)).error(eq(BAD_REQUEST_TEXT + "{}"),
-        eq(ERROR_MESSAGE));
+    verify(logger, times(1)).error(BAD_REQUEST_TEXT + "{}",
+        ERROR_MESSAGE);
   }
 
   @Test
@@ -175,5 +177,22 @@ public class LogServiceTest {
 
     LogService.logDebug(ERROR_MESSAGE);
     verify(logger, times(1)).debug(anyString(), eq(ERROR_MESSAGE));
+  }
+
+  @Test
+  public void logStatisticEventError_Should_LogExceptionStackTraceAndErrorMessage() {
+
+    LogService.logStatisticsEventError(exception);
+    verify(logger, times(1))
+        .error(anyString(), eq(STATISTICS_EVENT_PROCESSING_ERROR), anyString());
+    verify(exception, atLeastOnce()).printStackTrace(any(PrintWriter.class));
+  }
+
+  @Test
+  public void logStatisticEventWarning_Should_LogErrorMessageAsWarning() {
+
+    LogService.logStatisticsEventWarning(ERROR_MESSAGE);
+    verify(logger, times(1))
+        .warn(anyString(), eq(STATISTICS_EVENT_PROCESSING_WARNING), eq(ERROR_MESSAGE));
   }
 }

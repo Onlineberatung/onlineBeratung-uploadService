@@ -6,9 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
-/**
- * Service for logging.
- */
+/** Service for logging. */
 public class LogService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LogService.class);
@@ -20,9 +18,11 @@ public class LogService {
   private static final String INTERNAL_SERVER_ERROR_TEXT = "Internal Server Error: ";
   private static final String BAD_REQUEST_TEXT = "Bad Request: ";
   private static final String UPLOAD_SERVICE_API_TEXT = "UploadService API: {}";
+  private static final String STATISTICS_EVENT_PROCESSING_ERROR = "StatisticsEventProcessing error: ";
+  private static final String STATISTICS_EVENT_PROCESSING_WARNING = "StatisticsEventProcessing warning: ";
 
-  private LogService() {
-  }
+
+  private LogService() {}
 
   /**
    * Logs a Rocket.Chat service error.
@@ -45,7 +45,7 @@ public class LogService {
   /**
    * Logs a Rocket.Chat service error.
    *
-   * @param message   the message to be logged
+   * @param message the message to be logged
    * @param exception the exception to be logged
    */
   public static void logRocketChatServiceError(String message, Exception exception) {
@@ -101,7 +101,7 @@ public class LogService {
   /**
    * Logs an Internal Server Error/Exception.
    *
-   * @param message   the message to be logged
+   * @param message the message to be logged
    * @param exception the exception to be logged
    */
   public static void logInternalServerError(String message, Exception exception) {
@@ -141,11 +141,11 @@ public class LogService {
    * Logs an Warning.
    *
    * @param httpStatus an status to be logged
-   * @param exception  the exception to be logged
+   * @param exception the exception to be logged
    */
   public static void logWarning(HttpStatus httpStatus, Exception exception) {
-    LOGGER.warn("UploadService API: {}: {}", httpStatus.getReasonPhrase(),
-        getStackTrace(exception));
+    LOGGER.warn(
+        "UploadService API: {}: {}", httpStatus.getReasonPhrase(), getStackTrace(exception));
   }
 
   /**
@@ -165,4 +165,24 @@ public class LogService {
   public static void logDebug(String message) {
     LOGGER.debug(UPLOAD_SERVICE_API_TEXT, message);
   }
+
+  /**
+   * Error while processing statistics event.
+   *
+   * @param exception Exception
+   */
+  public static void logStatisticsEventError(Exception exception) {
+    LOGGER.error("{}{}", STATISTICS_EVENT_PROCESSING_ERROR, getStackTrace(exception));
+  }
+
+  /**
+   * Warning while processing statistics event.
+   *
+   * @param message error message
+   */
+  public static void logStatisticsEventWarning(String message) {
+    LOGGER.warn("{}{}", STATISTICS_EVENT_PROCESSING_WARNING, message);
+  }
+
+
 }
