@@ -23,7 +23,7 @@ public enum Authority {
 
   USER(UserRole.USER, singletonList(USER_DEFAULT)),
   CONSULTANT(UserRole.CONSULTANT, singletonList(CONSULTANT_DEFAULT)),
-  U25_CONSULTANT(UserRole.U25_CONSULTANT, singletonList(USE_FEEDBACK)),
+  U25_CONSULTANT(UserRole.PEER_CONSULTANT, singletonList(USE_FEEDBACK)),
   TECHNICAL(UserRole.TECHNICAL, singletonList(TECHNICAL_DEFAULT)),
   ANONYMOUS(UserRole.ANONYMOUS, singletonList(ANONYMOUS_DEFAULT));
 
