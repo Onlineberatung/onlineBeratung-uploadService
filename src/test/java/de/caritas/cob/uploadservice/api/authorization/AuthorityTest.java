@@ -34,9 +34,9 @@ public class AuthorityTest {
   }
 
   @Test
-  public void getAuthoritiesByRoleName_Should_ReturnCorrectRoles_ForKeycloakRoleU25Consultant() {
+  public void getAuthoritiesByRoleName_Should_ReturnCorrectRoles_ForKeycloakRolePeerConsultant() {
 
-    List<String> result = Authority.getAuthoritiesByUserRole(UserRole.U25_CONSULTANT);
+    List<String> result = Authority.getAuthoritiesByUserRole(UserRole.PEER_CONSULTANT);
 
     assertNotNull(result);
     assertTrue(result.contains(AuthorityValue.USE_FEEDBACK));
