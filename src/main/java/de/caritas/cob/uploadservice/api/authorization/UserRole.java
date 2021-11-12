@@ -11,7 +11,7 @@ public enum UserRole {
   USER("user"),
   CONSULTANT("consultant"),
   TECHNICAL("technical"),
-  U25_CONSULTANT("u25-consultant"),
+  PEER_CONSULTANT("peer-consultant"),
   ANONYMOUS("anonymous");
 
   private final String value;
