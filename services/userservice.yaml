@@ -1606,6 +1606,11 @@ components:
             type: string
         consultingTypes:
           $ref: "#/components/schemas/ConsultingTypeMap"
+        hasAnonymousConversations:
+          type: boolean
+          example: true
+          description: "Is true if consultant has at least one consulting type containing
+          anonymous conversations active"
 
     UpdateConsultantDTO:
       type: object
