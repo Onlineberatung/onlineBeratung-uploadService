@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.10.0](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.9.0...v1.10.0) (2021-12-14)
+
+
+### Features
+
+* changed message format ([6724659](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/672465922cb652695ecd7ac8c41c35814984a68b))
+* implementation of statistic trigger and tests ([c9dd33d](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/c9dd33d11552a24a91f1503e152eff16ee86e877))
+* new statisticsservice.yaml with changes in create message statistics event ([fd30211](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/fd302115d06a42774132e6682841b6ee306aeb08))
+* new statisticsservice.yaml with changes in create message statistics event ([b9539f1](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/b9539f13ef12ca8ed1888b2e5899d3e3a126920c))
+* new statisticsservice.yaml with changes in create message statistics event ([8212cf5](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/8212cf534b79b60f89b16574dc9235eaafc3ab2b))
+* optimizations ([0ffb89a](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/0ffb89a7a0e6f1d9cdcbcf5b6c0373e2d60542d9))
+* updated dockerImage.yml ([ad9679e](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/ad9679e3b6163d4eed714de8cdc4774ae58468a1))
+* updated service api descriptions ([631ee73](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/631ee732fa62d7be4e7c919b57f56ca1bb59fa33))
+
+
+### Bug Fixes
+
+* fixed tests ([08fb35f](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/08fb35f193cb864672f9144c7b6ebfdd75deef2f))
+* fixed unit test ([2cf31c9](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/2cf31c9e32e54c9451be4b1cbaf08360b51b5cbf))
+* update of statisticsservice.yaml ([5a7451f](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/5a7451fda0ea25335049c4ecb67ac3dbe7ca1e61))
+
 ## [1.9.0](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.8.0...v1.9.0) (2021-11-29)
 
 
