@@ -1,0 +1,149 @@
+openapi: 3.0.1
+info:
+  title: will be replaced
+  description: This information will be replaced by the SpringFox config information
+  version: 0.0.1
+paths:
+  /statistics/consultant:
+    get:
+      tags:
+        - statistics-controller
+      summary: 'Returns statistical data for a consultant. [Authorization: consultant]'
+      operationId: getConsultantStatistics
+      responses:
+        200:
+          description: OK - successfull operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        403:
+          description: FORBIDDEN - no/invalid CSRF token
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+  /statistics/consultant/csv:
+    get:
+      tags:
+        - statistics-controller
+      summary: 'Returns statistical data for a consultant as csv file. [Authorization: consultant]'
+      operationId: getConsultantStatisticsCsv
+      responses:
+        200:
+          description: OK - successfull operation
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        403:
+          description: FORBIDDEN - no/invalid CSRF token
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+      security:
+        - Bearer: [ ]
+
+components:
+  schemas:
+
+    EventType:
+      type: string
+      enum:
+        - "ASSIGN_SESSION"
+        - "CREATE_MESSAGE"
+        - "START_VIDEO_CALL"
+        - "STOP_VIDEO_CALL"
+
+    UserRole:
+      type: string
+      enum:
+        - "CONSULTANT"
+        - "ASKER"
+
+    StatisticsEventMessage:
+      type: object
+      required:
+        - eventType
+        - userId
+        - userRole
+        - timestamp
+      properties:
+        eventType:
+          $ref: '#/components/schemas/EventType'
+        userId:
+          type: string
+          description: The keycloak id of the consultant
+          example: d63f4cc0-215d-40e2-a866-2d3e910f0590
+        userRole:
+          $ref: '#/components/schemas/UserRole'
+        timestamp:
+          type: string
+          format: date-time
+          description: "Timestamp of event"
+          example: "2021-01-30T08:30:00Z"
+
+    AssignSessionStatisticsEventMessage:
+      type: object
+      required:
+        - sessionId
+      allOf:
+        - $ref: '#/components/schemas/StatisticsEventMessage'
+        - type: object
+      properties:
+        sessionId:
+          type: integer
+          format: int64
+          description: The id of the session
+          example: 12345
+
+    CreateMessageStatisticsEventMessage:
+      type: object
+      required:
+        - rcGroupId
+        - hasAttachment
+      allOf:
+        - $ref: '#/components/schemas/StatisticsEventMessage'
+        - type: object
+      properties:
+        rcGroupId:
+          type: string
+          description: The Rocket.Chat id of the group from the session
+          example: hzt766asas
+        hasAttachment:
+          type: boolean
+          description: indicates whether the message has an attachment
+          example: true
+
+    StartVideoCallStatisticsEventMessage:
+      type: object
+      required:
+        - sessionId
+        - videoCallUuid
+      allOf:
+        - $ref: '#/components/schemas/StatisticsEventMessage'
+        - type: object
+      properties:
+        sessionId:
+          type: integer
+          format: int64
+          description: The id of the session
+          example: 12345
+        videoCallUuid:
+          type: string
+          description: The uuid of the video call
+          example: 123e4567-e89b-12d3-a456-556642440000
+
+    StopVideoCallStatisticsEventMessage:
+      type: object
+      required:
+        - videoCallUuid
+      allOf:
+        - $ref: '#/components/schemas/StatisticsEventMessage'
+        - type: object
+      properties:
+        videoCallUuid:
+          type: string
+          description: The uuid of the video call
+          example: 123e4567-e89b-12d3-a456-556642440000
+
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      name: Authorization
+      in: header
