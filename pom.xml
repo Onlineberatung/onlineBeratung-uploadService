@@ -24,8 +24,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>11</java.version>
-    <!-- force at least version 2.15 due to https://logging.apache.org/log4j/2.x/security.html -->
-    <log4j.version>2.15.0</log4j.version>
+    <!-- force at least version 2.16 due to https://logging.apache.org/log4j/2.x/security.html -->
+    <log4j.version>2.16.0</log4j.version>
   </properties>
 
   <dependencies>
