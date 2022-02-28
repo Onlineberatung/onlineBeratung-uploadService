@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileService {
 
   private final MimeTypeDetector mimeTypeDetector;
-  @Value("#{${mimeTypeWhitelist}}")
+  @Value("#{${mime-type-whitelist}}")
   private final Set<String> mimeTypeWhitelist;
 
   public void verifyMimeType(MultipartFile multipartFile) {
