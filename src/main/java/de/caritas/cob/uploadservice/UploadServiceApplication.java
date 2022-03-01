@@ -4,11 +4,14 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import de.caritas.cob.uploadservice.api.exception.KeycloakException;
 import de.caritas.cob.uploadservice.api.helper.AuthenticatedUser;
+import de.caritas.cob.uploadservice.media.MimeTypeDetector;
+import de.caritas.cob.uploadservice.media.TikaMimeTypeDetector;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.tika.Tika;
 import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.keycloak.representations.AccessToken;
@@ -165,5 +168,10 @@ public class UploadServiceApplication {
   @Bean
   public MultipartResolver multipartResolver() {
     return new StandardServletMultipartResolver();
+  }
+
+  @Bean
+  public MimeTypeDetector mimeTypeDetector() {
+    return new TikaMimeTypeDetector(new Tika());
   }
 }
