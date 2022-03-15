@@ -29,11 +29,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.caritas.cob.uploadservice.api.authorization.RoleAuthorizationAuthorityMapper;
 import de.caritas.cob.uploadservice.api.container.RocketChatCredentials;
 import de.caritas.cob.uploadservice.api.container.RocketChatUploadParameter;
+import de.caritas.cob.uploadservice.api.exception.InvalidFileTypeException;
 import de.caritas.cob.uploadservice.api.exception.httpresponses.QuotaReachedException;
 import de.caritas.cob.uploadservice.api.facade.UploadFacade;
 import de.caritas.cob.uploadservice.api.service.EncryptionService;
@@ -81,15 +80,15 @@ public class UploadControllerTestIT {
     MockPart fileToUpload = new MockPart(FORM_PARAM_FILE, "fileToUpload", "content".getBytes());
 
     mvc.perform(
-        multipart(PATH_UPLOAD_FILE_TO_ROOM)
-            .part(fileToUpload)
-            .param(FORM_PARAM_SEND_NOTIFICATION, FORM_PARAM_SEND_NOTIFICATION_TRUE)
-            .param(FORM_PARAM_DESCRIPTION, FORM_PARAM_DESCRIPTION_VALUE)
-            .param(FORM_PARAM_MESSAGE, FORM_PARAM_MESSAGE_VALUE)
-            .param(FORM_PARAM_TMID, FORM_PARAM_TMID_VALUE)
-            .contentType(MediaType.MULTIPART_FORM_DATA)
-            .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
-            .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
+            multipart(PATH_UPLOAD_FILE_TO_ROOM)
+                .part(fileToUpload)
+                .param(FORM_PARAM_SEND_NOTIFICATION, FORM_PARAM_SEND_NOTIFICATION_TRUE)
+                .param(FORM_PARAM_DESCRIPTION, FORM_PARAM_DESCRIPTION_VALUE)
+                .param(FORM_PARAM_MESSAGE, FORM_PARAM_MESSAGE_VALUE)
+                .param(FORM_PARAM_TMID, FORM_PARAM_TMID_VALUE)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
+                .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
         .andExpect(status().isNotFound());
   }
 
@@ -100,15 +99,15 @@ public class UploadControllerTestIT {
     MockPart fileToUpload = new MockPart(FORM_PARAM_FILE, "fileToUpload", "content".getBytes());
 
     mvc.perform(
-        multipart(PATH_UPLOAD_FILE_TO_FEEDBACK_ROOM)
-            .part(fileToUpload)
-            .param(FORM_PARAM_SEND_NOTIFICATION, FORM_PARAM_SEND_NOTIFICATION_TRUE)
-            .param(FORM_PARAM_DESCRIPTION, FORM_PARAM_DESCRIPTION_VALUE)
-            .param(FORM_PARAM_MESSAGE, FORM_PARAM_MESSAGE_VALUE)
-            .param(FORM_PARAM_TMID, FORM_PARAM_TMID_VALUE)
-            .contentType(MediaType.MULTIPART_FORM_DATA)
-            .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
-            .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
+            multipart(PATH_UPLOAD_FILE_TO_FEEDBACK_ROOM)
+                .part(fileToUpload)
+                .param(FORM_PARAM_SEND_NOTIFICATION, FORM_PARAM_SEND_NOTIFICATION_TRUE)
+                .param(FORM_PARAM_DESCRIPTION, FORM_PARAM_DESCRIPTION_VALUE)
+                .param(FORM_PARAM_MESSAGE, FORM_PARAM_MESSAGE_VALUE)
+                .param(FORM_PARAM_TMID, FORM_PARAM_TMID_VALUE)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
+                .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
         .andExpect(status().isNotFound());
   }
 
@@ -116,14 +115,14 @@ public class UploadControllerTestIT {
   public void uploadFileToRoom_Should_ReturnBadRequest_WhenFileIsMissing() throws Exception {
 
     mvc.perform(
-        multipart(PATH_UPLOAD_FILE_TO_ROOM + "/" + RC_ROOM_ID)
-            .param(FORM_PARAM_SEND_NOTIFICATION, FORM_PARAM_SEND_NOTIFICATION_TRUE)
-            .param(FORM_PARAM_DESCRIPTION, FORM_PARAM_DESCRIPTION_VALUE)
-            .param(FORM_PARAM_MESSAGE, FORM_PARAM_MESSAGE_VALUE)
-            .param(FORM_PARAM_TMID, FORM_PARAM_TMID_VALUE)
-            .contentType(MediaType.MULTIPART_FORM_DATA)
-            .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
-            .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
+            multipart(PATH_UPLOAD_FILE_TO_ROOM + "/" + RC_ROOM_ID)
+                .param(FORM_PARAM_SEND_NOTIFICATION, FORM_PARAM_SEND_NOTIFICATION_TRUE)
+                .param(FORM_PARAM_DESCRIPTION, FORM_PARAM_DESCRIPTION_VALUE)
+                .param(FORM_PARAM_MESSAGE, FORM_PARAM_MESSAGE_VALUE)
+                .param(FORM_PARAM_TMID, FORM_PARAM_TMID_VALUE)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
+                .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
         .andExpect(status().isBadRequest());
   }
 
@@ -134,14 +133,14 @@ public class UploadControllerTestIT {
     MockPart fileToUpload = new MockPart(FORM_PARAM_FILE, "fileToUpload", "content".getBytes());
 
     mvc.perform(
-        multipart(PATH_UPLOAD_FILE_TO_ROOM + "/" + RC_ROOM_ID)
-            .part(fileToUpload)
-            .param(FORM_PARAM_DESCRIPTION, FORM_PARAM_DESCRIPTION_VALUE)
-            .param(FORM_PARAM_MESSAGE, FORM_PARAM_MESSAGE_VALUE)
-            .param(FORM_PARAM_TMID, FORM_PARAM_TMID_VALUE)
-            .contentType(MediaType.MULTIPART_FORM_DATA)
-            .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
-            .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
+            multipart(PATH_UPLOAD_FILE_TO_ROOM + "/" + RC_ROOM_ID)
+                .part(fileToUpload)
+                .param(FORM_PARAM_DESCRIPTION, FORM_PARAM_DESCRIPTION_VALUE)
+                .param(FORM_PARAM_MESSAGE, FORM_PARAM_MESSAGE_VALUE)
+                .param(FORM_PARAM_TMID, FORM_PARAM_TMID_VALUE)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
+                .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
         .andExpect(status().isBadRequest());
   }
 
@@ -150,14 +149,14 @@ public class UploadControllerTestIT {
       throws Exception {
 
     mvc.perform(
-        multipart(PATH_UPLOAD_FILE_TO_FEEDBACK_ROOM + "/" + RC_ROOM_ID)
-            .param(FORM_PARAM_SEND_NOTIFICATION, FORM_PARAM_SEND_NOTIFICATION_TRUE)
-            .param(FORM_PARAM_DESCRIPTION, FORM_PARAM_DESCRIPTION_VALUE)
-            .param(FORM_PARAM_MESSAGE, FORM_PARAM_MESSAGE_VALUE)
-            .param(FORM_PARAM_TMID, FORM_PARAM_TMID_VALUE)
-            .contentType(MediaType.MULTIPART_FORM_DATA)
-            .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
-            .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
+            multipart(PATH_UPLOAD_FILE_TO_FEEDBACK_ROOM + "/" + RC_ROOM_ID)
+                .param(FORM_PARAM_SEND_NOTIFICATION, FORM_PARAM_SEND_NOTIFICATION_TRUE)
+                .param(FORM_PARAM_DESCRIPTION, FORM_PARAM_DESCRIPTION_VALUE)
+                .param(FORM_PARAM_MESSAGE, FORM_PARAM_MESSAGE_VALUE)
+                .param(FORM_PARAM_TMID, FORM_PARAM_TMID_VALUE)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
+                .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
         .andExpect(status().isBadRequest());
   }
 
@@ -168,14 +167,14 @@ public class UploadControllerTestIT {
     MockPart fileToUpload = new MockPart(FORM_PARAM_FILE, "fileToUpload", "content".getBytes());
 
     mvc.perform(
-        multipart(PATH_UPLOAD_FILE_TO_FEEDBACK_ROOM + "/" + RC_ROOM_ID)
-            .part(fileToUpload)
-            .param(FORM_PARAM_DESCRIPTION, FORM_PARAM_DESCRIPTION_VALUE)
-            .param(FORM_PARAM_MESSAGE, FORM_PARAM_MESSAGE_VALUE)
-            .param(FORM_PARAM_TMID, FORM_PARAM_TMID_VALUE)
-            .contentType(MediaType.MULTIPART_FORM_DATA)
-            .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
-            .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
+            multipart(PATH_UPLOAD_FILE_TO_FEEDBACK_ROOM + "/" + RC_ROOM_ID)
+                .part(fileToUpload)
+                .param(FORM_PARAM_DESCRIPTION, FORM_PARAM_DESCRIPTION_VALUE)
+                .param(FORM_PARAM_MESSAGE, FORM_PARAM_MESSAGE_VALUE)
+                .param(FORM_PARAM_TMID, FORM_PARAM_TMID_VALUE)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
+                .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
         .andExpect(status().isBadRequest());
   }
 
@@ -185,15 +184,15 @@ public class UploadControllerTestIT {
     MockPart fileToUpload = new MockPart(FORM_PARAM_FILE, "fileToUpload", "content".getBytes());
 
     mvc.perform(
-        multipart(PATH_UPLOAD_FILE_TO_ROOM + "/" + RC_ROOM_ID)
-            .part(fileToUpload)
-            .param(FORM_PARAM_SEND_NOTIFICATION, FORM_PARAM_SEND_NOTIFICATION_TRUE)
-            .param(FORM_PARAM_DESCRIPTION, FORM_PARAM_DESCRIPTION_VALUE)
-            .param(FORM_PARAM_MESSAGE, FORM_PARAM_MESSAGE_VALUE)
-            .param(FORM_PARAM_TMID, FORM_PARAM_TMID_VALUE)
-            .contentType(MediaType.MULTIPART_FORM_DATA)
-            .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
-            .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
+            multipart(PATH_UPLOAD_FILE_TO_ROOM + "/" + RC_ROOM_ID)
+                .part(fileToUpload)
+                .param(FORM_PARAM_SEND_NOTIFICATION, FORM_PARAM_SEND_NOTIFICATION_TRUE)
+                .param(FORM_PARAM_DESCRIPTION, FORM_PARAM_DESCRIPTION_VALUE)
+                .param(FORM_PARAM_MESSAGE, FORM_PARAM_MESSAGE_VALUE)
+                .param(FORM_PARAM_TMID, FORM_PARAM_TMID_VALUE)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
+                .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
         .andExpect(status().isCreated());
   }
 
@@ -203,15 +202,15 @@ public class UploadControllerTestIT {
     MockPart fileToUpload = new MockPart(FORM_PARAM_FILE, "fileToUpload", "content".getBytes());
 
     mvc.perform(
-        multipart(PATH_UPLOAD_FILE_TO_FEEDBACK_ROOM + "/" + RC_ROOM_ID)
-            .part(fileToUpload)
-            .param(FORM_PARAM_SEND_NOTIFICATION, FORM_PARAM_SEND_NOTIFICATION_TRUE)
-            .param(FORM_PARAM_DESCRIPTION, FORM_PARAM_DESCRIPTION_VALUE)
-            .param(FORM_PARAM_MESSAGE, FORM_PARAM_MESSAGE_VALUE)
-            .param(FORM_PARAM_TMID, FORM_PARAM_TMID_VALUE)
-            .contentType(MediaType.MULTIPART_FORM_DATA)
-            .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
-            .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
+            multipart(PATH_UPLOAD_FILE_TO_FEEDBACK_ROOM + "/" + RC_ROOM_ID)
+                .part(fileToUpload)
+                .param(FORM_PARAM_SEND_NOTIFICATION, FORM_PARAM_SEND_NOTIFICATION_TRUE)
+                .param(FORM_PARAM_DESCRIPTION, FORM_PARAM_DESCRIPTION_VALUE)
+                .param(FORM_PARAM_MESSAGE, FORM_PARAM_MESSAGE_VALUE)
+                .param(FORM_PARAM_TMID, FORM_PARAM_TMID_VALUE)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
+                .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
         .andExpect(status().isCreated());
   }
 
@@ -221,10 +220,10 @@ public class UploadControllerTestIT {
     when(encryptionService.getMasterKey()).thenReturn(MASTER_KEY_1);
 
     mvc.perform(
-        post(PATH_UPDATE_KEY)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(MASTER_KEY_DTO_KEY_2)
-            .accept(MediaType.APPLICATION_JSON))
+            post(PATH_UPDATE_KEY)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(MASTER_KEY_DTO_KEY_2)
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk());
   }
 
@@ -234,10 +233,10 @@ public class UploadControllerTestIT {
     when(encryptionService.getMasterKey()).thenReturn(MASTER_KEY_1);
 
     mvc.perform(
-        post(PATH_UPDATE_KEY)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(MASTER_KEY_DTO_KEY_1)
-            .accept(MediaType.APPLICATION_JSON))
+            post(PATH_UPDATE_KEY)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(MASTER_KEY_DTO_KEY_1)
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isConflict());
   }
 
@@ -247,12 +246,12 @@ public class UploadControllerTestIT {
     MockPart fileToUpload = new MockPart(FORM_PARAM_FILE, "fileToUpload", "content".getBytes());
 
     mvc.perform(
-        multipart(PATH_UPLOAD_FILE_TO_ROOM + "/" + RC_ROOM_ID)
-            .part(fileToUpload)
-            .param(FORM_PARAM_SEND_NOTIFICATION, FORM_PARAM_SEND_NOTIFICATION_TRUE)
-            .contentType(MediaType.MULTIPART_FORM_DATA)
-            .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
-            .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
+            multipart(PATH_UPLOAD_FILE_TO_ROOM + "/" + RC_ROOM_ID)
+                .part(fileToUpload)
+                .param(FORM_PARAM_SEND_NOTIFICATION, FORM_PARAM_SEND_NOTIFICATION_TRUE)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
+                .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
         .andExpect(status().isCreated());
   }
 
@@ -263,12 +262,12 @@ public class UploadControllerTestIT {
     MockPart fileToUpload = new MockPart(FORM_PARAM_FILE, "fileToUpload", "content".getBytes());
 
     mvc.perform(
-        multipart(PATH_UPLOAD_FILE_TO_FEEDBACK_ROOM + "/" + RC_ROOM_ID)
-            .part(fileToUpload)
-            .param(FORM_PARAM_SEND_NOTIFICATION, FORM_PARAM_SEND_NOTIFICATION_TRUE)
-            .contentType(MediaType.MULTIPART_FORM_DATA)
-            .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
-            .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
+            multipart(PATH_UPLOAD_FILE_TO_FEEDBACK_ROOM + "/" + RC_ROOM_ID)
+                .part(fileToUpload)
+                .param(FORM_PARAM_SEND_NOTIFICATION, FORM_PARAM_SEND_NOTIFICATION_TRUE)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
+                .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
         .andExpect(status().isCreated());
   }
 
@@ -277,26 +276,60 @@ public class UploadControllerTestIT {
       throws Exception {
     doThrow(new QuotaReachedException(LogService::logWarning))
         .when(this.uploadFacade).uploadFileToRoom(any(RocketChatCredentials.class),
-        any(RocketChatUploadParameter.class), anyBoolean());
+            any(RocketChatUploadParameter.class), anyBoolean());
 
     MockPart fileToUpload = new MockPart(FORM_PARAM_FILE, "fileToUpload", "content".getBytes());
 
     mvc.perform(
-        multipart(PATH_UPLOAD_FILE_TO_ROOM + "/" + RC_ROOM_ID)
-            .part(fileToUpload)
-            .param(FORM_PARAM_SEND_NOTIFICATION, FORM_PARAM_SEND_NOTIFICATION_TRUE)
-            .param(FORM_PARAM_DESCRIPTION, FORM_PARAM_DESCRIPTION_VALUE)
-            .param(FORM_PARAM_MESSAGE, FORM_PARAM_MESSAGE_VALUE)
-            .param(FORM_PARAM_TMID, FORM_PARAM_TMID_VALUE)
-            .contentType(MediaType.MULTIPART_FORM_DATA)
-            .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
-            .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
+            multipart(PATH_UPLOAD_FILE_TO_ROOM + "/" + RC_ROOM_ID)
+                .part(fileToUpload)
+                .param(FORM_PARAM_SEND_NOTIFICATION, FORM_PARAM_SEND_NOTIFICATION_TRUE)
+                .param(FORM_PARAM_DESCRIPTION, FORM_PARAM_DESCRIPTION_VALUE)
+                .param(FORM_PARAM_MESSAGE, FORM_PARAM_MESSAGE_VALUE)
+                .param(FORM_PARAM_TMID, FORM_PARAM_TMID_VALUE)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
+                .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
         .andExpect(status().isForbidden())
         .andExpect(header().string("X-Reason", "QUOTA_REACHED"));
   }
 
-  private String convertObjectToJson(Object object) throws JsonProcessingException {
-    ObjectMapper mapper = new ObjectMapper();
-    return mapper.writeValueAsString(object);
+  @Test
+  public void uploadFileToRoom_should_return_unsupported_media_type_on_InvalidFileTypeException()
+      throws Exception {
+    doThrow(InvalidFileTypeException.class).when(uploadFacade)
+        .uploadFileToRoom(any(RocketChatCredentials.class), any(RocketChatUploadParameter.class),
+            anyBoolean());
+    MockPart fileToUpload = new MockPart(FORM_PARAM_FILE, "fileToUpload", "content".getBytes());
+
+    mvc.perform(
+            multipart(PATH_UPLOAD_FILE_TO_ROOM + "/" + RC_ROOM_ID)
+                .part(fileToUpload)
+                .param(FORM_PARAM_SEND_NOTIFICATION, FORM_PARAM_SEND_NOTIFICATION_TRUE)
+                .param(FORM_PARAM_DESCRIPTION, FORM_PARAM_DESCRIPTION_VALUE)
+                .param(FORM_PARAM_MESSAGE, FORM_PARAM_MESSAGE_VALUE)
+                .param(FORM_PARAM_TMID, FORM_PARAM_TMID_VALUE)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
+                .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
+        .andExpect(status().isUnsupportedMediaType());
+  }
+
+  @Test
+  public void uploadFileToFeedbackRoom_should_return_unsupported_media_type_on_InvalidFileTypeException()
+      throws Exception {
+    doThrow(InvalidFileTypeException.class).when(uploadFacade)
+        .uploadFileToFeedbackRoom(any(RocketChatCredentials.class),
+            any(RocketChatUploadParameter.class), anyBoolean());
+    MockPart fileToUpload = new MockPart(FORM_PARAM_FILE, "fileToUpload", "content".getBytes());
+
+    mvc.perform(
+            multipart(PATH_UPLOAD_FILE_TO_FEEDBACK_ROOM + "/" + RC_ROOM_ID)
+                .part(fileToUpload)
+                .param(FORM_PARAM_SEND_NOTIFICATION, FORM_PARAM_SEND_NOTIFICATION_TRUE)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .header(RC_TOKEN_HEADER_PARAMETER_NAME, RC_TOKEN)
+                .header(RC_USER_ID_HEADER_PARAMETER_NAME, RC_USER_ID))
+        .andExpect(status().isUnsupportedMediaType());
   }
 }

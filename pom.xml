@@ -24,6 +24,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>11</java.version>
+    <!-- force at least version 2.16 due to https://logging.apache.org/log4j/2.x/security.html -->
+    <log4j.version>2.16.0</log4j.version>
   </properties>
 
   <dependencies>
@@ -140,6 +142,24 @@
     <dependency>
       <groupId>org.mariadb.jdbc</groupId>
       <artifactId>mariadb-java-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-to-slf4j</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
+
+    <!-- Tika -->
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-core</artifactId>
+      <version>2.3.0</version>
     </dependency>
 
     <!-- Test scope dependencies -->

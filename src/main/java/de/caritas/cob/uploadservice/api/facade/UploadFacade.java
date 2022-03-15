@@ -9,6 +9,7 @@ import de.caritas.cob.uploadservice.api.helper.AuthenticatedUser;
 import de.caritas.cob.uploadservice.api.helper.AuthenticatedUserHelper;
 import de.caritas.cob.uploadservice.api.helper.RocketChatUploadParameterEncrypter;
 import de.caritas.cob.uploadservice.api.helper.RocketChatUploadParameterSanitizer;
+import de.caritas.cob.uploadservice.api.service.FileService;
 import de.caritas.cob.uploadservice.api.service.LiveEventNotificationService;
 import de.caritas.cob.uploadservice.api.service.LogService;
 import de.caritas.cob.uploadservice.api.service.RocketChatService;
@@ -35,6 +36,7 @@ public class UploadFacade {
   private final @NonNull UploadTrackingService uploadTrackingService;
   private final @NonNull StatisticsService statisticsService;
   private final @NonNull AuthenticatedUser authenticatedUser;
+  private final @NonNull FileService fileService;
 
   /**
    * Upload a file with a message to a Rocket.Chat room. The message and the description are
@@ -43,7 +45,7 @@ public class UploadFacade {
    * <p>If the statistics function is enabled, the assignment of the enquired is processed as
    * statistical event.
    *
-   * @param rocketChatCredentials {@link RocketChatCredentials} container
+   * @param rocketChatCredentials     {@link RocketChatCredentials} container
    * @param rocketChatUploadParameter {@link RocketChatUploadParameter} container
    */
   public void uploadFileToRoom(
@@ -80,7 +82,7 @@ public class UploadFacade {
    * Upload a file with a message to a Rocket.Chat feedback room. The message and the description
    * are encrypted before it is sent to Rocket.Chat.
    *
-   * @param rocketChatCredentials {@link RocketChatCredentials} container
+   * @param rocketChatCredentials     {@link RocketChatCredentials} container
    * @param rocketChatUploadParameter {@link RocketChatUploadParameter} container
    */
   public void uploadFileToFeedbackRoom(
@@ -104,6 +106,7 @@ public class UploadFacade {
       RocketChatUploadParameter rocketChatUploadParameter) {
 
     rocketChatUploadParameterSanitizer.sanitize(rocketChatUploadParameter);
+    fileService.verifyMimeType(rocketChatUploadParameter.getFile());
     RocketChatUploadParameter encryptedRocketChatUploadParameter;
     try {
       encryptedRocketChatUploadParameter =
