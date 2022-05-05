@@ -24,6 +24,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>11</java.version>
+    <keycloak.version>17.0.0</keycloak.version>
     <!-- force at least version 2.16 due to https://logging.apache.org/log4j/2.x/security.html -->
     <log4j.version>2.16.0</log4j.version>
   </properties>
@@ -85,17 +86,17 @@
     <dependency>
       <groupId>org.keycloak</groupId>
       <artifactId>keycloak-spring-security-adapter</artifactId>
-      <version>13.0.1</version>
+      <version>${keycloak.version}</version>
     </dependency>
     <dependency>
       <groupId>org.keycloak</groupId>
       <artifactId>keycloak-spring-boot-starter</artifactId>
-      <version>13.0.1</version>
+      <version>${keycloak.version}</version>
     </dependency>
     <dependency>
       <groupId>org.keycloak</groupId>
       <artifactId>keycloak-admin-client</artifactId>
-      <version>13.0.1</version>
+      <version>${keycloak.version}</version>
     </dependency>
 
     <!-- Lombok dependencies -->
