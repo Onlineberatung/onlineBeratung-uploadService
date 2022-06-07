@@ -2,6 +2,7 @@ package de.caritas.cob.uploadservice.api.helper;
 
 import de.caritas.cob.uploadservice.api.model.NewMessageNotificationDto;
 import de.caritas.cob.uploadservice.api.service.LogService;
+import de.caritas.cob.uploadservice.api.service.TenantHeaderSupplier;
 import de.caritas.cob.uploadservice.api.service.helper.ServiceHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -20,11 +21,13 @@ public class EmailNotificationHelper {
 
   private final RestTemplate restTemplate;
   private final ServiceHelper serviceHelper;
+  private final TenantHeaderSupplier tenantHeaderSupplier;
 
   @Autowired
-  public EmailNotificationHelper(RestTemplate restTemplate, ServiceHelper serviceHelper) {
+  public EmailNotificationHelper(RestTemplate restTemplate, ServiceHelper serviceHelper, TenantHeaderSupplier tenantHeaderSupplier) {
     this.restTemplate = restTemplate;
     this.serviceHelper = serviceHelper;
+    this.tenantHeaderSupplier = tenantHeaderSupplier;
   }
 
   /**
@@ -41,6 +44,7 @@ public class EmailNotificationHelper {
       HttpHeaders header = serviceHelper.getKeycloakAndCsrfHttpHeaders(accessToken);
       NewMessageNotificationDto notificationDto = new NewMessageNotificationDto(rcGroupId);
       HttpEntity<NewMessageNotificationDto> request = new HttpEntity<>(notificationDto, header);
+      tenantHeaderSupplier.addTenantHeader(header);
 
       restTemplate.exchange(
           userServiceApiSendNewMessageNotificationUrl, HttpMethod.POST, request, Void.class);

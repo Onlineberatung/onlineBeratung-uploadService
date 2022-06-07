@@ -9,6 +9,7 @@ import static org.powermock.reflect.Whitebox.setInternalState;
 
 import de.caritas.cob.uploadservice.api.model.NewMessageNotificationDto;
 import de.caritas.cob.uploadservice.api.service.LogService;
+import de.caritas.cob.uploadservice.api.service.TenantHeaderSupplier;
 import de.caritas.cob.uploadservice.api.service.helper.ServiceHelper;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +36,7 @@ public class EmailNotificationHelperTest {
   @Mock private RestTemplate restTemplate;
   @Mock private ServiceHelper serviceHelper;
   @Mock private Logger logger;
+  @Mock private TenantHeaderSupplier tenantHeaderSupplier;
   @InjectMocks private EmailNotificationHelper emailNotificationHelper;
 
   @Before
