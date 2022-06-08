@@ -2,6 +2,8 @@ package de.caritas.cob.uploadservice.api.facade;
 
 import de.caritas.cob.uploadservice.api.helper.AuthenticatedUser;
 import de.caritas.cob.uploadservice.api.helper.EmailNotificationHelper;
+import de.caritas.cob.uploadservice.api.tenant.TenantContext;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,6 +23,9 @@ public class EmailNotificationFacade {
   @Value("${user.service.api.new.feedback.message.notification}")
   private String userServiceApiSendNewFeedbackMessageNotificationUrl;
 
+  @Value("${multitenancy.enabled}")
+  private boolean multitenancy;
+
   @Autowired
   public EmailNotificationFacade(
       EmailNotificationHelper emailNotificationHelper, AuthenticatedUser authenticatedUser) {
@@ -36,7 +41,9 @@ public class EmailNotificationFacade {
    */
   public void sendEmailNotification(String rcGroupId) {
     emailNotificationHelper.sendEmailNotificationViaUserService(
-        rcGroupId, userServiceApiSendNewMessageNotificationUrl, authenticatedUser.getAccessToken());
+        rcGroupId, userServiceApiSendNewMessageNotificationUrl,
+        authenticatedUser.getAccessToken(),
+        Optional.ofNullable(TenantContext.getCurrentTenant()));
   }
 
   /**
@@ -49,6 +56,6 @@ public class EmailNotificationFacade {
     emailNotificationHelper.sendEmailNotificationViaUserService(
         rcGroupId,
         userServiceApiSendNewFeedbackMessageNotificationUrl,
-        authenticatedUser.getAccessToken());
+        authenticatedUser.getAccessToken(), Optional.ofNullable(TenantContext.getCurrentTenant()));
   }
 }

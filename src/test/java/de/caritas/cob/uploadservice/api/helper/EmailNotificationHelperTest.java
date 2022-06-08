@@ -11,6 +11,8 @@ import de.caritas.cob.uploadservice.api.model.NewMessageNotificationDto;
 import de.caritas.cob.uploadservice.api.service.LogService;
 import de.caritas.cob.uploadservice.api.service.TenantHeaderSupplier;
 import de.caritas.cob.uploadservice.api.service.helper.ServiceHelper;
+import de.caritas.cob.uploadservice.api.tenant.TenantContext;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,7 +60,8 @@ public class EmailNotificationHelperTest {
         .thenThrow(exception);
 
     emailNotificationHelper.sendEmailNotificationViaUserService(
-        RC_GROUP_ID, USER_SERVICE_API_SEND_NEW_MESSAGE_NOTIFICATION_URL, KEYCLOAK_ACCESS_TOKEN);
+        RC_GROUP_ID, USER_SERVICE_API_SEND_NEW_MESSAGE_NOTIFICATION_URL, KEYCLOAK_ACCESS_TOKEN,
+        Optional.ofNullable(TenantContext.getCurrentTenant()));
 
     verify(logger, times(1)).error(anyString(), anyString());
   }
@@ -67,7 +70,8 @@ public class EmailNotificationHelperTest {
   public void sendEmailNotificationViaUserService_Should_CallUserServiceWithGiveUrl() {
 
     emailNotificationHelper.sendEmailNotificationViaUserService(
-        RC_GROUP_ID, USER_SERVICE_API_SEND_NEW_MESSAGE_NOTIFICATION_URL, KEYCLOAK_ACCESS_TOKEN);
+        RC_GROUP_ID, USER_SERVICE_API_SEND_NEW_MESSAGE_NOTIFICATION_URL, KEYCLOAK_ACCESS_TOKEN,
+        Optional.ofNullable(TenantContext.getCurrentTenant()));
 
     verify(restTemplate, times(1))
         .exchange(
