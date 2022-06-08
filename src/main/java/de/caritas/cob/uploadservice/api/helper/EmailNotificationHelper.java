@@ -63,18 +63,21 @@ public class EmailNotificationHelper {
     try {
       HttpHeaders header = serviceHelper.getKeycloakAndCsrfHttpHeaders(accessToken);
       NewMessageNotificationDto notificationDto = new NewMessageNotificationDto(rcGroupId);
+      addTenantHeaderIfPresent(currentTenant, header);
       HttpEntity<NewMessageNotificationDto> request = new HttpEntity<>(notificationDto, header);
-      if (currentTenant.isPresent()) {
-        TenantContext.setCurrentTenant(currentTenant.get());
-        tenantHeaderSupplier.addTenantHeader(header);
-        TenantContext.clear();
-      }
-
       restTemplate.exchange(
           userServiceApiSendNewMessageNotificationUrl, HttpMethod.POST, request, Void.class);
 
     } catch (RestClientException ex) {
       LogService.logUserServiceHelperError(ex);
+    }
+  }
+
+  private void addTenantHeaderIfPresent(Optional<Long> currentTenant, HttpHeaders header) {
+    if (currentTenant.isPresent()) {
+      TenantContext.setCurrentTenant(currentTenant.get());
+      tenantHeaderSupplier.addTenantHeader(header);
+      TenantContext.clear();
     }
   }
 }
