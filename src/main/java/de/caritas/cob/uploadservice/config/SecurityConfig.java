@@ -9,7 +9,6 @@ import static de.caritas.cob.uploadservice.api.authorization.Authority.Authority
 import de.caritas.cob.uploadservice.api.authorization.RoleAuthorizationAuthorityMapper;
 import de.caritas.cob.uploadservice.filter.HttpTenantFilter;
 import de.caritas.cob.uploadservice.filter.StatelessCsrfFilter;
-import javax.annotation.Nullable;
 import org.keycloak.adapters.KeycloakConfigResolver;
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
@@ -53,8 +52,7 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
   @Autowired
   private Environment environment;
 
-  @Autowired
-  @Nullable
+  @Autowired(required = false)
   private HttpTenantFilter httpTenantFilter;
 
   @Value("${multitenancy.enabled}")
