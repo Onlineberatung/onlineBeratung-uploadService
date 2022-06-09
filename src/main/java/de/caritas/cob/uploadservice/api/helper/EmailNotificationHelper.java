@@ -67,6 +67,7 @@ public class EmailNotificationHelper {
       HttpEntity<NewMessageNotificationDto> request = new HttpEntity<>(notificationDto, header);
       restTemplate.exchange(
           userServiceApiSendNewMessageNotificationUrl, HttpMethod.POST, request, Void.class);
+      TenantContext.clear();
 
     } catch (RestClientException ex) {
       LogService.logUserServiceHelperError(ex);
@@ -77,7 +78,6 @@ public class EmailNotificationHelper {
     if (currentTenant.isPresent()) {
       TenantContext.setCurrentTenant(currentTenant.get());
       tenantHeaderSupplier.addTenantHeader(header);
-      TenantContext.clear();
     }
   }
 }
