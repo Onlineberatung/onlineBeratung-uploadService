@@ -41,7 +41,7 @@ public class EmailNotificationFacade {
    */
   public void sendEmailNotification(String rcGroupId) {
     emailNotificationHelper.sendEmailNotificationViaUserService(
-        rcGroupId, userServiceApiSendNewMessageNotificationUrl,
+        rcGroupId,
         authenticatedUser.getAccessToken(),
         Optional.ofNullable(TenantContext.getCurrentTenant()));
   }
@@ -53,9 +53,8 @@ public class EmailNotificationFacade {
    * @param rcGroupId
    */
   public void sendFeedbackEmailNotification(String rcGroupId) {
-    emailNotificationHelper.sendEmailNotificationViaUserService(
+    emailNotificationHelper.sendEmailFeedbackNotificationViaUserService(
         rcGroupId,
-        userServiceApiSendNewFeedbackMessageNotificationUrl,
         authenticatedUser.getAccessToken(), Optional.ofNullable(TenantContext.getCurrentTenant()));
   }
 }

@@ -57,7 +57,7 @@ public class EmailNotificationFacadeTest {
 
     verify(emailNotificationHelper, times(1))
         .sendEmailNotificationViaUserService(
-            RC_GROUP_ID, NOTIFICATION_API_URL, KEYCLOAK_ACCESS_TOKEN, Optional.ofNullable((TenantContext.getCurrentTenant())));
+            RC_GROUP_ID, KEYCLOAK_ACCESS_TOKEN, Optional.ofNullable((TenantContext.getCurrentTenant())));
   }
 
   @Test
@@ -69,7 +69,7 @@ public class EmailNotificationFacadeTest {
     emailNotificationFacade.sendFeedbackEmailNotification(RC_GROUP_ID);
 
     verify(emailNotificationHelper, times(1))
-        .sendEmailNotificationViaUserService(
-            RC_GROUP_ID, FEEDBACK_NOTIFICATION_API_URL, KEYCLOAK_ACCESS_TOKEN, Optional.ofNullable(TenantContext.getCurrentTenant()));
+        .sendEmailFeedbackNotificationViaUserService(
+            RC_GROUP_ID, KEYCLOAK_ACCESS_TOKEN, Optional.ofNullable(TenantContext.getCurrentTenant()));
   }
 }

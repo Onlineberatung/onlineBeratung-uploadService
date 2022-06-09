@@ -12,6 +12,7 @@ import de.caritas.cob.uploadservice.api.service.LogService;
 import de.caritas.cob.uploadservice.api.service.TenantHeaderSupplier;
 import de.caritas.cob.uploadservice.api.service.helper.ServiceHelper;
 import de.caritas.cob.uploadservice.api.tenant.TenantContext;
+import de.caritas.cob.uploadservice.userservice.generated.web.UserControllerApi;
 import de.caritas.cob.uploadservice.userservice.generated.web.model.NewMessageNotificationDTO;
 import java.util.Optional;
 import org.junit.Before;
@@ -25,7 +26,6 @@ import org.slf4j.Logger;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import de.caritas.cob.uploadservice.userservice.generated.web.UserControllerApi;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EmailNotificationHelperTest {
@@ -61,7 +61,7 @@ public class EmailNotificationHelperTest {
 
     // when
     emailNotificationHelper.sendEmailNotificationViaUserService(
-        RC_GROUP_ID, USER_SERVICE_API_SEND_NEW_MESSAGE_NOTIFICATION_URL, KEYCLOAK_ACCESS_TOKEN,
+        RC_GROUP_ID, KEYCLOAK_ACCESS_TOKEN,
         Optional.ofNullable(TenantContext.getCurrentTenant()));
 
     // then
@@ -76,7 +76,7 @@ public class EmailNotificationHelperTest {
 
     // when
     emailNotificationHelper.sendEmailNotificationViaUserService(
-        RC_GROUP_ID, USER_SERVICE_API_SEND_NEW_MESSAGE_NOTIFICATION_URL, KEYCLOAK_ACCESS_TOKEN,
+        RC_GROUP_ID, KEYCLOAK_ACCESS_TOKEN,
         Optional.ofNullable(TenantContext.getCurrentTenant()));
 
     // then

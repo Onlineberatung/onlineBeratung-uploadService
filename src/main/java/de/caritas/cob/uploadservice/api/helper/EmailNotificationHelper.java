@@ -4,6 +4,7 @@ import de.caritas.cob.uploadservice.api.service.LogService;
 import de.caritas.cob.uploadservice.api.service.TenantHeaderSupplier;
 import de.caritas.cob.uploadservice.api.service.helper.ServiceHelper;
 import de.caritas.cob.uploadservice.api.tenant.TenantContext;
+import de.caritas.cob.uploadservice.userservice.generated.web.model.NewMessageNotificationDTO;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -31,18 +32,33 @@ public class EmailNotificationHelper {
   /**
    * Send an email via the UserService
    *  @param rcGroupId
-   * @param userServiceApiSendNewMessageNotificationUrl
    * @param currentTenant
    */
   @Async
   public void sendEmailNotificationViaUserService(
-      String rcGroupId, String userServiceApiSendNewMessageNotificationUrl, String accessToken,
+      String rcGroupId, String accessToken,
       Optional<Long> currentTenant) {
 
     try {
-      de.caritas.cob.uploadservice.userservice.generated.web.model.NewMessageNotificationDTO notificationDto = new de.caritas.cob.uploadservice.userservice.generated.web.model.NewMessageNotificationDTO().rcGroupId(rcGroupId);
+      NewMessageNotificationDTO notificationDto = new NewMessageNotificationDTO().rcGroupId(rcGroupId);
       addDefaultHeaders(userControllerApi.getApiClient(), accessToken, currentTenant);
       userControllerApi.sendNewMessageNotification(notificationDto);
+      TenantContext.clear();
+
+    } catch (RestClientException ex) {
+      LogService.logUserServiceHelperError(ex);
+    }
+  }
+
+  @Async
+  public void sendEmailFeedbackNotificationViaUserService(
+      String rcGroupId, String accessToken,
+      Optional<Long> currentTenant) {
+
+    try {
+      NewMessageNotificationDTO notificationDto = new NewMessageNotificationDTO().rcGroupId(rcGroupId);
+      addDefaultHeaders(userControllerApi.getApiClient(), accessToken, currentTenant);
+      userControllerApi.sendNewFeedbackMessageNotification(notificationDto);
       TenantContext.clear();
 
     } catch (RestClientException ex) {
