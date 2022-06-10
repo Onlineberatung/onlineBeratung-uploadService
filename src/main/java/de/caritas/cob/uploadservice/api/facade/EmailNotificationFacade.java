@@ -23,9 +23,6 @@ public class EmailNotificationFacade {
   @Value("${user.service.api.new.feedback.message.notification}")
   private String userServiceApiSendNewFeedbackMessageNotificationUrl;
 
-  @Value("${multitenancy.enabled}")
-  private boolean multitenancy;
-
   @Autowired
   public EmailNotificationFacade(
       EmailNotificationHelper emailNotificationHelper, AuthenticatedUser authenticatedUser) {

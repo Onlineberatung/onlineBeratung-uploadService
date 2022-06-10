@@ -6,6 +6,7 @@ import de.caritas.cob.uploadservice.api.service.helper.ServiceHelper;
 import de.caritas.cob.uploadservice.api.tenant.TenantContext;
 import de.caritas.cob.uploadservice.userservice.generated.web.model.NewMessageNotificationDTO;
 import java.util.Optional;
+import java.util.function.Consumer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.annotation.Async;
@@ -38,29 +39,25 @@ public class EmailNotificationHelper {
   public void sendEmailNotificationViaUserService(
       String rcGroupId, String accessToken,
       Optional<Long> currentTenant) {
-
-    try {
-      NewMessageNotificationDTO notificationDto = new NewMessageNotificationDTO().rcGroupId(rcGroupId);
-      addDefaultHeaders(userControllerApi.getApiClient(), accessToken, currentTenant);
-      userControllerApi.sendNewMessageNotification(notificationDto);
-      TenantContext.clear();
-
-    } catch (RestClientException ex) {
-      LogService.logUserServiceHelperError(ex);
-    }
+    sendEmailNotificationCallingMethod(rcGroupId, accessToken, currentTenant,
+        userControllerApi::sendNewMessageNotification);
   }
 
   @Async
   public void sendEmailFeedbackNotificationViaUserService(
       String rcGroupId, String accessToken,
       Optional<Long> currentTenant) {
+    sendEmailNotificationCallingMethod(rcGroupId, accessToken, currentTenant,
+        userControllerApi::sendNewFeedbackMessageNotification);
+  }
 
+  private void sendEmailNotificationCallingMethod(String rcGroupId, String accessToken, Optional<Long> currentTenant, Consumer<NewMessageNotificationDTO> newMessageNotificationConsumerMethod) {
     try {
-      NewMessageNotificationDTO notificationDto = new NewMessageNotificationDTO().rcGroupId(rcGroupId);
+      NewMessageNotificationDTO notificationDto = new NewMessageNotificationDTO().rcGroupId(
+          rcGroupId);
       addDefaultHeaders(userControllerApi.getApiClient(), accessToken, currentTenant);
-      userControllerApi.sendNewFeedbackMessageNotification(notificationDto);
+      newMessageNotificationConsumerMethod.accept(notificationDto);
       TenantContext.clear();
-
     } catch (RestClientException ex) {
       LogService.logUserServiceHelperError(ex);
     }

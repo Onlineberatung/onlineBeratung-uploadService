@@ -3,12 +3,14 @@ package de.caritas.cob.uploadservice.config;
 import de.caritas.cob.uploadservice.tenantservice.generated.ApiClient;
 import de.caritas.cob.uploadservice.tenantservice.generated.web.TenantControllerApi;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
+@ConditionalOnExpression("${multitenancy.enabled:true}")
 public class TenantServiceApiClientConfig {
 
   @Value("${tenant.service.api.url}")
