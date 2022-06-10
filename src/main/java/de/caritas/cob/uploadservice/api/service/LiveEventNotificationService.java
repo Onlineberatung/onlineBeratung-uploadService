@@ -20,6 +20,7 @@ public class LiveEventNotificationService {
 
   private final @NonNull LiveproxyControllerApi liveproxyControllerApi;
   private final @NonNull ServiceHelper serviceHelper;
+  private final @NonNull TenantHeaderSupplier tenantHeaderSupplier;
 
   /**
    * Triggers a live event to proxy endpoint of user service.
@@ -40,6 +41,7 @@ public class LiveEventNotificationService {
 
   private void addDefaultHeaders(ApiClient apiClient) {
     HttpHeaders headers = this.serviceHelper.getKeycloakAndCsrfHttpHeaders();
+    tenantHeaderSupplier.addTenantHeader(headers);
     headers.forEach((key, value) -> apiClient.addDefaultHeader(key, value.iterator().next()));
   }
 
