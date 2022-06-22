@@ -5,7 +5,6 @@ import static de.caritas.cob.uploadservice.helper.TestConstants.RC_ROOM_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -21,6 +20,7 @@ import de.caritas.cob.uploadservice.api.exception.httpresponses.InternalServerEr
 import de.caritas.cob.uploadservice.api.helper.AuthenticatedUser;
 import de.caritas.cob.uploadservice.api.helper.RocketChatUploadParameterEncrypter;
 import de.caritas.cob.uploadservice.api.helper.RocketChatUploadParameterSanitizer;
+import de.caritas.cob.uploadservice.api.service.FileService;
 import de.caritas.cob.uploadservice.api.service.LiveEventNotificationService;
 import de.caritas.cob.uploadservice.api.service.RocketChatService;
 import de.caritas.cob.uploadservice.api.service.UploadTrackingService;
@@ -75,6 +75,11 @@ public class UploadFacadeTest {
   @Mock
   private AuthenticatedUser authenticatedUser;
 
+  @Mock
+  private FileService fileService;
+
+  private TestMultipartFile multipartFile;
+
   /**
    * Method: uploadFileToRoom
    */
@@ -85,6 +90,8 @@ public class UploadFacadeTest {
         .thenReturn(rocketChatUploadParameter);
     when(rocketChatUploadParameterEncrypter.encrypt(rocketChatUploadParameter))
         .thenReturn(rocketChatUploadParameter);
+    multipartFile = new TestMultipartFile();
+    when(rocketChatUploadParameter.getFile()).thenReturn(multipartFile);
     when(authenticatedUser.getRoles())
         .thenReturn(SetUtils.unmodifiableSet(UserRole.CONSULTANT.getValue()));
     when(authenticatedUser.getUserId())
@@ -105,6 +112,7 @@ public class UploadFacadeTest {
         rocketChatUploadParameter.getRoomId());
     verify(uploadTrackingService, times(1)).validateUploadLimit(any());
     verify(uploadTrackingService, times(1)).trackUploadedFileForUser(any());
+    verify(fileService).verifyMimeType(multipartFile);
   }
 
   @Test
@@ -220,6 +228,7 @@ public class UploadFacadeTest {
         rocketChatUploadParameter.getRoomId());
     verify(uploadTrackingService, times(1)).validateUploadLimit(any());
     verify(uploadTrackingService, times(1)).trackUploadedFileForUser(any());
+    verify(fileService).verifyMimeType(multipartFile);
   }
 
   @Test
