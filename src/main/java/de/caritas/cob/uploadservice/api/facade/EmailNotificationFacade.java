@@ -2,6 +2,8 @@ package de.caritas.cob.uploadservice.api.facade;
 
 import de.caritas.cob.uploadservice.api.helper.AuthenticatedUser;
 import de.caritas.cob.uploadservice.api.helper.EmailNotificationHelper;
+import de.caritas.cob.uploadservice.api.tenant.TenantContext;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -36,7 +38,9 @@ public class EmailNotificationFacade {
    */
   public void sendEmailNotification(String rcGroupId) {
     emailNotificationHelper.sendEmailNotificationViaUserService(
-        rcGroupId, userServiceApiSendNewMessageNotificationUrl, authenticatedUser.getAccessToken());
+        rcGroupId,
+        authenticatedUser.getAccessToken(),
+        Optional.ofNullable(TenantContext.getCurrentTenant()));
   }
 
   /**
@@ -46,9 +50,8 @@ public class EmailNotificationFacade {
    * @param rcGroupId
    */
   public void sendFeedbackEmailNotification(String rcGroupId) {
-    emailNotificationHelper.sendEmailNotificationViaUserService(
+    emailNotificationHelper.sendEmailFeedbackNotificationViaUserService(
         rcGroupId,
-        userServiceApiSendNewFeedbackMessageNotificationUrl,
-        authenticatedUser.getAccessToken());
+        authenticatedUser.getAccessToken(), Optional.ofNullable(TenantContext.getCurrentTenant()));
   }
 }
