@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.11.0](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.10.0...v1.11.0) (2022-03-14)
+
+
+### Features
+
+* detect mime type of uploaded file ([0f55086](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/0f55086d956c95ff0cd1c732feeeddfc9811f242))
+
+
+### Bug Fixes
+
+* add tika specific mime type for Open Office and MS Office documents ([ff7d06f](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/ff7d06f1db0fabe470ea7bb9c1c2b199fb64cca6))
+* force safe log4j version ([ba0db7a](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/ba0db7a00fc4302eb38861ebb1d8e02306513ccd))
+* update log4j ([f0d3b52](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/f0d3b52022398ee51e2756605865231837c30b73))
+* use kebab case for property, add integration test for invalid media type ([2bca0c4](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/2bca0c47d1358428d37eabd4d3672027d13a6470))
+
 ## [1.10.0](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.9.0...v1.10.0) (2021-12-14)
 
 

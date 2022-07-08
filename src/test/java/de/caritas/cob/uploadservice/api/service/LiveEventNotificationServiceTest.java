@@ -35,6 +35,9 @@ public class LiveEventNotificationServiceTest {
   private ServiceHelper serviceHelper;
 
   @Mock
+  private TenantHeaderSupplier tenantHeaderSupplier;
+
+  @Mock
   private Logger logger;
 
   @Before
