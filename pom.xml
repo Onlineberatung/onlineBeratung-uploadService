@@ -24,6 +24,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>11</java.version>
+    <keycloak.version>17.0.0</keycloak.version>
     <!-- force at least version 2.16 due to https://logging.apache.org/log4j/2.x/security.html -->
     <log4j.version>2.16.0</log4j.version>
   </properties>
@@ -47,9 +48,18 @@
       <artifactId>spring-boot-starter-amqp</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-cache</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.hibernate.validator</groupId>
       <artifactId>hibernate-validator</artifactId>
       <version>6.1.6.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.ehcache</groupId>
+      <artifactId>ehcache</artifactId>
+      <version>2.10.6</version>
     </dependency>
 
     <!-- Swagger/OpenApi dependencies -->
@@ -85,17 +95,17 @@
     <dependency>
       <groupId>org.keycloak</groupId>
       <artifactId>keycloak-spring-security-adapter</artifactId>
-      <version>13.0.1</version>
+      <version>${keycloak.version}</version>
     </dependency>
     <dependency>
       <groupId>org.keycloak</groupId>
       <artifactId>keycloak-spring-boot-starter</artifactId>
-      <version>13.0.1</version>
+      <version>${keycloak.version}</version>
     </dependency>
     <dependency>
       <groupId>org.keycloak</groupId>
       <artifactId>keycloak-admin-client</artifactId>
-      <version>13.0.1</version>
+      <version>${keycloak.version}</version>
     </dependency>
 
     <!-- Lombok dependencies -->
@@ -306,6 +316,30 @@
               <generateModelTests>false</generateModelTests>
               <modelPackage>
                 ${project.groupId}.${project.artifactId}.statisticsservice.generated.web.model
+              </modelPackage>
+            </configuration>
+          </execution>
+          <execution>
+            <id>tenantservice-client-model</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <configOptions>
+                <sourceFolder>/</sourceFolder>
+                <library>resttemplate</library>
+                <dateLibrary>java8</dateLibrary>
+              </configOptions>
+              <inputSpec>${project.basedir}/services/tenantservice.yaml</inputSpec>
+              <generatorName>java</generatorName>
+              <generateApis>true</generateApis>
+              <generateApiTests>false</generateApiTests>
+              <generateModelTests>false</generateModelTests>
+              <apiPackage>${project.groupId}.${project.artifactId}.tenantservice.generated.web
+              </apiPackage>
+              <modelPackage>
+                ${project.groupId}.${project.artifactId}.tenantservice.generated.web.model
               </modelPackage>
             </configuration>
           </execution>

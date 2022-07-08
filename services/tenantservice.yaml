@@ -1,0 +1,201 @@
+openapi: 3.0.1
+
+info:
+  title: Definition for Tenant API
+  description: This information will be replaced by the SpringFox config information
+  version: 0.0.1
+
+paths:
+  /tenant:
+    post:
+      tags:
+        - tenant-controller
+      summary: 'Creates a new tenant [Authorization: Role: tenant-admin]'
+      operationId: createTenant
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/TenantDTO'
+      responses:
+        200:
+          description: OK - successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantDTO'
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+  /tenant/{id}:
+    summary: Represents a tenant
+    description: This resource represents an individual tenant in a system.
+    get:
+      tags:
+        - tenant-controller
+      summary: 'Gets a tenant by its id [Authorization: Role: tenant-admin or single-tenant-admin]'
+      operationId: getTenantById
+      parameters:
+        - name: id
+          in: path
+          description: Tenant ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantDTO'
+        404:
+          description: Not found
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+    put:
+      tags:
+        - tenant-controller
+      summary: 'Updates a tenant [Authorization: Role: tenant-admin or single-tenant-admin]'
+      operationId: updateTenant
+      parameters:
+        - name: id
+          in: path
+          description: Tenant ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/TenantDTO'
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantDTO'
+        409:
+          description: CONFLICT - unique constraint validation fails
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+  /tenant/public/{subdomain}:
+    summary: 'Represents a publicly allowed tenant data'
+    description: This resource represents an individual tenant in a system.
+    get:
+      tags:
+        - tenant-controller
+      summary: 'Gets a tenant public information [Authorization: no-auth]'
+      operationId: getRestrictedTenantDataBySubdomain
+      parameters:
+        - name: subdomain
+          in: path
+          description: Subdomain
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestrictedTenantDTO'
+        404:
+          description: Not found
+        400:
+          description: BAD REQUEST - invalid/incomplete request or body object
+        500:
+          description: INTERNAL SERVER ERROR - server encountered unexpected condition
+components:
+  schemas:
+    TenantDTO:
+      type: object
+      required:
+        - id
+        - name
+        - subdomain
+      properties:
+        id:
+          type: long
+          example: 12132
+        name:
+          type: string
+          example: "Company name AG"
+          maxLength: 100
+        subdomain:
+          type: string
+          example: "companyname"
+          maxLength: 100
+        createDate:
+          type: string
+        updateDate:
+          type: string
+        licensing:
+          $ref: '#/components/schemas/Licensing'
+        theming:
+          $ref:
+            '#/components/schemas/Theming'
+        content:
+          $ref:
+            '#/components/schemas/Content'
+    RestrictedTenantDTO:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: long
+          example: 12132
+        name:
+          type: string
+          example: "Company name AG"
+          maxLength: 100
+        theming:
+          $ref:
+            '#/components/schemas/Theming'
+        content:
+          $ref:
+            '#/components/schemas/Content'
+    Licensing:
+      type: object
+      required:
+        - allowedNumberOfUsers
+      properties:
+        allowedNumberOfUsers:
+          type: integer
+          example: 1
+    Theming:
+      type: object
+      properties:
+        logo:
+          type: string
+          example: "base64 encoded image"
+        favicon:
+          type: string
+          example: "base64 encoded image"
+        primaryColor:
+          type: string
+          example: "#FFFFFF"
+        secondaryColor:
+          type: string
+          example: "#FFFFFF"
+    Content:
+      type: object
+      required:
+        - impressum
+      properties:
+        impressum:
+          type: string
+          example: "Llorem ipsum..."
+        claim:
+          type: string
+          example: "Llorem ipsum..."

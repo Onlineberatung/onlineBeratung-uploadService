@@ -7,6 +7,7 @@ import static de.caritas.cob.uploadservice.api.authorization.Authority.Authority
 import static de.caritas.cob.uploadservice.api.authorization.Authority.AuthorityValue.USE_FEEDBACK;
 
 import de.caritas.cob.uploadservice.api.authorization.RoleAuthorizationAuthorityMapper;
+import de.caritas.cob.uploadservice.filter.HttpTenantFilter;
 import de.caritas.cob.uploadservice.filter.StatelessCsrfFilter;
 import org.keycloak.adapters.KeycloakConfigResolver;
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
@@ -51,6 +52,12 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
   @Autowired
   private Environment environment;
 
+  @Autowired(required = false)
+  private HttpTenantFilter httpTenantFilter;
+
+  @Value("${multitenancy.enabled}")
+  private boolean multitenancy;
+
   /**
    * Processes HTTP requests and checks for a valid spring security authentication for the
    * (Keycloak) principal (authorization header).
@@ -67,11 +74,19 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     super.configure(http);
-    http.csrf()
+
+    HttpSecurity httpSecurity = http.csrf()
         .disable()
         .addFilterBefore(
             new StatelessCsrfFilter(csrfCookieProperty, csrfHeaderProperty,
-                csrfWhitelistHeaderProperty), CsrfFilter.class)
+                csrfWhitelistHeaderProperty), CsrfFilter.class);
+
+    if (multitenancy) {
+      httpSecurity = httpSecurity
+          .addFilterAfter(httpTenantFilter, KeycloakAuthenticatedActionsFilter.class);
+    }
+
+    httpSecurity
         .sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .sessionAuthenticationStrategy(sessionAuthenticationStrategy())
