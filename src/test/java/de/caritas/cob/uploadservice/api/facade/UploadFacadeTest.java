@@ -1,32 +1,43 @@
 package de.caritas.cob.uploadservice.api.facade;
 
+import static de.caritas.cob.uploadservice.helper.TestConstants.CONSULTANT_ID;
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_ROOM_ID;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import de.caritas.cob.uploadservice.api.authorization.UserRole;
 import de.caritas.cob.uploadservice.api.container.RocketChatCredentials;
 import de.caritas.cob.uploadservice.api.container.RocketChatUploadParameter;
 import de.caritas.cob.uploadservice.api.exception.CustomCryptoException;
 import de.caritas.cob.uploadservice.api.exception.RocketChatPostMarkGroupAsReadException;
 import de.caritas.cob.uploadservice.api.exception.httpresponses.InternalServerErrorException;
+import de.caritas.cob.uploadservice.api.helper.AuthenticatedUser;
 import de.caritas.cob.uploadservice.api.helper.RocketChatUploadParameterEncrypter;
 import de.caritas.cob.uploadservice.api.helper.RocketChatUploadParameterSanitizer;
+import de.caritas.cob.uploadservice.api.service.FileService;
 import de.caritas.cob.uploadservice.api.service.LiveEventNotificationService;
 import de.caritas.cob.uploadservice.api.service.RocketChatService;
 import de.caritas.cob.uploadservice.api.service.UploadTrackingService;
+import de.caritas.cob.uploadservice.api.statistics.StatisticsService;
+import de.caritas.cob.uploadservice.api.statistics.event.CreateMessageStatisticsEvent;
+import java.util.Objects;
+import org.apache.commons.collections4.SetUtils;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UploadFacadeTest {
@@ -58,6 +69,17 @@ public class UploadFacadeTest {
   @Mock
   private UploadTrackingService uploadTrackingService;
 
+  @Mock
+  private StatisticsService statisticsService;
+
+  @Mock
+  private AuthenticatedUser authenticatedUser;
+
+  @Mock
+  private FileService fileService;
+
+  private TestMultipartFile multipartFile;
+
   /**
    * Method: uploadFileToRoom
    */
@@ -68,6 +90,12 @@ public class UploadFacadeTest {
         .thenReturn(rocketChatUploadParameter);
     when(rocketChatUploadParameterEncrypter.encrypt(rocketChatUploadParameter))
         .thenReturn(rocketChatUploadParameter);
+    multipartFile = new TestMultipartFile();
+    when(rocketChatUploadParameter.getFile()).thenReturn(multipartFile);
+    when(authenticatedUser.getRoles())
+        .thenReturn(SetUtils.unmodifiableSet(UserRole.CONSULTANT.getValue()));
+    when(authenticatedUser.getUserId())
+        .thenReturn(CONSULTANT_ID);
   }
 
   @Test
@@ -76,14 +104,15 @@ public class UploadFacadeTest {
 
     uploadFacade.uploadFileToRoom(rocketChatCredentials, rocketChatUploadParameter, false);
 
-    verify(rocketChatUploadParameterSanitizer, times(1)).sanitize(eq(rocketChatUploadParameter));
-    verify(rocketChatUploadParameterEncrypter, times(1)).encrypt(eq(rocketChatUploadParameter));
-    verify(rocketChatService, times(1)).roomsUpload(eq(rocketChatCredentials),
-        eq(rocketChatUploadParameter));
+    verify(rocketChatUploadParameterSanitizer, times(1)).sanitize(rocketChatUploadParameter);
+    verify(rocketChatUploadParameterEncrypter, times(1)).encrypt(rocketChatUploadParameter);
+    verify(rocketChatService, times(1)).roomsUpload(rocketChatCredentials,
+        rocketChatUploadParameter);
     verify(rocketChatService, times(1)).markGroupAsReadForSystemUser(
-        eq(rocketChatUploadParameter.getRoomId()));
+        rocketChatUploadParameter.getRoomId());
     verify(uploadTrackingService, times(1)).validateUploadLimit(any());
     verify(uploadTrackingService, times(1)).trackUploadedFileForUser(any());
+    verify(fileService).verifyMimeType(multipartFile);
   }
 
   @Test
@@ -92,6 +121,29 @@ public class UploadFacadeTest {
     uploadFacade.uploadFileToRoom(rocketChatCredentials, rocketChatUploadParameter, true);
 
     verify(emailNotificationFacade, times(1)).sendEmailNotification(RC_ROOM_ID);
+  }
+
+  @Test
+  public void uploadFileToRoom_Should_FireUploadFileStatisticsEvent() {
+
+    uploadFacade.uploadFileToRoom(rocketChatCredentials, rocketChatUploadParameter, true);
+
+    verify(statisticsService, times(1))
+        .fireEvent(any(CreateMessageStatisticsEvent.class));
+
+    ArgumentCaptor<CreateMessageStatisticsEvent> captor = ArgumentCaptor.forClass(
+        CreateMessageStatisticsEvent.class);
+    verify(statisticsService, times(1)).fireEvent(captor.capture());
+    String userId = Objects.requireNonNull(
+        ReflectionTestUtils.getField(captor.getValue(), "userId")).toString();
+    assertThat(userId, Matchers.is(CONSULTANT_ID));
+    String userRole = Objects.requireNonNull(
+        ReflectionTestUtils.getField(captor.getValue(), "userRole")).toString();
+    assertThat(userRole, Matchers.is(UserRole.CONSULTANT.toString()));
+    String rcGroupId = Objects.requireNonNull(
+        ReflectionTestUtils.getField(captor.getValue(), "rcGroupId")).toString();
+    assertThat(rcGroupId, Matchers.is(RC_ROOM_ID));
+
   }
 
   @Test
@@ -168,14 +220,15 @@ public class UploadFacadeTest {
     uploadFacade.uploadFileToFeedbackRoom(
         rocketChatCredentials, rocketChatUploadParameter, false);
 
-    verify(rocketChatUploadParameterSanitizer, times(1)).sanitize(eq(rocketChatUploadParameter));
-    verify(rocketChatUploadParameterEncrypter, times(1)).encrypt(eq(rocketChatUploadParameter));
-    verify(rocketChatService, times(1)).roomsUpload(eq(rocketChatCredentials),
-        eq(rocketChatUploadParameter));
+    verify(rocketChatUploadParameterSanitizer, times(1)).sanitize(rocketChatUploadParameter);
+    verify(rocketChatUploadParameterEncrypter, times(1)).encrypt(rocketChatUploadParameter);
+    verify(rocketChatService, times(1)).roomsUpload(rocketChatCredentials,
+        rocketChatUploadParameter);
     verify(rocketChatService, times(1)).markGroupAsReadForSystemUser(
-        eq(rocketChatUploadParameter.getRoomId()));
+        rocketChatUploadParameter.getRoomId());
     verify(uploadTrackingService, times(1)).validateUploadLimit(any());
     verify(uploadTrackingService, times(1)).trackUploadedFileForUser(any());
+    verify(fileService).verifyMimeType(multipartFile);
   }
 
   @Test

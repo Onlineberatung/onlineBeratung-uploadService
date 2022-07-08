@@ -7,6 +7,8 @@ import static org.mockito.Mockito.when;
 
 import de.caritas.cob.uploadservice.api.helper.AuthenticatedUser;
 import de.caritas.cob.uploadservice.api.helper.EmailNotificationHelper;
+import de.caritas.cob.uploadservice.api.tenant.TenantContext;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,7 +57,7 @@ public class EmailNotificationFacadeTest {
 
     verify(emailNotificationHelper, times(1))
         .sendEmailNotificationViaUserService(
-            RC_GROUP_ID, NOTIFICATION_API_URL, KEYCLOAK_ACCESS_TOKEN);
+            RC_GROUP_ID, KEYCLOAK_ACCESS_TOKEN, Optional.ofNullable((TenantContext.getCurrentTenant())));
   }
 
   @Test
@@ -67,7 +69,7 @@ public class EmailNotificationFacadeTest {
     emailNotificationFacade.sendFeedbackEmailNotification(RC_GROUP_ID);
 
     verify(emailNotificationHelper, times(1))
-        .sendEmailNotificationViaUserService(
-            RC_GROUP_ID, FEEDBACK_NOTIFICATION_API_URL, KEYCLOAK_ACCESS_TOKEN);
+        .sendEmailFeedbackNotificationViaUserService(
+            RC_GROUP_ID, KEYCLOAK_ACCESS_TOKEN, Optional.ofNullable(TenantContext.getCurrentTenant()));
   }
 }

@@ -2,6 +2,49 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.11.0](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.10.0...v1.11.0) (2022-03-14)
+
+
+### Features
+
+* detect mime type of uploaded file ([0f55086](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/0f55086d956c95ff0cd1c732feeeddfc9811f242))
+
+
+### Bug Fixes
+
+* add tika specific mime type for Open Office and MS Office documents ([ff7d06f](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/ff7d06f1db0fabe470ea7bb9c1c2b199fb64cca6))
+* force safe log4j version ([ba0db7a](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/ba0db7a00fc4302eb38861ebb1d8e02306513ccd))
+* update log4j ([f0d3b52](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/f0d3b52022398ee51e2756605865231837c30b73))
+* use kebab case for property, add integration test for invalid media type ([2bca0c4](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/2bca0c47d1358428d37eabd4d3672027d13a6470))
+
+## [1.10.0](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.9.0...v1.10.0) (2021-12-14)
+
+
+### Features
+
+* changed message format ([6724659](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/672465922cb652695ecd7ac8c41c35814984a68b))
+* implementation of statistic trigger and tests ([c9dd33d](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/c9dd33d11552a24a91f1503e152eff16ee86e877))
+* new statisticsservice.yaml with changes in create message statistics event ([fd30211](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/fd302115d06a42774132e6682841b6ee306aeb08))
+* new statisticsservice.yaml with changes in create message statistics event ([b9539f1](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/b9539f13ef12ca8ed1888b2e5899d3e3a126920c))
+* new statisticsservice.yaml with changes in create message statistics event ([8212cf5](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/8212cf534b79b60f89b16574dc9235eaafc3ab2b))
+* optimizations ([0ffb89a](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/0ffb89a7a0e6f1d9cdcbcf5b6c0373e2d60542d9))
+* updated dockerImage.yml ([ad9679e](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/ad9679e3b6163d4eed714de8cdc4774ae58468a1))
+* updated service api descriptions ([631ee73](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/631ee732fa62d7be4e7c919b57f56ca1bb59fa33))
+
+
+### Bug Fixes
+
+* fixed tests ([08fb35f](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/08fb35f193cb864672f9144c7b6ebfdd75deef2f))
+* fixed unit test ([2cf31c9](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/2cf31c9e32e54c9451be4b1cbaf08360b51b5cbf))
+* update of statisticsservice.yaml ([5a7451f](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/5a7451fda0ea25335049c4ecb67ac3dbe7ca1e61))
+
+## [1.9.0](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.8.0...v1.9.0) (2021-11-29)
+
+
+### Features
+
+* adjust peer consultant user role and authority ([e91ac95](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/commit/e91ac95a61416a4e9577c9d4d739f69d148f4b30))
+
 ## [1.8.0](https://github.com/virtualidentityag/caritas-onlineBeratung-uploadService/compare/v1.7.0...v1.8.0) (2021-07-26)
 
 
