@@ -36,7 +36,10 @@ jobs:
           name: targetfiles
           path: target/*.jar
   push_to_registry:
-    needs: [test]
+    strategy:
+      matrix:
+        registry: [ "docker.pkg.github.com", "ghcr.io" ]
+    needs: [ test ]
     name: Push Docker image to GitHub Packages
     runs-on: ubuntu-latest
     steps:
@@ -47,7 +50,7 @@ jobs:
           name: targetfiles
       - name: Prepare Docker variables
         run: |
-          echo "DOCKER_REGISTRY=$(echo "docker.pkg.github.com/${{ github.repository }}" | awk '{print tolower($0)}')" >> $GITHUB_ENV
+          echo "DOCKER_REGISTRY=$(echo "${{ matrix.registry }}/${{ github.repository }}" | awk '{print tolower($0)}')" >> $GITHUB_ENV
           echo "DOCKER_IMAGE=$(echo "${{ github.repository }}" | awk -F / '{print tolower($2)}')" >> $GITHUB_ENV
         shell: bash
       - name: Push to GitHub Packages
