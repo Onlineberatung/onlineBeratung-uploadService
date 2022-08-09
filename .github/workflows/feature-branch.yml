@@ -3,35 +3,34 @@ name: Feature Branch
 on:
   push:
     branches-ignore:
-      - 'master'
-      - 'staging'
-      - 'develop'
+      - "master"
+      - "staging"
+      - "develop"
 
 jobs:
   test:
     name: Build and run unit tests
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Checkout
-      uses: actions/checkout@v2
+      - name: Setup JVM
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11.0.10
+          java-package: jdk
+          architecture: x64
 
-    - name: Setup JVM
-      uses: actions/setup-java@v1
-      with:
-        java-version: 11.0.10
-        java-package: jdk
-        architecture: x64
+      - name: Caching maven dependencies
+        uses: actions/cache@v1
+        env:
+          cache-name: cache-maven-dependencies
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/pom.xml') }}
 
-    - name: Caching maven dependencies
-      uses: actions/cache@v1
-      env:
-        cache-name: cache-maven-dependencies
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/pom.xml') }}
-
-    - name: Maven Package
-      run: mvn -B -Pprod  clean package -DskipTests
-    - name: Maven Verify
-      run: mvn -B -Pprod clean verify
+      - name: Maven Package
+        run: mvn -B -Pprod  clean package -DskipTests
+      - name: Maven Verify
+        run: mvn -B -Pprod clean verify
