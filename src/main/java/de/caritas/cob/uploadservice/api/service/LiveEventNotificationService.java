@@ -8,6 +8,7 @@ import de.caritas.cob.uploadservice.userservice.generated.web.LiveproxyControlle
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
@@ -27,6 +28,7 @@ public class LiveEventNotificationService {
    *
    * @param rcGroupId the rocket chat group id
    */
+  @Async
   public void sendLiveEvent(String rcGroupId) {
     if (isNotBlank(rcGroupId)) {
       addDefaultHeaders(this.liveproxyControllerApi.getApiClient());
