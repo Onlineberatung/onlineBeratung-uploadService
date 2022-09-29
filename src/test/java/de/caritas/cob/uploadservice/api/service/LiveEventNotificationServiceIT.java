@@ -19,7 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 @ActiveProfiles("testing")
 @DirtiesContext
-public class LiveEventNotificationServiceIT {
+class LiveEventNotificationServiceIT {
 
   @Autowired
   private LiveEventNotificationService underTest;
