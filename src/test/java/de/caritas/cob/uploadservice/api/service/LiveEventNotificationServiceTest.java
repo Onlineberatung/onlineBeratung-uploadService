@@ -1,5 +1,6 @@
 package de.caritas.cob.uploadservice.api.service;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -12,6 +13,7 @@ import static org.powermock.reflect.Whitebox.setInternalState;
 import de.caritas.cob.uploadservice.api.service.helper.ServiceHelper;
 import de.caritas.cob.uploadservice.userservice.generated.ApiClient;
 import de.caritas.cob.uploadservice.userservice.generated.web.LiveproxyControllerApi;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,7 +49,7 @@ public class LiveEventNotificationServiceTest {
 
   @Test
   public void sendLiveEvent_Should_notTriggerLiveEvent_When_rcGroupIdIsNull() {
-    this.liveEventNotificationService.sendLiveEvent(null);
+    this.liveEventNotificationService.sendLiveEvent(null, null, Optional.empty());
 
     verifyNoMoreInteractions(this.liveproxyControllerApi);
     verifyNoMoreInteractions(this.serviceHelper);
@@ -55,7 +57,7 @@ public class LiveEventNotificationServiceTest {
 
   @Test
   public void sendLiveEvent_Should_notTriggerLiveEvent_When_rcGroupIdIsEmpty() {
-    this.liveEventNotificationService.sendLiveEvent("");
+    this.liveEventNotificationService.sendLiveEvent(null, null, Optional.empty());
 
     verifyNoMoreInteractions(this.liveproxyControllerApi);
     verifyNoMoreInteractions(this.serviceHelper);
@@ -68,12 +70,12 @@ public class LiveEventNotificationServiceTest {
     HttpHeaders headers = new HttpHeaders();
     headers.add("header 1", "value 1");
     headers.add("header 2", "value 2");
-    when(this.serviceHelper.getKeycloakAndCsrfHttpHeaders()).thenReturn(headers);
+    when(this.serviceHelper.getKeycloakAndCsrfHttpHeaders(anyString(), any())).thenReturn(headers);
 
-    this.liveEventNotificationService.sendLiveEvent("valid");
+    this.liveEventNotificationService.sendLiveEvent("valid", "", Optional.empty());
 
     verify(this.liveproxyControllerApi, times(1)).sendLiveEvent("valid");
-    verify(this.serviceHelper, times(1)).getKeycloakAndCsrfHttpHeaders();
+    verify(this.serviceHelper, times(1)).getKeycloakAndCsrfHttpHeaders(anyString(), any());
     verify(apiClient, times(2)).addDefaultHeader(anyString(), anyString());
   }
 
@@ -82,9 +84,10 @@ public class LiveEventNotificationServiceTest {
     doThrow(new RestClientException("")).when(this.liveproxyControllerApi)
         .sendLiveEvent(anyString());
     when(this.liveproxyControllerApi.getApiClient()).thenReturn(mock(ApiClient.class));
-    when(this.serviceHelper.getKeycloakAndCsrfHttpHeaders()).thenReturn(new HttpHeaders());
+    when(this.serviceHelper.getKeycloakAndCsrfHttpHeaders(anyString(), any()))
+        .thenReturn(new HttpHeaders());
 
-    this.liveEventNotificationService.sendLiveEvent("valid");
+    this.liveEventNotificationService.sendLiveEvent("valid", "", Optional.empty());
 
     verify(this.logger, times(1)).error(anyString(), anyString(), anyString());
   }

@@ -19,9 +19,10 @@ public class TenantHeaderSupplier {
   @Value("${multitenancy.enabled}")
   private boolean multitenancy;
 
-  public void addTenantHeader(HttpHeaders headers) {
+  public void addTenantHeader(HttpHeaders headers, Optional<Long> tenantId) {
     if (multitenancy) {
-      headers.add("tenantId", TenantContext.getCurrentTenant().toString());
+      var tenantIdNumber = tenantId.orElseGet(TenantContext::getCurrentTenant);
+      headers.add("tenantId", tenantIdNumber.toString());
     }
   }
 

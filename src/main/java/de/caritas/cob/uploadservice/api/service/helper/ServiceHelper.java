@@ -1,6 +1,10 @@
 package de.caritas.cob.uploadservice.api.service.helper;
 
+import static java.util.Objects.isNull;
+
 import de.caritas.cob.uploadservice.api.helper.AuthenticatedUser;
+import de.caritas.cob.uploadservice.api.service.TenantHeaderSupplier;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -20,34 +24,28 @@ public class ServiceHelper {
   private String csrfCookieProperty;
 
   private final @NonNull AuthenticatedUser authenticatedUser;
+  private final @NonNull TenantHeaderSupplier tenantHeaderSupplier;
 
   /**
    * Returns {@link HttpHeaders} with CSRF cookie and CSRF header and the provided Keycloak Bearer
    * token.
    *
    * @param accessToken Keycloak Bearer token
+   * @param tenantId optional tenant ID
    * @return {@link HttpHeaders}
    */
-  public HttpHeaders getKeycloakAndCsrfHttpHeaders(String accessToken) {
-    return createKeycloakAuthHeader(accessToken);
+  public HttpHeaders getKeycloakAndCsrfHttpHeaders(String accessToken, Optional<Long> tenantId) {
+    var headers = new HttpHeaders();
+    addCsrfValues(headers);
+    tenantHeaderSupplier.addTenantHeader(headers, tenantId);
+    addAuthorizationHeader(headers, accessToken);
+
+    return headers;
   }
 
-  /**
-   * Returns {@link HttpHeaders} with CSRF cookie and CSRF header and the Keycloak Bearer token of
-   * the currently authenticated user.
-   *
-   * @return {@link HttpHeaders}
-   */
-  public HttpHeaders getKeycloakAndCsrfHttpHeaders() {
-    return createKeycloakAuthHeader(authenticatedUser.getAccessToken());
-  }
-
-  private HttpHeaders createKeycloakAuthHeader(String accessToken) {
-    HttpHeaders header = new HttpHeaders();
-    header = this.addCsrfValues(header);
-    header.add("Authorization", "Bearer " + accessToken);
-
-    return header;
+  private void addAuthorizationHeader(HttpHeaders headers, String accessToken) {
+    var token = isNull(accessToken) ? authenticatedUser.getAccessToken() : accessToken;
+    headers.add("Authorization", "Bearer " + token);
   }
 
   private HttpHeaders addCsrfValues(HttpHeaders httpHeaders) {

@@ -65,7 +65,7 @@ public class EmailNotificationHelper {
 
   private void addDefaultHeaders(
       de.caritas.cob.uploadservice.userservice.generated.ApiClient apiClient, String accessToken, Optional<Long> currentTenant) {
-    HttpHeaders headers = this.serviceHelper.getKeycloakAndCsrfHttpHeaders(accessToken);
+    HttpHeaders headers = this.serviceHelper.getKeycloakAndCsrfHttpHeaders(accessToken, currentTenant);
     addTenantHeaderIfPresent(currentTenant, headers);
     headers.forEach((key, value) -> apiClient.addDefaultHeader(key, value.iterator().next()));
   }
@@ -73,7 +73,7 @@ public class EmailNotificationHelper {
   private void addTenantHeaderIfPresent(Optional<Long> currentTenant, HttpHeaders headers) {
     if (currentTenant.isPresent()) {
       TenantContext.setCurrentTenant(currentTenant.get());
-      tenantHeaderSupplier.addTenantHeader(headers);
+      tenantHeaderSupplier.addTenantHeader(headers, currentTenant);
     }
   }
 }
