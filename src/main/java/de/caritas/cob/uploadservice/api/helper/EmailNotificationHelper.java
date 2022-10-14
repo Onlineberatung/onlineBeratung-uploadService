@@ -1,9 +1,12 @@
 package de.caritas.cob.uploadservice.api.helper;
 
+
 import de.caritas.cob.uploadservice.api.service.LogService;
 import de.caritas.cob.uploadservice.api.service.TenantHeaderSupplier;
 import de.caritas.cob.uploadservice.api.service.helper.ServiceHelper;
 import de.caritas.cob.uploadservice.api.tenant.TenantContext;
+import de.caritas.cob.uploadservice.config.apiclient.UserServiceApiControllerFactory;
+import de.caritas.cob.uploadservice.userservice.generated.ApiClient;
 import de.caritas.cob.uploadservice.userservice.generated.web.model.NewMessageNotificationDTO;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -21,24 +24,28 @@ public class EmailNotificationHelper {
 
   private final ServiceHelper serviceHelper;
   private final TenantHeaderSupplier tenantHeaderSupplier;
-  private final de.caritas.cob.uploadservice.userservice.generated.web.UserControllerApi userControllerApi;
+  private final UserServiceApiControllerFactory userServiceApiControllerFactory;
 
   @Autowired
-  public EmailNotificationHelper(ServiceHelper serviceHelper, TenantHeaderSupplier tenantHeaderSupplier, de.caritas.cob.uploadservice.userservice.generated.web.UserControllerApi userControllerApi) {
+  public EmailNotificationHelper(ServiceHelper serviceHelper,
+      TenantHeaderSupplier tenantHeaderSupplier,
+      UserServiceApiControllerFactory userServiceApiControllerFactory) {
     this.serviceHelper = serviceHelper;
     this.tenantHeaderSupplier = tenantHeaderSupplier;
-    this.userControllerApi = userControllerApi;
+    this.userServiceApiControllerFactory = userServiceApiControllerFactory;
   }
 
   /**
    * Send an email via the UserService
-   *  @param rcGroupId
+   *
+   * @param rcGroupId
    * @param currentTenant
    */
   @Async
   public void sendEmailNotificationViaUserService(
       String rcGroupId, String accessToken,
       Optional<Long> currentTenant) {
+    var userControllerApi = userServiceApiControllerFactory.createControllerApi();
     sendEmailNotificationCallingMethod(rcGroupId, accessToken, currentTenant,
         userControllerApi::sendNewMessageNotification);
   }
@@ -47,14 +54,18 @@ public class EmailNotificationHelper {
   public void sendEmailFeedbackNotificationViaUserService(
       String rcGroupId, String accessToken,
       Optional<Long> currentTenant) {
+    var userControllerApi = userServiceApiControllerFactory.createControllerApi();
     sendEmailNotificationCallingMethod(rcGroupId, accessToken, currentTenant,
         userControllerApi::sendNewFeedbackMessageNotification);
   }
 
-  private void sendEmailNotificationCallingMethod(String rcGroupId, String accessToken, Optional<Long> currentTenant, Consumer<NewMessageNotificationDTO> newMessageNotificationConsumerMethod) {
+  private void sendEmailNotificationCallingMethod(String rcGroupId, String accessToken,
+      Optional<Long> currentTenant,
+      Consumer<NewMessageNotificationDTO> newMessageNotificationConsumerMethod) {
     try {
       NewMessageNotificationDTO notificationDto = new NewMessageNotificationDTO().rcGroupId(
           rcGroupId);
+      var userControllerApi = userServiceApiControllerFactory.createControllerApi();
       addDefaultHeaders(userControllerApi.getApiClient(), accessToken, currentTenant);
       newMessageNotificationConsumerMethod.accept(notificationDto);
       TenantContext.clear();
@@ -63,9 +74,10 @@ public class EmailNotificationHelper {
     }
   }
 
-  private void addDefaultHeaders(
-      de.caritas.cob.uploadservice.userservice.generated.ApiClient apiClient, String accessToken, Optional<Long> currentTenant) {
-    HttpHeaders headers = this.serviceHelper.getKeycloakAndCsrfHttpHeaders(accessToken);
+  private void addDefaultHeaders(ApiClient apiClient, String accessToken,
+      Optional<Long> currentTenant) {
+    HttpHeaders headers = this.serviceHelper.getKeycloakAndCsrfHttpHeaders(accessToken,
+        currentTenant);
     addTenantHeaderIfPresent(currentTenant, headers);
     headers.forEach((key, value) -> apiClient.addDefaultHeader(key, value.iterator().next()));
   }
@@ -73,7 +85,7 @@ public class EmailNotificationHelper {
   private void addTenantHeaderIfPresent(Optional<Long> currentTenant, HttpHeaders headers) {
     if (currentTenant.isPresent()) {
       TenantContext.setCurrentTenant(currentTenant.get());
-      tenantHeaderSupplier.addTenantHeader(headers);
+      tenantHeaderSupplier.addTenantHeader(headers, currentTenant);
     }
   }
 }

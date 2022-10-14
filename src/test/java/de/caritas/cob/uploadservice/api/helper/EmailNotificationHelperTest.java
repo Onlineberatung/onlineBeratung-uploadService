@@ -1,6 +1,7 @@
 package de.caritas.cob.uploadservice.api.helper;
 
 import static de.caritas.cob.uploadservice.helper.TestConstants.KEYCLOAK_ACCESS_TOKEN;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
@@ -12,6 +13,7 @@ import de.caritas.cob.uploadservice.api.service.LogService;
 import de.caritas.cob.uploadservice.api.service.TenantHeaderSupplier;
 import de.caritas.cob.uploadservice.api.service.helper.ServiceHelper;
 import de.caritas.cob.uploadservice.api.tenant.TenantContext;
+import de.caritas.cob.uploadservice.config.apiclient.UserServiceApiControllerFactory;
 import de.caritas.cob.uploadservice.userservice.generated.web.UserControllerApi;
 import de.caritas.cob.uploadservice.userservice.generated.web.model.NewMessageNotificationDTO;
 import java.util.Optional;
@@ -42,6 +44,8 @@ public class EmailNotificationHelperTest {
   @Mock private ServiceHelper serviceHelper;
   @Mock private Logger logger;
   @Mock private TenantHeaderSupplier tenantHeaderSupplier;
+
+  @Mock private UserServiceApiControllerFactory userServiceApiControllerFactory;
   @InjectMocks private EmailNotificationHelper emailNotificationHelper;
 
   @Before
@@ -56,7 +60,8 @@ public class EmailNotificationHelperTest {
     // given
     RestClientException exception = new RestClientException(ERROR);
     when(userControllerApi.getApiClient()).thenReturn(apiClient);
-    when(serviceHelper.getKeycloakAndCsrfHttpHeaders(Mockito.anyString())).thenReturn(new HttpHeaders());
+    when(serviceHelper.getKeycloakAndCsrfHttpHeaders(Mockito.anyString(), any())).thenReturn(new HttpHeaders());
+    when(userServiceApiControllerFactory.createControllerApi()).thenReturn(userControllerApi);
     doThrow(exception).when(userControllerApi).sendNewMessageNotification(Mockito.any(NewMessageNotificationDTO.class));
 
     // when
@@ -72,7 +77,8 @@ public class EmailNotificationHelperTest {
   public void sendEmailNotificationViaUserService_Should_CallUserServiceWithGiveUrl() {
     // given
     when(userControllerApi.getApiClient()).thenReturn(apiClient);
-    when(serviceHelper.getKeycloakAndCsrfHttpHeaders(Mockito.anyString())).thenReturn(new HttpHeaders());
+    when(serviceHelper.getKeycloakAndCsrfHttpHeaders(Mockito.anyString(), any())).thenReturn(new HttpHeaders());
+    when(userServiceApiControllerFactory.createControllerApi()).thenReturn(userControllerApi);
 
     // when
     emailNotificationHelper.sendEmailNotificationViaUserService(
