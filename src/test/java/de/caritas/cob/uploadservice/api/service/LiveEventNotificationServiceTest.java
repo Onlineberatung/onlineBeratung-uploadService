@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import static org.powermock.reflect.Whitebox.setInternalState;
 
 import de.caritas.cob.uploadservice.api.service.helper.ServiceHelper;
+import de.caritas.cob.uploadservice.config.apiclient.LiveProxyApiControllerFactory;
 import de.caritas.cob.uploadservice.userservice.generated.ApiClient;
 import de.caritas.cob.uploadservice.userservice.generated.web.LiveproxyControllerApi;
 import java.util.Optional;
@@ -42,6 +43,9 @@ public class LiveEventNotificationServiceTest {
   @Mock
   private Logger logger;
 
+  @Mock
+  private LiveProxyApiControllerFactory liveProxyApiControllerFactory;
+
   @Before
   public void setup() {
     setInternalState(LogService.class, "LOGGER", logger);
@@ -51,6 +55,7 @@ public class LiveEventNotificationServiceTest {
   public void sendLiveEvent_Should_notTriggerLiveEvent_When_rcGroupIdIsNull() {
     this.liveEventNotificationService.sendLiveEvent(null, null, Optional.empty());
 
+    verifyNoMoreInteractions(this.liveProxyApiControllerFactory);
     verifyNoMoreInteractions(this.liveproxyControllerApi);
     verifyNoMoreInteractions(this.serviceHelper);
   }
@@ -59,6 +64,7 @@ public class LiveEventNotificationServiceTest {
   public void sendLiveEvent_Should_notTriggerLiveEvent_When_rcGroupIdIsEmpty() {
     this.liveEventNotificationService.sendLiveEvent(null, null, Optional.empty());
 
+    verifyNoMoreInteractions(this.liveProxyApiControllerFactory);
     verifyNoMoreInteractions(this.liveproxyControllerApi);
     verifyNoMoreInteractions(this.serviceHelper);
   }
@@ -71,6 +77,7 @@ public class LiveEventNotificationServiceTest {
     headers.add("header 1", "value 1");
     headers.add("header 2", "value 2");
     when(this.serviceHelper.getKeycloakAndCsrfHttpHeaders(anyString(), any())).thenReturn(headers);
+    when(this.liveProxyApiControllerFactory.createControllerApi()).thenReturn(liveproxyControllerApi);
 
     this.liveEventNotificationService.sendLiveEvent("valid", "", Optional.empty());
 
@@ -86,8 +93,10 @@ public class LiveEventNotificationServiceTest {
     when(this.liveproxyControllerApi.getApiClient()).thenReturn(mock(ApiClient.class));
     when(this.serviceHelper.getKeycloakAndCsrfHttpHeaders(anyString(), any()))
         .thenReturn(new HttpHeaders());
+    when(this.liveProxyApiControllerFactory.createControllerApi()).thenReturn(liveproxyControllerApi);
 
     this.liveEventNotificationService.sendLiveEvent("valid", "", Optional.empty());
+
 
     verify(this.logger, times(1)).error(anyString(), anyString(), anyString());
   }

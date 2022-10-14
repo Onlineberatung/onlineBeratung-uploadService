@@ -13,6 +13,7 @@ import de.caritas.cob.uploadservice.api.service.LogService;
 import de.caritas.cob.uploadservice.api.service.TenantHeaderSupplier;
 import de.caritas.cob.uploadservice.api.service.helper.ServiceHelper;
 import de.caritas.cob.uploadservice.api.tenant.TenantContext;
+import de.caritas.cob.uploadservice.config.apiclient.UserServiceApiControllerFactory;
 import de.caritas.cob.uploadservice.userservice.generated.web.UserControllerApi;
 import de.caritas.cob.uploadservice.userservice.generated.web.model.NewMessageNotificationDTO;
 import java.util.Optional;
@@ -43,6 +44,8 @@ public class EmailNotificationHelperTest {
   @Mock private ServiceHelper serviceHelper;
   @Mock private Logger logger;
   @Mock private TenantHeaderSupplier tenantHeaderSupplier;
+
+  @Mock private UserServiceApiControllerFactory userServiceApiControllerFactory;
   @InjectMocks private EmailNotificationHelper emailNotificationHelper;
 
   @Before
@@ -58,6 +61,7 @@ public class EmailNotificationHelperTest {
     RestClientException exception = new RestClientException(ERROR);
     when(userControllerApi.getApiClient()).thenReturn(apiClient);
     when(serviceHelper.getKeycloakAndCsrfHttpHeaders(Mockito.anyString(), any())).thenReturn(new HttpHeaders());
+    when(userServiceApiControllerFactory.createControllerApi()).thenReturn(userControllerApi);
     doThrow(exception).when(userControllerApi).sendNewMessageNotification(Mockito.any(NewMessageNotificationDTO.class));
 
     // when
@@ -74,6 +78,7 @@ public class EmailNotificationHelperTest {
     // given
     when(userControllerApi.getApiClient()).thenReturn(apiClient);
     when(serviceHelper.getKeycloakAndCsrfHttpHeaders(Mockito.anyString(), any())).thenReturn(new HttpHeaders());
+    when(userServiceApiControllerFactory.createControllerApi()).thenReturn(userControllerApi);
 
     // when
     emailNotificationHelper.sendEmailNotificationViaUserService(
