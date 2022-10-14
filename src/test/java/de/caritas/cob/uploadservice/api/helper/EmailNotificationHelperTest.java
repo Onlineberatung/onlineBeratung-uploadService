@@ -37,16 +37,24 @@ public class EmailNotificationHelperTest {
       "http://caritas.local/service/user/mails/new";
   private static final String ERROR = "error";
 
-  @Mock private RestTemplate restTemplate;
+  @Mock
+  private RestTemplate restTemplate;
 
-  @Mock private UserControllerApi userControllerApi;
-  @Mock private de.caritas.cob.uploadservice.userservice.generated.ApiClient apiClient;
-  @Mock private ServiceHelper serviceHelper;
-  @Mock private Logger logger;
-  @Mock private TenantHeaderSupplier tenantHeaderSupplier;
+  @Mock
+  private UserControllerApi userControllerApi;
+  @Mock
+  private de.caritas.cob.uploadservice.userservice.generated.ApiClient apiClient;
+  @Mock
+  private ServiceHelper serviceHelper;
+  @Mock
+  private Logger logger;
+  @Mock
+  private TenantHeaderSupplier tenantHeaderSupplier;
 
-  @Mock private UserServiceApiControllerFactory userServiceApiControllerFactory;
-  @InjectMocks private EmailNotificationHelper emailNotificationHelper;
+  @Mock
+  private UserServiceApiControllerFactory userServiceApiControllerFactory;
+  @InjectMocks
+  private EmailNotificationHelper emailNotificationHelper;
 
   @Before
   public void setup() {
@@ -60,9 +68,11 @@ public class EmailNotificationHelperTest {
     // given
     RestClientException exception = new RestClientException(ERROR);
     when(userControllerApi.getApiClient()).thenReturn(apiClient);
-    when(serviceHelper.getKeycloakAndCsrfHttpHeaders(Mockito.anyString(), any())).thenReturn(new HttpHeaders());
+    when(serviceHelper.getKeycloakAndCsrfHttpHeaders(Mockito.anyString(), any())).thenReturn(
+        new HttpHeaders());
     when(userServiceApiControllerFactory.createControllerApi()).thenReturn(userControllerApi);
-    doThrow(exception).when(userControllerApi).sendNewMessageNotification(Mockito.any(NewMessageNotificationDTO.class));
+    doThrow(exception).when(userControllerApi)
+        .sendNewMessageNotification(Mockito.any(NewMessageNotificationDTO.class));
 
     // when
     emailNotificationHelper.sendEmailNotificationViaUserService(
@@ -76,9 +86,13 @@ public class EmailNotificationHelperTest {
   @Test
   public void sendEmailNotificationViaUserService_Should_CallUserServiceWithGiveUrl() {
     // given
-    when(userControllerApi.getApiClient()).thenReturn(apiClient);
-    when(serviceHelper.getKeycloakAndCsrfHttpHeaders(Mockito.anyString(), any())).thenReturn(new HttpHeaders());
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("authorization", "Bearer XYZ");
+    when(serviceHelper.getKeycloakAndCsrfHttpHeaders(Mockito.anyString(), any())).thenReturn(
+        headers);
     when(userServiceApiControllerFactory.createControllerApi()).thenReturn(userControllerApi);
+    when(userControllerApi.getApiClient()).thenReturn(apiClient);
 
     // when
     emailNotificationHelper.sendEmailNotificationViaUserService(
@@ -88,5 +102,6 @@ public class EmailNotificationHelperTest {
     // then
     verify(userControllerApi, times(1))
         .sendNewMessageNotification(Mockito.any(NewMessageNotificationDTO.class));
+    verify(apiClient).addDefaultHeader("authorization", "Bearer XYZ");
   }
 }

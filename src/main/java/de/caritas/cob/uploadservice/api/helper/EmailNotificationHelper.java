@@ -1,6 +1,5 @@
 package de.caritas.cob.uploadservice.api.helper;
 
-
 import de.caritas.cob.uploadservice.api.service.LogService;
 import de.caritas.cob.uploadservice.api.service.TenantHeaderSupplier;
 import de.caritas.cob.uploadservice.api.service.helper.ServiceHelper;
@@ -46,8 +45,8 @@ public class EmailNotificationHelper {
       String rcGroupId, String accessToken,
       Optional<Long> currentTenant) {
     var userControllerApi = userServiceApiControllerFactory.createControllerApi();
-    sendEmailNotificationCallingMethod(rcGroupId, accessToken, currentTenant,
-        userControllerApi::sendNewMessageNotification);
+    addDefaultHeaders(userControllerApi.getApiClient(), accessToken, currentTenant);
+    sendEmailNotificationCallingMethod(rcGroupId, userControllerApi::sendNewMessageNotification);
   }
 
   @Async
@@ -55,18 +54,15 @@ public class EmailNotificationHelper {
       String rcGroupId, String accessToken,
       Optional<Long> currentTenant) {
     var userControllerApi = userServiceApiControllerFactory.createControllerApi();
-    sendEmailNotificationCallingMethod(rcGroupId, accessToken, currentTenant,
+    addDefaultHeaders(userControllerApi.getApiClient(), accessToken, currentTenant);
+    sendEmailNotificationCallingMethod(rcGroupId,
         userControllerApi::sendNewFeedbackMessageNotification);
   }
 
-  private void sendEmailNotificationCallingMethod(String rcGroupId, String accessToken,
-      Optional<Long> currentTenant,
-      Consumer<NewMessageNotificationDTO> newMessageNotificationConsumerMethod) {
+  private void sendEmailNotificationCallingMethod(String rcGroupId, Consumer<NewMessageNotificationDTO> newMessageNotificationConsumerMethod) {
     try {
       NewMessageNotificationDTO notificationDto = new NewMessageNotificationDTO().rcGroupId(
           rcGroupId);
-      var userControllerApi = userServiceApiControllerFactory.createControllerApi();
-      addDefaultHeaders(userControllerApi.getApiClient(), accessToken, currentTenant);
       newMessageNotificationConsumerMethod.accept(notificationDto);
       TenantContext.clear();
     } catch (RestClientException ex) {
