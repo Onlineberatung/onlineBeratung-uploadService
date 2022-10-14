@@ -5,6 +5,7 @@ import static de.caritas.cob.uploadservice.helper.TestConstants.RC_ROOM_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -187,7 +188,7 @@ public class UploadFacadeTest {
     uploadFacade.uploadFileToRoom(rocketChatCredentials, rocketChatUploadParameter, false);
 
     verify(this.liveEventNotificationService, times(1))
-        .sendLiveEvent(rocketChatUploadParameter.getRoomId());
+        .sendLiveEvent(eq(rocketChatUploadParameter.getRoomId()), any(), any());
   }
 
   @Test(expected = InternalServerErrorException.class)
@@ -286,6 +287,6 @@ public class UploadFacadeTest {
     uploadFacade.uploadFileToFeedbackRoom(rocketChatCredentials, rocketChatUploadParameter, false);
 
     verify(this.liveEventNotificationService, times(1))
-        .sendLiveEvent(rocketChatUploadParameter.getRoomId());
+        .sendLiveEvent(eq(rocketChatUploadParameter.getRoomId()), any(), any());
   }
 }

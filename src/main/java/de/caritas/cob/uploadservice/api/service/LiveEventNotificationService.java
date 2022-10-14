@@ -5,9 +5,9 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import de.caritas.cob.uploadservice.api.service.helper.ServiceHelper;
 import de.caritas.cob.uploadservice.userservice.generated.ApiClient;
 import de.caritas.cob.uploadservice.userservice.generated.web.LiveproxyControllerApi;
+import java.util.Optional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -29,9 +29,9 @@ public class LiveEventNotificationService {
    * @param rcGroupId the rocket chat group id
    */
   @Async
-  public void sendLiveEvent(String rcGroupId) {
+  public void sendLiveEvent(String rcGroupId, String accessToken, Optional<Long> tenantId) {
     if (isNotBlank(rcGroupId)) {
-      addDefaultHeaders(this.liveproxyControllerApi.getApiClient());
+      addDefaultHeaders(this.liveproxyControllerApi.getApiClient(), accessToken, tenantId);
       try {
         this.liveproxyControllerApi.sendLiveEvent(rcGroupId);
       } catch (RestClientException e) {
@@ -41,9 +41,8 @@ public class LiveEventNotificationService {
     }
   }
 
-  private void addDefaultHeaders(ApiClient apiClient) {
-    HttpHeaders headers = this.serviceHelper.getKeycloakAndCsrfHttpHeaders();
-    tenantHeaderSupplier.addTenantHeader(headers);
+  private void addDefaultHeaders(ApiClient apiClient, String accessToken, Optional<Long> tenantId) {
+    var headers = serviceHelper.getKeycloakAndCsrfHttpHeaders(accessToken, tenantId);
     headers.forEach((key, value) -> apiClient.addDefaultHeader(key, value.iterator().next()));
   }
 

@@ -16,6 +16,7 @@ import de.caritas.cob.uploadservice.api.service.RocketChatService;
 import de.caritas.cob.uploadservice.api.service.UploadTrackingService;
 import de.caritas.cob.uploadservice.api.statistics.StatisticsService;
 import de.caritas.cob.uploadservice.api.statistics.event.CreateMessageStatisticsEvent;
+import de.caritas.cob.uploadservice.api.tenant.TenantContext;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.UserRole;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +58,8 @@ public class UploadFacade {
 
     sanitizeAndEncryptParametersAndUploadToRocketChatRoom(
         rocketChatCredentials, rocketChatUploadParameter);
-    this.liveEventNotificationService.sendLiveEvent(rocketChatUploadParameter.getRoomId());
+    this.liveEventNotificationService.sendLiveEvent(rocketChatUploadParameter.getRoomId(),
+        authenticatedUser.getAccessToken(), TenantContext.getCurrentTenantOption());
     this.uploadTrackingService.trackUploadedFileForUser(rocketChatUploadParameter.getRoomId());
 
     if (sendNotification) {
@@ -93,7 +95,8 @@ public class UploadFacade {
     this.uploadTrackingService.validateUploadLimit(rocketChatUploadParameter.getRoomId());
     sanitizeAndEncryptParametersAndUploadToRocketChatRoom(
         rocketChatCredentials, rocketChatUploadParameter);
-    this.liveEventNotificationService.sendLiveEvent(rocketChatUploadParameter.getRoomId());
+    this.liveEventNotificationService.sendLiveEvent(rocketChatUploadParameter.getRoomId(),
+        authenticatedUser.getAccessToken(), TenantContext.getCurrentTenantOption());
     this.uploadTrackingService.trackUploadedFileForUser(rocketChatUploadParameter.getRoomId());
 
     if (sendNotification) {

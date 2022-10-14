@@ -1,5 +1,7 @@
 package de.caritas.cob.uploadservice.api.tenant;
 
+import java.util.Optional;
+
 public class TenantContext {
 
   private TenantContext() {
@@ -10,6 +12,10 @@ public class TenantContext {
 
   public static Long getCurrentTenant() {
     return currentTenant.get();
+  }
+
+  public static Optional<Long> getCurrentTenantOption() {
+    return Optional.ofNullable(getCurrentTenant());
   }
 
   public static void setCurrentTenant(Long tenant) {
