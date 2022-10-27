@@ -115,7 +115,7 @@ public class UploadFacade {
     if (type != null && type.equals("e2e") && fileHeader != null && !fileHeader.isBlank()) {
       // TEMP DEV TryCatch TODO: REMOVE
       try {
-        fileService.verifyFileHeaderMimeType(new ByteArrayInputStream(rocketChatUploadParameter.getFileHeader().getBytes()));
+        fileService.verifyFileHeaderMimeType(new ByteArrayInputStream(fileHeader.getBytes()));
       } catch (Exception e) {
         log.warn("Exception during fileHeader mime check", e);
       }
