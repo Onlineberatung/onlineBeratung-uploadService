@@ -18,13 +18,16 @@ import de.caritas.cob.uploadservice.api.statistics.StatisticsService;
 import de.caritas.cob.uploadservice.api.statistics.event.CreateMessageStatisticsEvent;
 import de.caritas.cob.uploadservice.api.tenant.TenantContext;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.UserRole;
+import java.io.ByteArrayInputStream;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /*
  * Facade to encapsulate the steps for uploading a file with an encrypted message.
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class UploadFacade {
@@ -52,12 +55,12 @@ public class UploadFacade {
   public void uploadFileToRoom(
       RocketChatCredentials rocketChatCredentials,
       RocketChatUploadParameter rocketChatUploadParameter,
-      boolean sendNotification) {
+      boolean sendNotification, String fileHeader) {
 
     this.uploadTrackingService.validateUploadLimit(rocketChatUploadParameter.getRoomId());
 
     sanitizeAndEncryptParametersAndUploadToRocketChatRoom(
-        rocketChatCredentials, rocketChatUploadParameter);
+        rocketChatCredentials, rocketChatUploadParameter, fileHeader);
     this.liveEventNotificationService.sendLiveEvent(rocketChatUploadParameter.getRoomId(),
         authenticatedUser.getAccessToken(), TenantContext.getCurrentTenantOption());
     this.uploadTrackingService.trackUploadedFileForUser(rocketChatUploadParameter.getRoomId());
@@ -94,7 +97,7 @@ public class UploadFacade {
 
     this.uploadTrackingService.validateUploadLimit(rocketChatUploadParameter.getRoomId());
     sanitizeAndEncryptParametersAndUploadToRocketChatRoom(
-        rocketChatCredentials, rocketChatUploadParameter);
+        rocketChatCredentials, rocketChatUploadParameter, null);
     this.liveEventNotificationService.sendLiveEvent(rocketChatUploadParameter.getRoomId(),
         authenticatedUser.getAccessToken(), TenantContext.getCurrentTenantOption());
     this.uploadTrackingService.trackUploadedFileForUser(rocketChatUploadParameter.getRoomId());
@@ -106,10 +109,20 @@ public class UploadFacade {
 
   private void sanitizeAndEncryptParametersAndUploadToRocketChatRoom(
       RocketChatCredentials rocketChatCredentials,
-      RocketChatUploadParameter rocketChatUploadParameter) {
+      RocketChatUploadParameter rocketChatUploadParameter, String fileHeader) {
 
     rocketChatUploadParameterSanitizer.sanitize(rocketChatUploadParameter);
-    fileService.verifyMimeType(rocketChatUploadParameter.getFile());
+    if (fileHeader != null) {
+      // TEMP DEV TryCatch TODO: REMOVE
+      try {
+        fileService.verifyFileHeaderMimeType(new ByteArrayInputStream(fileHeader.getBytes()));
+      } catch (Exception e) {
+        log.warn("Exception during fileHeader mime check", e);
+      }
+    } else {
+      fileService.verifyMimeType(rocketChatUploadParameter.getFile());
+    }
+
     RocketChatUploadParameter encryptedRocketChatUploadParameter;
     try {
       encryptedRocketChatUploadParameter =

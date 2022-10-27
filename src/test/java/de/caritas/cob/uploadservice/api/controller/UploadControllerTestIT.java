@@ -276,7 +276,7 @@ public class UploadControllerTestIT {
       throws Exception {
     doThrow(new QuotaReachedException(LogService::logWarning))
         .when(this.uploadFacade).uploadFileToRoom(any(RocketChatCredentials.class),
-            any(RocketChatUploadParameter.class), anyBoolean());
+            any(RocketChatUploadParameter.class), anyBoolean(), null);
 
     MockPart fileToUpload = new MockPart(FORM_PARAM_FILE, "fileToUpload", "content".getBytes());
 
@@ -299,7 +299,7 @@ public class UploadControllerTestIT {
       throws Exception {
     doThrow(InvalidFileTypeException.class).when(uploadFacade)
         .uploadFileToRoom(any(RocketChatCredentials.class), any(RocketChatUploadParameter.class),
-            anyBoolean());
+            anyBoolean(), null);
     MockPart fileToUpload = new MockPart(FORM_PARAM_FILE, "fileToUpload", "content".getBytes());
 
     mvc.perform(

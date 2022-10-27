@@ -60,6 +60,8 @@ paths:
             schema:
               required:
                 - file
+                - fileHeader
+                - t
                 - sendNotification
               properties:
                 msg:
@@ -76,6 +78,13 @@ paths:
                   type: string
                   description: File to upload
                   format: binary
+                fileHeader:
+                  type: string
+                  description: File to upload
+                t:
+                  type: string
+                  description: Type of message
+                  example: "e2e"
                 sendNotification:
                   type: string
                   description: Flag, whether an email notification should be sent
