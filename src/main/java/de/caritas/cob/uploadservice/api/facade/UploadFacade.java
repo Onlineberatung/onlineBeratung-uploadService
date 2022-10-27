@@ -55,12 +55,12 @@ public class UploadFacade {
   public void uploadFileToRoom(
       RocketChatCredentials rocketChatCredentials,
       RocketChatUploadParameter rocketChatUploadParameter,
-      boolean sendNotification, String fileHeader) {
+      boolean sendNotification, String type, String fileHeader) {
 
     this.uploadTrackingService.validateUploadLimit(rocketChatUploadParameter.getRoomId());
 
     sanitizeAndEncryptParametersAndUploadToRocketChatRoom(
-        rocketChatCredentials, rocketChatUploadParameter, fileHeader);
+        rocketChatCredentials, rocketChatUploadParameter, type, fileHeader);
     this.liveEventNotificationService.sendLiveEvent(rocketChatUploadParameter.getRoomId(),
         authenticatedUser.getAccessToken(), TenantContext.getCurrentTenantOption());
     this.uploadTrackingService.trackUploadedFileForUser(rocketChatUploadParameter.getRoomId());
@@ -97,7 +97,7 @@ public class UploadFacade {
 
     this.uploadTrackingService.validateUploadLimit(rocketChatUploadParameter.getRoomId());
     sanitizeAndEncryptParametersAndUploadToRocketChatRoom(
-        rocketChatCredentials, rocketChatUploadParameter, null);
+        rocketChatCredentials, rocketChatUploadParameter, null, null);
     this.liveEventNotificationService.sendLiveEvent(rocketChatUploadParameter.getRoomId(),
         authenticatedUser.getAccessToken(), TenantContext.getCurrentTenantOption());
     this.uploadTrackingService.trackUploadedFileForUser(rocketChatUploadParameter.getRoomId());
@@ -109,13 +109,13 @@ public class UploadFacade {
 
   private void sanitizeAndEncryptParametersAndUploadToRocketChatRoom(
       RocketChatCredentials rocketChatCredentials,
-      RocketChatUploadParameter rocketChatUploadParameter, String fileHeader) {
+      RocketChatUploadParameter rocketChatUploadParameter, String type, String fileHeader) {
 
     rocketChatUploadParameterSanitizer.sanitize(rocketChatUploadParameter);
-    if (fileHeader != null) {
+    if (type != null && type.equals("e2e") && fileHeader != null && !fileHeader.isBlank()) {
       // TEMP DEV TryCatch TODO: REMOVE
       try {
-        fileService.verifyFileHeaderMimeType(new ByteArrayInputStream(fileHeader.getBytes()));
+        fileService.verifyFileHeaderMimeType(new ByteArrayInputStream(rocketChatUploadParameter.getFileHeader().getBytes()));
       } catch (Exception e) {
         log.warn("Exception during fileHeader mime check", e);
       }

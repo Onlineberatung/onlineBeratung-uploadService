@@ -77,8 +77,8 @@ public class UploadController implements UploadsApi {
       @RequestHeader String rcUserId,
       @RequestPart MultipartFile file,
       @RequestParam String sendNotification,
-      @RequestPart(required = false) String fileHeader,
       @RequestPart(required = false) String t,
+      @RequestPart(required = false) String fileHeader,
       @RequestParam(required = false) String msg,
       @RequestParam(required = false) String description,
       @RequestParam(required = false) String tmId) {
@@ -96,8 +96,12 @@ public class UploadController implements UploadsApi {
             .build();
 
     uploadFacade.uploadFileToRoom(
-        rocketChatCredentials, rocketChatUploadParameter, parseBoolean(sendNotification),
-        t != null && t.equals("e2e") ? fileHeader : null);
+        rocketChatCredentials,
+        rocketChatUploadParameter,
+        parseBoolean(sendNotification),
+        t,
+        fileHeader
+    );
 
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
