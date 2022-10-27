@@ -22,6 +22,7 @@ import static de.caritas.cob.uploadservice.helper.TestConstants.RC_USER_ID;
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_USER_ID_HEADER_PARAMETER_NAME;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -276,7 +277,7 @@ public class UploadControllerTestIT {
       throws Exception {
     doThrow(new QuotaReachedException(LogService::logWarning))
         .when(this.uploadFacade).uploadFileToRoom(any(RocketChatCredentials.class),
-            any(RocketChatUploadParameter.class), anyBoolean(), null);
+            any(RocketChatUploadParameter.class), anyBoolean(), nullable(String.class));
 
     MockPart fileToUpload = new MockPart(FORM_PARAM_FILE, "fileToUpload", "content".getBytes());
 
@@ -299,7 +300,7 @@ public class UploadControllerTestIT {
       throws Exception {
     doThrow(InvalidFileTypeException.class).when(uploadFacade)
         .uploadFileToRoom(any(RocketChatCredentials.class), any(RocketChatUploadParameter.class),
-            anyBoolean(), null);
+            anyBoolean(), nullable(String.class));
     MockPart fileToUpload = new MockPart(FORM_PARAM_FILE, "fileToUpload", "content".getBytes());
 
     mvc.perform(

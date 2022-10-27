@@ -60,8 +60,6 @@ paths:
             schema:
               required:
                 - file
-                - fileHeader
-                - t
                 - sendNotification
               properties:
                 msg:
@@ -74,10 +72,6 @@ paths:
                   type: string
                   description: The thread message id (if you want upload a file to
                     a thread)
-                file:
-                  type: string
-                  description: File to upload
-                  format: binary
                 fileHeader:
                   type: string
                   description: File to upload
@@ -85,6 +79,10 @@ paths:
                   type: string
                   description: Type of message
                   example: "e2e"
+                file:
+                  type: string
+                  description: File to upload
+                  format: binary
                 sendNotification:
                   type: string
                   description: Flag, whether an email notification should be sent
