@@ -144,11 +144,13 @@ public class UploadFacade {
     if (attachmentE2eEnabled) {
       // TEMP DEV TryCatch TODO: REMOVE
       try {
-        rocketChatService.deleteMessage(rocketChatCredentials, uploadResponse.getMessage().getId());
-        FullUploadResponseDtoMessage modifiedPostPayload = uploadResponse.getMessage();
-        modifiedPostPayload.setT("e2e");
-        rocketChatService.postGroupMessage(rocketChatCredentials, modifiedPostPayload);
-      } catch (Exception e){
+        if (rocketChatService.deleteMessage(rocketChatCredentials,
+            uploadResponse.getMessage().getId())) {
+          FullUploadResponseDtoMessage modifiedPostPayload = uploadResponse.getMessage();
+          modifiedPostPayload.setT("e2e");
+          rocketChatService.postGroupMessage(rocketChatCredentials, modifiedPostPayload);
+        }
+      } catch (Exception e) {
         log.warn("Exception during E2E attachment message recreation", e);
       }
     }
