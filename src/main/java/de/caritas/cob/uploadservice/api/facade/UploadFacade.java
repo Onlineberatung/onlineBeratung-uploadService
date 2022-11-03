@@ -18,6 +18,7 @@ import de.caritas.cob.uploadservice.api.statistics.StatisticsService;
 import de.caritas.cob.uploadservice.api.statistics.event.CreateMessageStatisticsEvent;
 import de.caritas.cob.uploadservice.api.tenant.TenantContext;
 import de.caritas.cob.uploadservice.rocketchat.generated.web.model.FullUploadResponseDto;
+import de.caritas.cob.uploadservice.rocketchat.generated.web.model.FullUploadResponseDtoMessage;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.UserRole;
 import java.io.ByteArrayInputStream;
 import lombok.NonNull;
@@ -117,7 +118,8 @@ public class UploadFacade {
       RocketChatUploadParameter rocketChatUploadParameter, String type, String fileHeader) {
 
     rocketChatUploadParameterSanitizer.sanitize(rocketChatUploadParameter);
-    if (attachmentE2eEnabled && type != null && type.equals("e2e") && fileHeader != null && !fileHeader.isBlank()) {
+    if (attachmentE2eEnabled && type != null && type.equals("e2e") && fileHeader != null
+        && !fileHeader.isBlank()) {
       // TEMP DEV TryCatch TODO: REMOVE
       try {
         fileService.verifyFileHeaderMimeType(new ByteArrayInputStream(fileHeader.getBytes()));
@@ -136,10 +138,19 @@ public class UploadFacade {
       throw new InternalServerErrorException(e, LogService::logEncryptionServiceError);
     }
 
-    if(attachmentE2eEnabled){
-      // TODO: Delete message, create new with t = "e2e"
-      FullUploadResponseDto uploadResponse = rocketChatService.roomsUpload(rocketChatCredentials,
-          encryptedRocketChatUploadParameter);
+    FullUploadResponseDto uploadResponse = rocketChatService.roomsUpload(rocketChatCredentials,
+        encryptedRocketChatUploadParameter);
+
+    if (attachmentE2eEnabled) {
+      // TEMP DEV TryCatch TODO: REMOVE
+      try {
+        rocketChatService.deleteMessage(rocketChatCredentials, uploadResponse.getMessage().getId());
+        FullUploadResponseDtoMessage modifiedPostPayload = uploadResponse.getMessage();
+        modifiedPostPayload.setT("e2e");
+        rocketChatService.postGroupMessage(rocketChatCredentials, modifiedPostPayload);
+      } catch (Exception e){
+        log.warn("Exception during E2E attachment message recreation", e);
+      }
     }
 
     try {

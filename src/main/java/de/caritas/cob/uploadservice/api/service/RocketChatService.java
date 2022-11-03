@@ -1,5 +1,7 @@
 package de.caritas.cob.uploadservice.api.service;
 
+import static java.util.Objects.nonNull;
+
 import de.caritas.cob.uploadservice.api.container.RocketChatCredentials;
 import de.caritas.cob.uploadservice.api.container.RocketChatUploadParameter;
 import de.caritas.cob.uploadservice.api.container.UploadError;
@@ -11,20 +13,27 @@ import de.caritas.cob.uploadservice.api.helper.FileSanitizer;
 import de.caritas.cob.uploadservice.api.helper.MultipartInputStreamFileResource;
 import de.caritas.cob.uploadservice.api.helper.UploadErrorHelper;
 import de.caritas.cob.uploadservice.api.model.rocket.chat.StandardResponseDto;
-import de.caritas.cob.uploadservice.api.model.rocket.chat.group.PostGroupAsReadDto;
 import de.caritas.cob.uploadservice.api.model.rocket.chat.UploadResponseDto;
+import de.caritas.cob.uploadservice.api.model.rocket.chat.group.PostGroupAsReadDto;
+import de.caritas.cob.uploadservice.api.model.rocket.chat.message.SendMessageResponseDTO;
+import de.caritas.cob.uploadservice.api.model.rocket.chat.message.SendMessageWrapper;
+import de.caritas.cob.uploadservice.api.service.dto.StringifiedMessageResponse;
 import de.caritas.cob.uploadservice.api.service.helper.RocketChatCredentialsHelper;
 import de.caritas.cob.uploadservice.rocketchat.generated.web.model.FullUploadResponseDto;
+import de.caritas.cob.uploadservice.rocketchat.generated.web.model.FullUploadResponseDtoMessage;
 import java.io.IOException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
@@ -32,6 +41,7 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class RocketChatService {
 
@@ -40,6 +50,12 @@ public class RocketChatService {
 
   @Value("${rocket.chat.api.rooms.upload.url}")
   private String rcRoomsUpload;
+
+  @Value("${rocket.chat.api.rooms.delete.url}")
+  private String rcDelete;
+
+  @Value("${rocket.chat.api.send.message.url}")
+  private String rcSendMessageUrl;
 
   @Value("${rocket.chat.header.auth.token}")
   private String rcHeaderAuthToken;
@@ -65,6 +81,7 @@ public class RocketChatService {
   private final @NonNull RestTemplate restTemplate;
   private final @NonNull RocketChatCredentialsHelper rcCredentialHelper;
   private final @NonNull UploadErrorHelper uploadErrorHelper;
+  private final @NonNull MessageMapper mapper;
 
   private HttpHeaders getRocketChatHeader(String rcToken, String rcUserId) {
     HttpHeaders headers = new HttpHeaders();
@@ -170,6 +187,45 @@ public class RocketChatService {
               rocketChatUploadParameter.getRoomId(), rocketChatCredentials.getRocketChatUserId()));
     }
     return response;
+  }
+
+  public SendMessageResponseDTO postGroupMessage(RocketChatCredentials rocketChatCredentials,
+      FullUploadResponseDtoMessage sendMessage) {
+    var headers = getRocketChatHeader(rocketChatCredentials.getRocketChatToken(),
+        rocketChatCredentials.getRocketChatUserId());
+    var payload = new SendMessageWrapper(sendMessage);
+    var request = new HttpEntity<>(payload, headers);
+
+    try {
+      return restTemplate.postForObject(rcSendMessageUrl, request, SendMessageResponseDTO.class);
+    } catch (Exception ex) {
+      LogService.logRocketChatServiceError(
+          "Request body which caused the error was " + request.getBody());
+      throw new InternalServerErrorException(ex, LogService::logRocketChatServiceError);
+    }
+  }
+
+  public boolean deleteMessage(RocketChatCredentials rocketChatCredentials, String messageId) {
+    String deleteUrl = rcDelete;
+    var deleteMessage = mapper.deleteMessageOf(messageId);
+    var entity = new HttpEntity<>(deleteMessage,
+        getRocketChatHeader(rocketChatCredentials.getRocketChatToken(),
+            rocketChatCredentials.getRocketChatUserId()));
+
+    try {
+      var response = restTemplate.postForEntity(deleteUrl, entity,
+          StringifiedMessageResponse.class);
+      return isSuccessful(response);
+    } catch (HttpClientErrorException exception) {
+      log.error("Deleting message failed.", exception);
+      return false;
+    }
+  }
+
+  private boolean isSuccessful(ResponseEntity<StringifiedMessageResponse> response) {
+    var body = response.getBody();
+
+    return nonNull(body) && body.getSuccess() && !body.getMessage().contains("\"error\"");
   }
 
   private MultiValueMap<String, Object> getParameterMapForUploadRequest(

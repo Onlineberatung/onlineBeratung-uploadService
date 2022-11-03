@@ -11,6 +11,7 @@ import static de.caritas.cob.uploadservice.helper.TestConstants.FILE_NAME_SANITI
 import static de.caritas.cob.uploadservice.helper.TestConstants.INVALID_RC_SYSTEM_USER;
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_DESCRIPTION;
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_FULL_UPLOAD_ERROR_RESPONSE_DTO_SUCCESS;
+import static de.caritas.cob.uploadservice.helper.TestConstants.RC_FULL_UPLOAD_ERROR_RESPONSE_DTO_UNKNOWN_ERROR;
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_MESSAGE;
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_ROOM_ID;
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_SYSTEM_USER;
@@ -52,6 +53,7 @@ import de.caritas.cob.uploadservice.api.model.rocket.chat.UploadResponseDto;
 import de.caritas.cob.uploadservice.api.service.helper.RocketChatCredentialsHelper;
 import de.caritas.cob.uploadservice.rocketchat.generated.web.model.FullUploadResponseDto;
 import java.nio.charset.StandardCharsets;
+import liquibase.pro.packaged.M;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,6 +66,8 @@ import org.mockito.Mockito;
 import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
+import org.springframework.amqp.core.Message;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.MultiValueMap;
@@ -87,6 +91,8 @@ public class RocketChatServiceTest {
   private Logger logger;
   @Mock
   private UploadErrorHelper uploadErrorHelper;
+  @Mock
+  private MessageMapper mapper;
 
   @Captor
   private ArgumentCaptor<HttpEntity<MultiValueMap<String, Object>>> mapArgumentCaptor;
@@ -296,8 +302,8 @@ public class RocketChatServiceTest {
     when(restTemplate.postForObject(
         ArgumentMatchers.anyString(),
         any(),
-        ArgumentMatchers.<Class<UploadResponseDto>>any()))
-        .thenReturn(RC_UPLOAD_ERROR_RESPONSE_DTO_UNKNOWN_ERROR);
+        ArgumentMatchers.<Class<FullUploadResponseDto>>any()))
+        .thenReturn(RC_FULL_UPLOAD_ERROR_RESPONSE_DTO_UNKNOWN_ERROR);
 
     try {
       rocketChatService.roomsUpload(rocketChatCredentials, rocketChatUploadParameter);

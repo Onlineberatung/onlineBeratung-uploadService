@@ -24,6 +24,9 @@ components:
             msg:
               type: string
               example: This is a message with a file
+            t:
+              type: string
+              example: p
             file:
               type: object
               properties:

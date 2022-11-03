@@ -115,6 +115,10 @@ public class TestConstants {
           + "}";
   public static final UploadResponseDto RC_UPLOAD_ERROR_RESPONSE_DTO_UNKNOWN_ERROR =
       new UploadResponseDto(false, ERROR_MSG, ERROR_MSG);
+
+  public static final FullUploadResponseDto RC_FULL_UPLOAD_ERROR_RESPONSE_DTO_UNKNOWN_ERROR =
+      FullUploadResponseDto.builder().success(false).error(ERROR_MSG).errorType(ERROR_MSG).build();
+
   public static final UploadError RC_UPLOAD_ERROR_UNKNOWN_ERROR =
       UploadError.builder()
           .rcError(ERROR_MSG)
