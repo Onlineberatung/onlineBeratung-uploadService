@@ -45,7 +45,7 @@ public class UploadFacade {
   private final @NonNull AuthenticatedUser authenticatedUser;
   private final @NonNull FileService fileService;
 
-  @Value("${attachementE2E.enabled}")
+  @Value("${attachmentE2E.enabled}")
   private boolean attachmentE2eEnabled;
 
   /**
