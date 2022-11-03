@@ -352,8 +352,8 @@ public class RocketChatServiceTest {
     when(restTemplate.postForObject(
         ArgumentMatchers.anyString(),
         any(),
-        ArgumentMatchers.<Class<UploadResponseDto>>any()))
-        .thenReturn(RC_UPLOAD_ERROR_RESPONSE_DTO_SUCCESS);
+        ArgumentMatchers.<Class<FullUploadResponseDto>>any()))
+        .thenReturn(RC_FULL_UPLOAD_ERROR_RESPONSE_DTO_SUCCESS);
 
     rocketChatService
         .roomsUpload(rocketChatCredentials, rocketChatUploadParameterWithUnsanitizedFileName);
