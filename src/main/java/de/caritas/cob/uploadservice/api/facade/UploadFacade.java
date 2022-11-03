@@ -118,8 +118,15 @@ public class UploadFacade {
       RocketChatUploadParameter rocketChatUploadParameter, String type, String fileHeader) {
 
     rocketChatUploadParameterSanitizer.sanitize(rocketChatUploadParameter);
-    if (attachmentE2eEnabled && type != null && type.equals("e2e") && fileHeader != null
-        && !fileHeader.isBlank()) {
+
+    // TODO: Fallback strategy or throw Error for enabled E2E but invalid payload?
+    boolean doAttachmentE2e = attachmentE2eEnabled
+        && type != null
+        && type.equals("e2e")
+        && fileHeader != null
+        && !fileHeader.isBlank();
+
+    if (doAttachmentE2e) {
       // TEMP DEV TryCatch TODO: REMOVE
       try {
         fileService.verifyFileHeaderMimeType(new ByteArrayInputStream(fileHeader.getBytes()));
@@ -141,7 +148,7 @@ public class UploadFacade {
     FullUploadResponseDto uploadResponse = rocketChatService.roomsUpload(rocketChatCredentials,
         encryptedRocketChatUploadParameter);
 
-    if (attachmentE2eEnabled) {
+    if (doAttachmentE2e) {
       // TEMP DEV TryCatch TODO: REMOVE
       try {
         if (rocketChatService.deleteMessage(rocketChatCredentials,
