@@ -17,11 +17,13 @@ import de.caritas.cob.uploadservice.api.service.UploadTrackingService;
 import de.caritas.cob.uploadservice.api.statistics.StatisticsService;
 import de.caritas.cob.uploadservice.api.statistics.event.CreateMessageStatisticsEvent;
 import de.caritas.cob.uploadservice.api.tenant.TenantContext;
+import de.caritas.cob.uploadservice.rocketchat.generated.web.model.FullUploadResponseDto;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.UserRole;
 import java.io.ByteArrayInputStream;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /*
@@ -41,6 +43,9 @@ public class UploadFacade {
   private final @NonNull StatisticsService statisticsService;
   private final @NonNull AuthenticatedUser authenticatedUser;
   private final @NonNull FileService fileService;
+
+  @Value("${attachementE2E.enabled}")
+  private boolean attachmentE2eEnabled;
 
   /**
    * Upload a file with a message to a Rocket.Chat room. The message and the description are
@@ -112,7 +117,7 @@ public class UploadFacade {
       RocketChatUploadParameter rocketChatUploadParameter, String type, String fileHeader) {
 
     rocketChatUploadParameterSanitizer.sanitize(rocketChatUploadParameter);
-    if (type != null && type.equals("e2e") && fileHeader != null && !fileHeader.isBlank()) {
+    if (attachmentE2eEnabled && type != null && type.equals("e2e") && fileHeader != null && !fileHeader.isBlank()) {
       // TEMP DEV TryCatch TODO: REMOVE
       try {
         fileService.verifyFileHeaderMimeType(new ByteArrayInputStream(fileHeader.getBytes()));
@@ -131,7 +136,12 @@ public class UploadFacade {
       throw new InternalServerErrorException(e, LogService::logEncryptionServiceError);
     }
 
-    rocketChatService.roomsUpload(rocketChatCredentials, encryptedRocketChatUploadParameter);
+    if(attachmentE2eEnabled){
+      // TODO: Delete message, create new with t = "e2e"
+      FullUploadResponseDto uploadResponse = rocketChatService.roomsUpload(rocketChatCredentials,
+          encryptedRocketChatUploadParameter);
+    }
+
     try {
       rocketChatService.markGroupAsReadForSystemUser(rocketChatUploadParameter.getRoomId());
     } catch (RocketChatPostMarkGroupAsReadException e) {

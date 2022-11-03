@@ -7,6 +7,7 @@ import de.caritas.cob.uploadservice.api.container.RocketChatCredentials;
 import de.caritas.cob.uploadservice.api.container.UploadError;
 import de.caritas.cob.uploadservice.api.model.rocket.chat.StandardResponseDto;
 import de.caritas.cob.uploadservice.api.model.rocket.chat.UploadResponseDto;
+import de.caritas.cob.uploadservice.rocketchat.generated.web.model.FullUploadResponseDto;
 import org.springframework.mock.web.MockMultipartFile;
 
 public class TestConstants {
@@ -132,6 +133,9 @@ public class TestConstants {
           + "}";
   public static final UploadResponseDto RC_UPLOAD_ERROR_RESPONSE_DTO_SUCCESS =
       new UploadResponseDto(true, null, null);
+
+  public static final FullUploadResponseDto RC_FULL_UPLOAD_ERROR_RESPONSE_DTO_SUCCESS =
+      FullUploadResponseDto.builder().success(true).error(null).errorType(null).build();
 
   /* Upload */
   public static final String FORM_PARAM_SEND_NOTIFICATION = "sendNotification";

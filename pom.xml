@@ -343,6 +343,33 @@
               </modelPackage>
             </configuration>
           </execution>
+          <!-- Generate models for RocketChat -->
+          <execution>
+            <id>rocketchat-client-model</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <configOptions>
+                <sourceFolder>/</sourceFolder>
+                <library>resttemplate</library>
+                <dateLibrary>java8</dateLibrary>
+                <!--suppress UnresolvedMavenProperty -->
+                <additionalModelTypeAnnotations>@lombok.AllArgsConstructor @lombok.Builder @lombok.NoArgsConstructor</additionalModelTypeAnnotations>
+              </configOptions>
+              <inputSpec>${project.basedir}/services/rocketchat.yaml</inputSpec>
+              <generatorName>java</generatorName>
+              <generateApis>false</generateApis>
+              <generateSupportingFiles>false</generateSupportingFiles>
+              <generateApiTests>false</generateApiTests>
+              <generateModelTests>false</generateModelTests>
+              <skipValidateSpec>true</skipValidateSpec>
+              <modelPackage>
+                ${project.groupId}.${project.artifactId}.rocketchat.generated.web.model
+              </modelPackage>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <!-- Code style check -->

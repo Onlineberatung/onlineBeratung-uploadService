@@ -11,9 +11,10 @@ import de.caritas.cob.uploadservice.api.helper.FileSanitizer;
 import de.caritas.cob.uploadservice.api.helper.MultipartInputStreamFileResource;
 import de.caritas.cob.uploadservice.api.helper.UploadErrorHelper;
 import de.caritas.cob.uploadservice.api.model.rocket.chat.StandardResponseDto;
-import de.caritas.cob.uploadservice.api.model.rocket.chat.UploadResponseDto;
 import de.caritas.cob.uploadservice.api.model.rocket.chat.group.PostGroupAsReadDto;
+import de.caritas.cob.uploadservice.api.model.rocket.chat.UploadResponseDto;
 import de.caritas.cob.uploadservice.api.service.helper.RocketChatCredentialsHelper;
+import de.caritas.cob.uploadservice.rocketchat.generated.web.model.FullUploadResponseDto;
 import java.io.IOException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -122,11 +123,11 @@ public class RocketChatService {
    * @param rocketChatCredentials {@link RocketChatCredentials} container
    * @param rocketChatUploadParameter {@link RocketChatUploadParameter} container
    */
-  public void roomsUpload(
+  public FullUploadResponseDto roomsUpload(
       RocketChatCredentials rocketChatCredentials,
       RocketChatUploadParameter rocketChatUploadParameter) {
 
-    UploadResponseDto response;
+    FullUploadResponseDto response;
     String uploadUrl = rcRoomsUpload + "/" + rocketChatUploadParameter.getRoomId();
 
     try {
@@ -142,7 +143,7 @@ public class RocketChatService {
       HttpEntity<MultiValueMap<String, Object>> request =
           new HttpEntity<>(map, headers);
 
-      response = restTemplate.postForObject(uploadUrl, request, UploadResponseDto.class);
+      response = restTemplate.postForObject(uploadUrl, request, FullUploadResponseDto.class);
 
     } catch (HttpStatusCodeException httpStatusCodeException) {
       UploadResponseDto errorResponse =
@@ -162,12 +163,13 @@ public class RocketChatService {
       }
     }
 
-    if (response == null || !response.isSuccess()) {
+    if (response == null || !response.getSuccess()) {
       throw new MultipartException(
           String.format(
               "Could not upload file to room with id %s for user with id %s",
               rocketChatUploadParameter.getRoomId(), rocketChatCredentials.getRocketChatUserId()));
     }
+    return response;
   }
 
   private MultiValueMap<String, Object> getParameterMapForUploadRequest(

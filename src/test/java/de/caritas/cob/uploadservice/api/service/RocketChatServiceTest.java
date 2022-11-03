@@ -10,6 +10,7 @@ import static de.caritas.cob.uploadservice.helper.TestConstants.ERROR_MSG;
 import static de.caritas.cob.uploadservice.helper.TestConstants.FILE_NAME_SANITIZED;
 import static de.caritas.cob.uploadservice.helper.TestConstants.INVALID_RC_SYSTEM_USER;
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_DESCRIPTION;
+import static de.caritas.cob.uploadservice.helper.TestConstants.RC_FULL_UPLOAD_ERROR_RESPONSE_DTO_SUCCESS;
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_MESSAGE;
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_ROOM_ID;
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_SYSTEM_USER;
@@ -49,6 +50,7 @@ import de.caritas.cob.uploadservice.api.helper.UploadErrorHelper;
 import de.caritas.cob.uploadservice.api.model.rocket.chat.StandardResponseDto;
 import de.caritas.cob.uploadservice.api.model.rocket.chat.UploadResponseDto;
 import de.caritas.cob.uploadservice.api.service.helper.RocketChatCredentialsHelper;
+import de.caritas.cob.uploadservice.rocketchat.generated.web.model.FullUploadResponseDto;
 import java.nio.charset.StandardCharsets;
 import org.junit.Before;
 import org.junit.Test;
@@ -328,8 +330,8 @@ public class RocketChatServiceTest {
     when(restTemplate.postForObject(
         ArgumentMatchers.anyString(),
         any(),
-        ArgumentMatchers.<Class<UploadResponseDto>>any()))
-        .thenReturn(RC_UPLOAD_ERROR_RESPONSE_DTO_SUCCESS);
+        ArgumentMatchers.<Class<FullUploadResponseDto>>any()))
+        .thenReturn(RC_FULL_UPLOAD_ERROR_RESPONSE_DTO_SUCCESS);
 
     try {
       rocketChatService.roomsUpload(rocketChatCredentials, rocketChatUploadParameter);

@@ -1,6 +1,5 @@
 package de.caritas.cob.uploadservice.api.helper;
 
-import static de.caritas.cob.uploadservice.helper.TestConstants.FIELD_NAME_LOGSERVICE;
 import static de.caritas.cob.uploadservice.helper.TestConstants.INVALID_JSON_BODY;
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_UPLOAD_ERROR_RESPONSE_BODY;
 import static org.junit.Assert.assertEquals;
@@ -17,8 +16,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 

@@ -1,0 +1,118 @@
+openapi: 3.0.1
+info:
+  title: RocketChat
+  description: RocketChat Models
+  version: 0.0.1
+
+components:
+  schemas:
+    FullUploadResponseDto:
+      type: object
+      properties:
+        message:
+          type: object
+          properties:
+            _id:
+              type: string
+              example: XhqGxkXYtcYba2F9K
+            rid:
+              type: string
+              example: GENERAL
+            ts:
+              type: string
+              example: 2022-06-29T07:34:33.736Z
+            msg:
+              type: string
+              example: This is a message with a file
+            file:
+              type: object
+              properties:
+                _id:
+                  type: string
+                  example: pw6oyrjBStWwMdeMv
+                name:
+                  type: string
+                  example: example.txt
+                type:
+                  type: string
+                  example: text/plain
+            files:
+              type: array
+              items:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: pw6oyrjBStWwMdeMv
+                  name:
+                    type: string
+                    example: example.txt
+                  type:
+                    type: string
+                    example: text/plain
+            attachments:
+              type: array
+              items:
+                type: object
+                properties:
+                  ts:
+                    type: string
+                    example: 1970-01-01T00:00:00.000Z
+                  title:
+                    type: string
+                    example: example.txt
+                  title_link:
+                    type: string
+                    example: /file-upload/pw6oyrjBStWwMdeMv/example.txt
+                  title_link_download:
+                    type: boolean
+                  type:
+                    type: string
+                    example: file
+                  description:
+                    type: string
+                    example: Simple text file
+            u:
+              type: object
+              properties:
+                _id:
+                  type: string
+                  example: g8aroJivN5R32TxCm
+                username:
+                  type: string
+                  example: rodriq
+                name:
+                  type: string
+                  example: Rodriq
+            _updatedAt:
+              type: string
+              example: 2022-06-29T07:34:33.811Z
+            urls:
+              type: array
+              items:
+                type: object
+            md:
+              type: array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: PARAGRAPH
+                  value:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          example: PLAIN_TEXT
+                        value:
+                          type: string
+                          example: This is a message with a file
+        success:
+          type: boolean
+        error:
+          type: string
+        errorType:
+          type: string
