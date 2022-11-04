@@ -148,7 +148,7 @@ public class UploadFacade {
 
     log.debug("Upload Response: {}", uploadResponse);
 
-    if (doAttachmentE2e || true) {
+    if (doAttachmentE2e) {
       // TEMP DEV TryCatch TODO: REMOVE
       try {
         if (rocketChatService.deleteMessage(rocketChatCredentials,
@@ -161,6 +161,8 @@ public class UploadFacade {
               .alias(uploadResponse.getMessage().getAlias())
               .org(uploadResponse.getMessage().getOrg())
               .t("e2e")
+              .file(uploadResponse.getMessage().getFile())
+              .files(uploadResponse.getMessage().getFiles())
               .attachments(uploadResponse.getMessage().getAttachments())
               .build();
           SendMessageResponseDTO postResponse = rocketChatService.sendGroupMessage(

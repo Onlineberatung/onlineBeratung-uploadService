@@ -171,3 +171,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Attachment'
+        file:
+          type: object
+          properties:
+            _id:
+              type: string
+              example: pw6oyrjBStWwMdeMv
+            name:
+              type: string
+              example: example.txt
+            type:
+              type: string
+              example: text/plain
+        files:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+                example: pw6oyrjBStWwMdeMv
+              name:
+                type: string
+                example: example.txt
+              type:
+                type: string
+                example: text/plain
