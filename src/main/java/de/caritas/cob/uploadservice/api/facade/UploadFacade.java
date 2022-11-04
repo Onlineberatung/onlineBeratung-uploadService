@@ -9,6 +9,7 @@ import de.caritas.cob.uploadservice.api.helper.AuthenticatedUser;
 import de.caritas.cob.uploadservice.api.helper.AuthenticatedUserHelper;
 import de.caritas.cob.uploadservice.api.helper.RocketChatUploadParameterEncrypter;
 import de.caritas.cob.uploadservice.api.helper.RocketChatUploadParameterSanitizer;
+import de.caritas.cob.uploadservice.api.model.rocket.chat.message.SendMessageResponseDTO;
 import de.caritas.cob.uploadservice.api.service.FileService;
 import de.caritas.cob.uploadservice.api.service.LiveEventNotificationService;
 import de.caritas.cob.uploadservice.api.service.LogService;
@@ -148,6 +149,8 @@ public class UploadFacade {
     FullUploadResponseDto uploadResponse = rocketChatService.roomsUpload(rocketChatCredentials,
         encryptedRocketChatUploadParameter);
 
+    log.debug("Upload Response: {}", uploadResponse);
+
     if (doAttachmentE2e) {
       // TEMP DEV TryCatch TODO: REMOVE
       try {
@@ -155,7 +158,9 @@ public class UploadFacade {
             uploadResponse.getMessage().getId())) {
           FullUploadResponseDtoMessage modifiedPostPayload = uploadResponse.getMessage();
           modifiedPostPayload.setT("e2e");
-          rocketChatService.postGroupMessage(rocketChatCredentials, modifiedPostPayload);
+          // rocketChatService.postGroupMessage(rocketChatCredentials, modifiedPostPayload);
+          SendMessageResponseDTO postResponse = rocketChatService.postMessage(rocketChatCredentials, modifiedPostPayload);
+          log.debug("Post Response: {}", postResponse);
         }
       } catch (Exception e) {
         log.warn("Exception during E2E attachment message recreation", e);

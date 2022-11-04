@@ -57,6 +57,9 @@ public class RocketChatService {
   @Value("${rocket.chat.api.send.message.url}")
   private String rcSendMessageUrl;
 
+  @Value("${rocket.chat.api.post.message.url}")
+  private String rcPostMessageUrl;
+
   @Value("${rocket.chat.header.auth.token}")
   private String rcHeaderAuthToken;
 
@@ -189,7 +192,7 @@ public class RocketChatService {
     return response;
   }
 
-  public SendMessageResponseDTO postGroupMessage(RocketChatCredentials rocketChatCredentials,
+  public SendMessageResponseDTO sendGroupMessage(RocketChatCredentials rocketChatCredentials,
       FullUploadResponseDtoMessage sendMessage) {
     var headers = getRocketChatHeader(rocketChatCredentials.getRocketChatToken(),
         rocketChatCredentials.getRocketChatUserId());
@@ -198,6 +201,22 @@ public class RocketChatService {
 
     try {
       return restTemplate.postForObject(rcSendMessageUrl, request, SendMessageResponseDTO.class);
+    } catch (Exception ex) {
+      LogService.logRocketChatServiceError(
+          "Request body which caused the error was " + request.getBody());
+      throw new InternalServerErrorException(ex, LogService::logRocketChatServiceError);
+    }
+  }
+
+  public SendMessageResponseDTO postMessage(RocketChatCredentials rocketChatCredentials,
+      FullUploadResponseDtoMessage postMessage) {
+    var headers = getRocketChatHeader(rocketChatCredentials.getRocketChatToken(),
+        rocketChatCredentials.getRocketChatUserId());
+    var payload = new SendMessageWrapper(postMessage);
+    var request = new HttpEntity<>(payload, headers);
+
+    try {
+      return restTemplate.postForObject(rcPostMessageUrl, request, SendMessageResponseDTO.class);
     } catch (Exception ex) {
       LogService.logRocketChatServiceError(
           "Request body which caused the error was " + request.getBody());
