@@ -57,6 +57,9 @@ public class RocketChatService {
   @Value("${rocket.chat.api.send.message.url}")
   private String rcSendMessageUrl;
 
+  @Value("${rocket.chat.api.update.message.url}")
+  private String rcUpdateMessageUrl;
+
   @Value("${rocket.chat.header.auth.token}")
   private String rcHeaderAuthToken;
 
@@ -81,7 +84,7 @@ public class RocketChatService {
   private final @NonNull RestTemplate restTemplate;
   private final @NonNull RocketChatCredentialsHelper rcCredentialHelper;
   private final @NonNull UploadErrorHelper uploadErrorHelper;
-  private final @NonNull MessageMapper mapper;
+  private final @NonNull RocketChatMapper mapper;
 
   private HttpHeaders getRocketChatHeader(String rcToken, String rcUserId) {
     HttpHeaders headers = new HttpHeaders();
@@ -202,6 +205,23 @@ public class RocketChatService {
       LogService.logRocketChatServiceError(
           "Request body which caused the error was " + request.getBody());
       throw new InternalServerErrorException(ex, LogService::logRocketChatServiceError);
+    }
+  }
+
+  public boolean setE2eType(RocketChatCredentials rocketChatCredentials, String messageId) {
+    String updateMessageUrl = rcUpdateMessageUrl;
+    var updateMessage = mapper.e2eUpdateMessage(messageId);
+    var entity = new HttpEntity<>(updateMessage,
+        getRocketChatHeader(rocketChatCredentials.getRocketChatToken(),
+            rocketChatCredentials.getRocketChatUserId()));
+
+    try {
+      var response = restTemplate.postForEntity(updateMessageUrl, entity,
+          StringifiedMessageResponse.class);
+      return isSuccessful(response);
+    } catch (HttpClientErrorException exception) {
+      log.error("Updating message with attachment E2E type failed.", exception);
+      return false;
     }
   }
 

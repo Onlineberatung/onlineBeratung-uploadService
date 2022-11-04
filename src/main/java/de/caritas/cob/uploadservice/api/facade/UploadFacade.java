@@ -151,6 +151,7 @@ public class UploadFacade {
     if (doAttachmentE2e) {
       // TEMP DEV TryCatch TODO: REMOVE
       try {
+        /*
         if (rocketChatService.deleteMessage(rocketChatCredentials,
             uploadResponse.getMessage().getId())) {
           SendMessageDto sendMessageDTO = SendMessageDto.builder()
@@ -169,6 +170,8 @@ public class UploadFacade {
               rocketChatCredentials, sendMessageDTO);
           log.debug("Post Response: {}", postResponse);
         }
+         */
+        rocketChatService.setE2eType(rocketChatCredentials, uploadResponse.getMessage().getId());
       } catch (Exception e) {
         log.warn("Exception during E2E attachment message recreation", e);
       }

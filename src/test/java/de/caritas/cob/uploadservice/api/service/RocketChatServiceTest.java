@@ -24,7 +24,6 @@ import static de.caritas.cob.uploadservice.helper.TestConstants.RC_UPLOAD_ERROR_
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_UPLOAD_ERROR_RESPONSE_BODY_UNKNOWN_ERROR;
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_UPLOAD_ERROR_RESPONSE_DTO_ENTITY_TOO_LARGE;
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_UPLOAD_ERROR_RESPONSE_DTO_INVALID_FILE_TYPE;
-import static de.caritas.cob.uploadservice.helper.TestConstants.RC_UPLOAD_ERROR_RESPONSE_DTO_SUCCESS;
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_UPLOAD_ERROR_RESPONSE_DTO_UNKNOWN_ERROR;
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_UPLOAD_ERROR_UNKNOWN_ERROR;
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_USER_ID;
@@ -53,7 +52,6 @@ import de.caritas.cob.uploadservice.api.model.rocket.chat.UploadResponseDto;
 import de.caritas.cob.uploadservice.api.service.helper.RocketChatCredentialsHelper;
 import de.caritas.cob.uploadservice.rocketchat.generated.web.model.FullUploadResponseDto;
 import java.nio.charset.StandardCharsets;
-import liquibase.pro.packaged.M;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -66,8 +64,6 @@ import org.mockito.Mockito;
 import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
-import org.springframework.amqp.core.Message;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.MultiValueMap;
@@ -92,7 +88,7 @@ public class RocketChatServiceTest {
   @Mock
   private UploadErrorHelper uploadErrorHelper;
   @Mock
-  private MessageMapper mapper;
+  private RocketChatMapper mapper;
 
   @Captor
   private ArgumentCaptor<HttpEntity<MultiValueMap<String, Object>>> mapArgumentCaptor;

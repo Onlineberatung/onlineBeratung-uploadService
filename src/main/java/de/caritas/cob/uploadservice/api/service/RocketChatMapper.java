@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class MessageMapper {
+public class RocketChatMapper {
 
   @SuppressWarnings("java:S2245")
   // Using pseudorandom number generators (PRNGs) is security-sensitive
@@ -39,5 +39,24 @@ public class MessageMapper {
     }
 
     return deleteMessage;
+  }
+
+  public MethodCall e2eUpdateMessage(String messageId) {
+    var params = Map.of("_id", messageId, "t", "e2e");
+
+    var message = new MethodMessageWithParamMap();
+    message.setParams(List.of(params));
+    message.setId(random.nextInt(100));
+    message.setMethod("updateMessage");
+
+    var updateMessage = new MethodCall();
+    try {
+      var messageString = objectMapper.writeValueAsString(message);
+      updateMessage.setMessage(messageString);
+    } catch (JsonProcessingException e) {
+      log.error("Serializing {} did not work.", message);
+    }
+
+    return updateMessage;
   }
 }
