@@ -151,7 +151,7 @@ public class UploadFacade {
 
     log.debug("Upload Response: {}", uploadResponse);
 
-    if (doAttachmentE2e) {
+    if (doAttachmentE2e || true) {
       // TEMP DEV TryCatch TODO: REMOVE
       try {
         if (rocketChatService.deleteMessage(rocketChatCredentials,
