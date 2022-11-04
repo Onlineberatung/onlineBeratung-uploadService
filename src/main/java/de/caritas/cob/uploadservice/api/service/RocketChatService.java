@@ -20,7 +20,7 @@ import de.caritas.cob.uploadservice.api.model.rocket.chat.message.SendMessageWra
 import de.caritas.cob.uploadservice.api.service.dto.StringifiedMessageResponse;
 import de.caritas.cob.uploadservice.api.service.helper.RocketChatCredentialsHelper;
 import de.caritas.cob.uploadservice.rocketchat.generated.web.model.FullUploadResponseDto;
-import de.caritas.cob.uploadservice.rocketchat.generated.web.model.FullUploadResponseDtoMessage;
+import de.caritas.cob.uploadservice.rocketchat.generated.web.model.SendMessageDto;
 import java.io.IOException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -190,7 +190,7 @@ public class RocketChatService {
   }
 
   public SendMessageResponseDTO sendGroupMessage(RocketChatCredentials rocketChatCredentials,
-      FullUploadResponseDtoMessage sendMessage) {
+      SendMessageDto sendMessage) {
     var headers = getRocketChatHeader(rocketChatCredentials.getRocketChatToken(),
         rocketChatCredentials.getRocketChatUserId());
     var payload = new SendMessageWrapper(sendMessage);

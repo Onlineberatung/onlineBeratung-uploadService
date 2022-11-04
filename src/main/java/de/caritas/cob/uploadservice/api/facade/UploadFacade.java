@@ -20,6 +20,7 @@ import de.caritas.cob.uploadservice.api.statistics.event.CreateMessageStatistics
 import de.caritas.cob.uploadservice.api.tenant.TenantContext;
 import de.caritas.cob.uploadservice.rocketchat.generated.web.model.FullUploadResponseDto;
 import de.caritas.cob.uploadservice.rocketchat.generated.web.model.FullUploadResponseDtoMessage;
+import de.caritas.cob.uploadservice.rocketchat.generated.web.model.SendMessageDto;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.UserRole;
 import java.io.ByteArrayInputStream;
 import lombok.NonNull;
@@ -45,9 +46,6 @@ public class UploadFacade {
   private final @NonNull StatisticsService statisticsService;
   private final @NonNull AuthenticatedUser authenticatedUser;
   private final @NonNull FileService fileService;
-
-  @Value("${attachmentE2E.enabled}")
-  private boolean attachmentE2eEnabled;
 
   /**
    * Upload a file with a message to a Rocket.Chat room. The message and the description are
@@ -121,8 +119,7 @@ public class UploadFacade {
     rocketChatUploadParameterSanitizer.sanitize(rocketChatUploadParameter);
 
     // TODO: Fallback strategy or throw Error for enabled E2E but invalid payload?
-    boolean doAttachmentE2e = attachmentE2eEnabled
-        && type != null
+    boolean doAttachmentE2e = type != null
         && type.equals("e2e")
         && fileHeader != null
         && !fileHeader.isBlank();
@@ -156,9 +153,18 @@ public class UploadFacade {
       try {
         if (rocketChatService.deleteMessage(rocketChatCredentials,
             uploadResponse.getMessage().getId())) {
-          FullUploadResponseDtoMessage modifiedPostPayload = uploadResponse.getMessage();
-          modifiedPostPayload.setT("e2e");
-          SendMessageResponseDTO postResponse = rocketChatService.sendGroupMessage(rocketChatCredentials, modifiedPostPayload);
+          SendMessageDto sendMessageDTO = SendMessageDto.builder()
+              .id(uploadResponse.getMessage().getId())
+              .rid(uploadResponse.getMessage().getRid())
+              .tmid(uploadResponse.getMessage().getTmid())
+              .msg(uploadResponse.getMessage().getMsg())
+              .alias(uploadResponse.getMessage().getAlias())
+              .org(uploadResponse.getMessage().getOrg())
+              .t("e2e")
+              .attachments(uploadResponse.getMessage().getAttachments())
+              .build();
+          SendMessageResponseDTO postResponse = rocketChatService.sendGroupMessage(
+              rocketChatCredentials, sendMessageDTO);
           log.debug("Post Response: {}", postResponse);
         }
       } catch (Exception e) {
