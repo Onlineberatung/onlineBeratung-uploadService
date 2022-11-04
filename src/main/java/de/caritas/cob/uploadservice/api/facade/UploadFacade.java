@@ -158,8 +158,7 @@ public class UploadFacade {
             uploadResponse.getMessage().getId())) {
           FullUploadResponseDtoMessage modifiedPostPayload = uploadResponse.getMessage();
           modifiedPostPayload.setT("e2e");
-          // rocketChatService.postGroupMessage(rocketChatCredentials, modifiedPostPayload);
-          SendMessageResponseDTO postResponse = rocketChatService.postMessage(rocketChatCredentials, modifiedPostPayload);
+          SendMessageResponseDTO postResponse = rocketChatService.sendGroupMessage(rocketChatCredentials, modifiedPostPayload);
           log.debug("Post Response: {}", postResponse);
         }
       } catch (Exception e) {
