@@ -9,24 +9,21 @@ import de.caritas.cob.uploadservice.api.helper.AuthenticatedUser;
 import de.caritas.cob.uploadservice.api.helper.AuthenticatedUserHelper;
 import de.caritas.cob.uploadservice.api.helper.RocketChatUploadParameterEncrypter;
 import de.caritas.cob.uploadservice.api.helper.RocketChatUploadParameterSanitizer;
-import de.caritas.cob.uploadservice.api.model.rocket.chat.message.SendMessageResponseDTO;
 import de.caritas.cob.uploadservice.api.service.FileService;
 import de.caritas.cob.uploadservice.api.service.LiveEventNotificationService;
 import de.caritas.cob.uploadservice.api.service.LogService;
+import de.caritas.cob.uploadservice.api.service.MongoDbService;
 import de.caritas.cob.uploadservice.api.service.RocketChatService;
 import de.caritas.cob.uploadservice.api.service.UploadTrackingService;
 import de.caritas.cob.uploadservice.api.statistics.StatisticsService;
 import de.caritas.cob.uploadservice.api.statistics.event.CreateMessageStatisticsEvent;
 import de.caritas.cob.uploadservice.api.tenant.TenantContext;
 import de.caritas.cob.uploadservice.rocketchat.generated.web.model.FullUploadResponseDto;
-import de.caritas.cob.uploadservice.rocketchat.generated.web.model.FullUploadResponseDtoMessage;
-import de.caritas.cob.uploadservice.rocketchat.generated.web.model.SendMessageDto;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.UserRole;
 import java.io.ByteArrayInputStream;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /*
@@ -46,6 +43,7 @@ public class UploadFacade {
   private final @NonNull StatisticsService statisticsService;
   private final @NonNull AuthenticatedUser authenticatedUser;
   private final @NonNull FileService fileService;
+  private final @NonNull MongoDbService mongoDbService;
 
   /**
    * Upload a file with a message to a Rocket.Chat room. The message and the description are
@@ -151,27 +149,7 @@ public class UploadFacade {
     if (doAttachmentE2e) {
       // TEMP DEV TryCatch TODO: REMOVE
       try {
-        /*
-        if (rocketChatService.deleteMessage(rocketChatCredentials,
-            uploadResponse.getMessage().getId())) {
-          SendMessageDto sendMessageDTO = SendMessageDto.builder()
-              .id(uploadResponse.getMessage().getId())
-              .rid(uploadResponse.getMessage().getRid())
-              .tmid(uploadResponse.getMessage().getTmid())
-              .msg(uploadResponse.getMessage().getMsg())
-              .alias(uploadResponse.getMessage().getAlias())
-              .org(uploadResponse.getMessage().getOrg())
-              .t("e2e")
-              .file(uploadResponse.getMessage().getFile())
-              .files(uploadResponse.getMessage().getFiles())
-              .attachments(uploadResponse.getMessage().getAttachments())
-              .build();
-          SendMessageResponseDTO postResponse = rocketChatService.sendGroupMessage(
-              rocketChatCredentials, sendMessageDTO);
-          log.debug("Post Response: {}", postResponse);
-        }
-         */
-        rocketChatService.setE2eType(rocketChatCredentials, uploadResponse.getMessage().getId());
+        mongoDbService.setE2eType(uploadResponse.getMessage().getId());
       } catch (Exception e) {
         log.warn("Exception during E2E attachment message recreation", e);
       }

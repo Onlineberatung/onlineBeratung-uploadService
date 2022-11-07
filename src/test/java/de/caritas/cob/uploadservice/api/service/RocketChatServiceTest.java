@@ -87,8 +87,6 @@ public class RocketChatServiceTest {
   private Logger logger;
   @Mock
   private UploadErrorHelper uploadErrorHelper;
-  @Mock
-  private RocketChatMapper mapper;
 
   @Captor
   private ArgumentCaptor<HttpEntity<MultiValueMap<String, Object>>> mapArgumentCaptor;
