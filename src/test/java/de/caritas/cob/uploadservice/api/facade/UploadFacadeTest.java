@@ -23,6 +23,7 @@ import de.caritas.cob.uploadservice.api.helper.RocketChatUploadParameterEncrypte
 import de.caritas.cob.uploadservice.api.helper.RocketChatUploadParameterSanitizer;
 import de.caritas.cob.uploadservice.api.service.FileService;
 import de.caritas.cob.uploadservice.api.service.LiveEventNotificationService;
+import de.caritas.cob.uploadservice.api.service.MongoDbService;
 import de.caritas.cob.uploadservice.api.service.RocketChatService;
 import de.caritas.cob.uploadservice.api.service.UploadTrackingService;
 import de.caritas.cob.uploadservice.api.statistics.StatisticsService;
@@ -78,6 +79,9 @@ public class UploadFacadeTest {
 
   @Mock
   private FileService fileService;
+
+  @Mock
+  private MongoDbService mongoDbService;
 
   private TestMultipartFile multipartFile;
 
