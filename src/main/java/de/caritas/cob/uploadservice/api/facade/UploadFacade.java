@@ -116,19 +116,10 @@ public class UploadFacade {
 
     rocketChatUploadParameterSanitizer.sanitize(rocketChatUploadParameter);
 
-    // TODO: Fallback strategy or throw Error for enabled E2E but invalid payload?
-    boolean doAttachmentE2e = type != null
-        && type.equals("e2e")
-        && fileHeader != null
-        && !fileHeader.isBlank();
+    boolean doAttachmentE2e = type != null && type.equals("e2e");
 
     if (doAttachmentE2e) {
-      // TEMP DEV TryCatch TODO: REMOVE
-      try {
-        fileService.verifyFileHeaderMimeType(new ByteArrayInputStream(fileHeader.getBytes()));
-      } catch (Exception e) {
-        log.warn("Exception during fileHeader mime check", e);
-      }
+      fileService.verifyFileHeaderMimeType(new ByteArrayInputStream(fileHeader.getBytes()));
     } else {
       fileService.verifyMimeType(rocketChatUploadParameter.getFile());
     }
@@ -144,15 +135,9 @@ public class UploadFacade {
     FullUploadResponseDto uploadResponse = rocketChatService.roomsUpload(rocketChatCredentials,
         encryptedRocketChatUploadParameter);
 
-    log.debug("Upload Response: {}", uploadResponse);
-
     if (doAttachmentE2e) {
-      // TEMP DEV TryCatch TODO: REMOVE
-      try {
-        mongoDbService.setE2eType(uploadResponse.getMessage().getId());
-      } catch (Exception e) {
-        log.warn("Exception during E2E attachment message recreation", e);
-      }
+      assert uploadResponse.getMessage() != null;
+      mongoDbService.setE2eType(uploadResponse.getMessage().getId());
     }
 
     try {

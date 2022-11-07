@@ -21,8 +21,8 @@ public class MongoDbService {
   private final @NonNull MongoClient mongoClient;
 
   /**
-   * This method is used to set the t (=type) field of message to the value "e2e" for manual marking
-   * of upload messages as encrypted
+   * This method is used to set the t (=type) field of a rocketchat mongodb message object to the
+   * value "e2e" for manual flagging of upload/attachment messages as encrypted
    *
    * @param messageId ID of the message
    */
@@ -32,7 +32,7 @@ public class MongoDbService {
     Bson update = set("t", "e2e");
     UpdateResult result = messageCollection.updateOne(filter, update);
     if (!result.wasAcknowledged() || result.getModifiedCount() != 1) {
-      log.warn("Problem encountered while trying to set e2e flag for attachment message: {}", result);
+      log.error("Problem encountered while trying to set e2e flag for attachment message: {}", result);
     }
   }
 
