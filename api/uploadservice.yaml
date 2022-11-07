@@ -74,7 +74,7 @@ paths:
                     a thread)
                 fileHeader:
                   type: string
-                  description: File to upload
+                  description: Starting bytes of file which includes mimetype for verification
                 t:
                   type: string
                   description: Type of message
