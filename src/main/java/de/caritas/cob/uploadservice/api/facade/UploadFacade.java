@@ -25,6 +25,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 /*
  * Facade to encapsulate the steps for uploading a file with an encrypted message.
@@ -136,9 +137,9 @@ public class UploadFacade {
         encryptedRocketChatUploadParameter);
 
     if (doAttachmentE2e) {
-      if (uploadResponse.getMessage() == null || uploadResponse.getMessage().getId() == null) {
+      if (uploadResponse.getMessage() == null || !StringUtils.hasText(uploadResponse.getMessage().getId())) {
         throw new InternalServerErrorException(
-            new Exception("Upload response message payload or id was null!"),
+            new Exception("Upload response message payload or id was empty!"),
             LogService::logInternalServerError);
       }
       mongoDbService.setE2eType(uploadResponse.getMessage().getId());
