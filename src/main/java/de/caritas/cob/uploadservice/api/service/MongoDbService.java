@@ -6,6 +6,7 @@ import static com.mongodb.client.model.Updates.set;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.result.UpdateResult;
+import de.caritas.cob.uploadservice.api.exception.httpresponses.InternalServerErrorException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,11 @@ public class MongoDbService {
     Bson update = set("t", "e2e");
     UpdateResult result = messageCollection.updateOne(filter, update);
     if (!result.wasAcknowledged() || result.getModifiedCount() != 1) {
-      log.error("Problem encountered while trying to set e2e flag for attachment message: {}", result);
+      throw new InternalServerErrorException(
+          new Exception(
+              "Problem encountered while trying to set e2e flag for attachment message, result was: "
+                  + result),
+          LogService::logInternalServerError);
     }
   }
 
