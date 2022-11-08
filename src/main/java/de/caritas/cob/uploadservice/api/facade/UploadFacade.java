@@ -136,7 +136,11 @@ public class UploadFacade {
         encryptedRocketChatUploadParameter);
 
     if (doAttachmentE2e) {
-      assert uploadResponse.getMessage() != null;
+      if (uploadResponse.getMessage() == null) {
+        throw new InternalServerErrorException(
+            new Exception("Upload response message payload was null!"),
+            LogService::logInternalServerError);
+      }
       mongoDbService.setE2eType(uploadResponse.getMessage().getId());
     }
 
