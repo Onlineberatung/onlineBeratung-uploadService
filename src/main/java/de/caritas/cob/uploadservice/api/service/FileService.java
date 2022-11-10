@@ -5,6 +5,7 @@ import static java.util.Objects.isNull;
 import de.caritas.cob.uploadservice.api.exception.InvalidFileTypeException;
 import de.caritas.cob.uploadservice.api.exception.httpresponses.InternalServerErrorException;
 import de.caritas.cob.uploadservice.media.MimeTypeDetector;
+import java.io.InputStream;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,25 @@ public class FileService {
     if (mimeType.isEmpty() || !mimeTypeWhitelist.contains(mimeType.get())) {
       throw new InvalidFileTypeException(
           "invalid mime type " + mimeType + " of file " + multipartFile.getOriginalFilename());
+    }
+  }
+
+  public void verifyFileHeaderMimeType(InputStream fileHeaderInputStream) {
+    if (isNull(fileHeaderInputStream)) {
+      return;
+    }
+
+    Optional<String> mimeType;
+    try {
+      mimeType = mimeTypeDetector.detect(fileHeaderInputStream);
+    } catch (Exception e) {
+      throw new InternalServerErrorException(
+          "failed to detect mime type of fileHeader " + fileHeaderInputStream, e,
+          LogService::logInternalServerError);
+    }
+    if (mimeType.isEmpty() || !mimeTypeWhitelist.contains(mimeType.get())) {
+      throw new InvalidFileTypeException(
+          "invalid mime type " + mimeType + " of fileHeader " + fileHeaderInputStream);
     }
   }
 }

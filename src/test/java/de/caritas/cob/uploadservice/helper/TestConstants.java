@@ -7,6 +7,7 @@ import de.caritas.cob.uploadservice.api.container.RocketChatCredentials;
 import de.caritas.cob.uploadservice.api.container.UploadError;
 import de.caritas.cob.uploadservice.api.model.rocket.chat.StandardResponseDto;
 import de.caritas.cob.uploadservice.api.model.rocket.chat.UploadResponseDto;
+import de.caritas.cob.uploadservice.rocketchat.generated.web.model.FullUploadResponseDto;
 import org.springframework.mock.web.MockMultipartFile;
 
 public class TestConstants {
@@ -114,6 +115,10 @@ public class TestConstants {
           + "}";
   public static final UploadResponseDto RC_UPLOAD_ERROR_RESPONSE_DTO_UNKNOWN_ERROR =
       new UploadResponseDto(false, ERROR_MSG, ERROR_MSG);
+
+  public static final FullUploadResponseDto RC_FULL_UPLOAD_ERROR_RESPONSE_DTO_UNKNOWN_ERROR =
+      FullUploadResponseDto.builder().success(false).error(ERROR_MSG).errorType(ERROR_MSG).build();
+
   public static final UploadError RC_UPLOAD_ERROR_UNKNOWN_ERROR =
       UploadError.builder()
           .rcError(ERROR_MSG)
@@ -133,6 +138,9 @@ public class TestConstants {
   public static final UploadResponseDto RC_UPLOAD_ERROR_RESPONSE_DTO_SUCCESS =
       new UploadResponseDto(true, null, null);
 
+  public static final FullUploadResponseDto RC_FULL_UPLOAD_ERROR_RESPONSE_DTO_SUCCESS =
+      FullUploadResponseDto.builder().success(true).error(null).errorType(null).build();
+
   /* Upload */
   public static final String FORM_PARAM_SEND_NOTIFICATION = "sendNotification";
   public static final String FORM_PARAM_SEND_NOTIFICATION_TRUE = "true";
@@ -143,6 +151,10 @@ public class TestConstants {
   public static final String FORM_PARAM_TMID = "tmId";
   public static final String FORM_PARAM_TMID_VALUE = "This is the tmid";
   public static final String FORM_PARAM_FILE = "file";
+  public static final String FORM_PARAM_FILE_HEADER = "fileHeader";
+  public static final String FORM_PARAM_FILE_HEADER_EMPTY = "";
+  public static final String FORM_PARAM_TYPE = "t";
+  public static final String FORM_PARAM_TYPE_EMPTY = "";
   public static final String FILE_NAME_UNSANITIZED = "äöüßÄÖÜt!\"e...~´´`::.jpg;.jpg;st-+_#$1.jpg.doc";
   public static final String FILE_NAME_UNSANITIZED_WITH_SPACES = "   äöüßÄÖÜt!\"e ...~´´`::.jpg;.jpg;st-+_#$1.jpg.doc  ";
   public static final String FILE_NAME_SANITIZED = "äöüßÄÖÜtejpgjpgst-+#1jpg.doc";

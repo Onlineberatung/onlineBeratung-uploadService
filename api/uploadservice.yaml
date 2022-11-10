@@ -72,6 +72,13 @@ paths:
                   type: string
                   description: The thread message id (if you want upload a file to
                     a thread)
+                fileHeader:
+                  type: string
+                  description: Starting bytes of file which includes mimetype for verification
+                t:
+                  type: string
+                  description: Type of message
+                  example: "e2e"
                 file:
                   type: string
                   description: File to upload
