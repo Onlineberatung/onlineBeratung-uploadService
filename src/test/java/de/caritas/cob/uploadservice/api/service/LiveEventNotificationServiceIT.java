@@ -6,16 +6,19 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import de.caritas.cob.uploadservice.api.helper.AuthenticatedUser;
+import de.caritas.cob.uploadservice.config.SecurityConfig;
 import de.caritas.cob.uploadservice.userservice.generated.ApiClient;
 import de.caritas.cob.uploadservice.userservice.generated.web.LiveproxyControllerApi;
 import java.lang.management.ManagementFactory;
 import java.util.Optional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
+import org.keycloak.adapters.KeycloakConfigResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper;
@@ -42,6 +45,7 @@ class LiveEventNotificationServiceIT {
 
   @MockBean
   private DocumentationPluginsBootstrapper documentationPluginsBootstrapper;
+
 
   @Test
   void sendLiveEventShouldRunInAnotherThread() {

@@ -110,19 +110,6 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
   }
 
   /**
-   * Use the KeycloakSpringBootConfigResolver to be able to save the Keycloak settings in the spring
-   * application properties.
-   */
-
-  @Bean
-  @Override
-  protected AdapterDeploymentContext adapterDeploymentContext() throws Exception {
-    AdapterDeploymentContextFactoryBean factoryBean = new AdapterDeploymentContextFactoryBean(new KeycloakSpringConfigResolverWrapper(new KeycloakSpringBootConfigResolver()));
-    factoryBean.afterPropertiesSet();
-    return factoryBean.getObject();
-  }
-
-  /**
    * Change springs authentication strategy to be stateless (no session is being created).
    */
   @Bean
