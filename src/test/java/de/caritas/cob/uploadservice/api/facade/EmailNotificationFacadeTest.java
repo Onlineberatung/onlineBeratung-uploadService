@@ -14,8 +14,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EmailNotificationFacadeTest {
@@ -36,16 +36,8 @@ public class EmailNotificationFacadeTest {
 
   @Before
   public void setup() throws NoSuchFieldException, SecurityException {
-    FieldSetter.setField(
-        emailNotificationFacade,
-        emailNotificationFacade.getClass().getDeclaredField(FIELD_NAME_NEW_MESSAGE_NOTIFICATION),
-        NOTIFICATION_API_URL);
-    FieldSetter.setField(
-        emailNotificationFacade,
-        emailNotificationFacade
-            .getClass()
-            .getDeclaredField(FIELD_NAME_NEW_FEEDBACK_MESSAGE_NOTIFICATION),
-        FEEDBACK_NOTIFICATION_API_URL);
+    ReflectionTestUtils.setField(emailNotificationFacade, FIELD_NAME_NEW_MESSAGE_NOTIFICATION, NOTIFICATION_API_URL);
+    ReflectionTestUtils.setField(emailNotificationFacade, FIELD_NAME_NEW_FEEDBACK_MESSAGE_NOTIFICATION, FEEDBACK_NOTIFICATION_API_URL);
   }
 
   @Test

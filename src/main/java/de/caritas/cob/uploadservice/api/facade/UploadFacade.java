@@ -24,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -117,10 +118,15 @@ public class UploadFacade {
 
     rocketChatUploadParameterSanitizer.sanitize(rocketChatUploadParameter);
 
-    boolean doAttachmentE2e = type != null && type.equals("e2e");
+    boolean doAttachmentE2e = StringUtils.hasText(type) && type.equals("e2e");
 
     if (doAttachmentE2e) {
-      fileService.verifyFileHeaderMimeType(new ByteArrayInputStream(fileHeader.getBytes()));
+      JSONArray parsed = new JSONArray(fileHeader);
+      byte[] fileHeaderByteList = new byte[parsed.length()];
+      for (int i = 0; i < parsed.length(); i++) {
+        fileHeaderByteList[i] = parsed.getNumber(i).byteValue();
+      }
+      fileService.verifyFileHeaderMimeType(new ByteArrayInputStream(fileHeaderByteList));
     } else {
       fileService.verifyMimeType(rocketChatUploadParameter.getFile());
     }
