@@ -46,9 +46,6 @@ class LiveEventNotificationServiceIT {
   @MockBean
   private DocumentationPluginsBootstrapper documentationPluginsBootstrapper;
 
-  @MockBean
-  private KeycloakConfigResolver keycloakConfigResolver;
-
 
   @Test
   void sendLiveEventShouldRunInAnotherThread() {
