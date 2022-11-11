@@ -18,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper;
 
 @SpringBootTest
 @ActiveProfiles("testing")
@@ -32,11 +33,15 @@ class LiveEventNotificationServiceIT {
   @SuppressWarnings("unused")
   private LiveproxyControllerApi liveproxyControllerApi;
 
+
   @MockBean
   private AuthenticatedUser authenticatedUser;
 
   @MockBean
   private ApiClient apiClient;
+
+  @MockBean
+  private DocumentationPluginsBootstrapper documentationPluginsBootstrapper;
 
   @Test
   void sendLiveEventShouldRunInAnotherThread() {

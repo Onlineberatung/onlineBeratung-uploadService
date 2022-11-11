@@ -21,10 +21,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ServiceHelperTest {
@@ -39,14 +39,12 @@ public class ServiceHelperTest {
 
   @Before
   public void setup() throws NoSuchFieldException, SecurityException {
-    FieldSetter.setField(
-        serviceHelper,
-        serviceHelper.getClass().getDeclaredField(FIELD_NAME_CSRF_TOKEN_HEADER_PROPERTY),
-        CSRF_TOKEN_HEADER_VALUE);
-    FieldSetter.setField(
-        serviceHelper,
-        serviceHelper.getClass().getDeclaredField(FIELD_NAME_CSRF_TOKEN_COOKIE_PROPERTY),
-        CSRF_TOKEN_COOKIE_VALUE);
+    ReflectionTestUtils.setField(serviceHelper,
+            FIELD_NAME_CSRF_TOKEN_HEADER_PROPERTY, CSRF_TOKEN_HEADER_VALUE
+    );
+    ReflectionTestUtils.setField(serviceHelper,
+            FIELD_NAME_CSRF_TOKEN_COOKIE_PROPERTY, CSRF_TOKEN_COOKIE_VALUE
+    );
   }
 
   /**
