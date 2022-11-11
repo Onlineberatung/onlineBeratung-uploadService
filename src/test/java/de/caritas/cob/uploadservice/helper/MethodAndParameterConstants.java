@@ -15,6 +15,8 @@ public class MethodAndParameterConstants {
         String.class,
         String.class,
         String.class,
+        String.class,
+        String.class,
         String.class
       };
   public static final String UPLOAD_FILE_TO_FEEDBACK_ROOM_METHOD_NAME = "uploadFileToFeedbackRoom";
