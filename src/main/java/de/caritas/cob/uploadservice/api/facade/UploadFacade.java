@@ -12,19 +12,26 @@ import de.caritas.cob.uploadservice.api.helper.RocketChatUploadParameterSanitize
 import de.caritas.cob.uploadservice.api.service.FileService;
 import de.caritas.cob.uploadservice.api.service.LiveEventNotificationService;
 import de.caritas.cob.uploadservice.api.service.LogService;
+import de.caritas.cob.uploadservice.api.service.MongoDbService;
 import de.caritas.cob.uploadservice.api.service.RocketChatService;
 import de.caritas.cob.uploadservice.api.service.UploadTrackingService;
 import de.caritas.cob.uploadservice.api.statistics.StatisticsService;
 import de.caritas.cob.uploadservice.api.statistics.event.CreateMessageStatisticsEvent;
 import de.caritas.cob.uploadservice.api.tenant.TenantContext;
+import de.caritas.cob.uploadservice.rocketchat.generated.web.model.FullUploadResponseDto;
 import de.caritas.cob.uploadservice.statisticsservice.generated.web.model.UserRole;
+import java.io.ByteArrayInputStream;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 /*
  * Facade to encapsulate the steps for uploading a file with an encrypted message.
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class UploadFacade {
@@ -38,6 +45,7 @@ public class UploadFacade {
   private final @NonNull StatisticsService statisticsService;
   private final @NonNull AuthenticatedUser authenticatedUser;
   private final @NonNull FileService fileService;
+  private final @NonNull MongoDbService mongoDbService;
 
   /**
    * Upload a file with a message to a Rocket.Chat room. The message and the description are
@@ -52,12 +60,12 @@ public class UploadFacade {
   public void uploadFileToRoom(
       RocketChatCredentials rocketChatCredentials,
       RocketChatUploadParameter rocketChatUploadParameter,
-      boolean sendNotification) {
+      boolean sendNotification, String type, String fileHeader) {
 
     this.uploadTrackingService.validateUploadLimit(rocketChatUploadParameter.getRoomId());
 
     sanitizeAndEncryptParametersAndUploadToRocketChatRoom(
-        rocketChatCredentials, rocketChatUploadParameter);
+        rocketChatCredentials, rocketChatUploadParameter, type, fileHeader);
     this.liveEventNotificationService.sendLiveEvent(rocketChatUploadParameter.getRoomId(),
         authenticatedUser.getAccessToken(), TenantContext.getCurrentTenantOption());
     this.uploadTrackingService.trackUploadedFileForUser(rocketChatUploadParameter.getRoomId());
@@ -94,7 +102,7 @@ public class UploadFacade {
 
     this.uploadTrackingService.validateUploadLimit(rocketChatUploadParameter.getRoomId());
     sanitizeAndEncryptParametersAndUploadToRocketChatRoom(
-        rocketChatCredentials, rocketChatUploadParameter);
+        rocketChatCredentials, rocketChatUploadParameter, null, null);
     this.liveEventNotificationService.sendLiveEvent(rocketChatUploadParameter.getRoomId(),
         authenticatedUser.getAccessToken(), TenantContext.getCurrentTenantOption());
     this.uploadTrackingService.trackUploadedFileForUser(rocketChatUploadParameter.getRoomId());
@@ -106,10 +114,23 @@ public class UploadFacade {
 
   private void sanitizeAndEncryptParametersAndUploadToRocketChatRoom(
       RocketChatCredentials rocketChatCredentials,
-      RocketChatUploadParameter rocketChatUploadParameter) {
+      RocketChatUploadParameter rocketChatUploadParameter, String type, String fileHeader) {
 
     rocketChatUploadParameterSanitizer.sanitize(rocketChatUploadParameter);
-    fileService.verifyMimeType(rocketChatUploadParameter.getFile());
+
+    boolean doAttachmentE2e = StringUtils.hasText(type) && type.equals("e2e");
+
+    if (doAttachmentE2e) {
+      JSONArray parsed = new JSONArray(fileHeader);
+      byte[] fileHeaderByteList = new byte[parsed.length()];
+      for (int i = 0; i < parsed.length(); i++) {
+        fileHeaderByteList[i] = parsed.getNumber(i).byteValue();
+      }
+      fileService.verifyFileHeaderMimeType(new ByteArrayInputStream(fileHeaderByteList));
+    } else {
+      fileService.verifyMimeType(rocketChatUploadParameter.getFile());
+    }
+
     RocketChatUploadParameter encryptedRocketChatUploadParameter;
     try {
       encryptedRocketChatUploadParameter =
@@ -118,7 +139,18 @@ public class UploadFacade {
       throw new InternalServerErrorException(e, LogService::logEncryptionServiceError);
     }
 
-    rocketChatService.roomsUpload(rocketChatCredentials, encryptedRocketChatUploadParameter);
+    FullUploadResponseDto uploadResponse = rocketChatService.roomsUpload(rocketChatCredentials,
+        encryptedRocketChatUploadParameter);
+
+    if (doAttachmentE2e) {
+      if (uploadResponse.getMessage() == null || !StringUtils.hasText(uploadResponse.getMessage().getId())) {
+        throw new InternalServerErrorException(
+            new Exception("Upload response message payload or id was empty!"),
+            LogService::logInternalServerError);
+      }
+      mongoDbService.setE2eType(uploadResponse.getMessage().getId());
+    }
+
     try {
       rocketChatService.markGroupAsReadForSystemUser(rocketChatUploadParameter.getRoomId());
     } catch (RocketChatPostMarkGroupAsReadException e) {

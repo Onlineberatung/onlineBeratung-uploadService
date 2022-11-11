@@ -22,14 +22,12 @@ import springfox.documentation.service.SecurityScheme;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
  * Provides the SpringFox (API documentation generation) configuration.
  *
  */
 @Configuration
-@EnableSwagger2
 @Import(BeanValidatorPluginsConfiguration.class)
 public class SpringFoxConfig {
 
@@ -54,9 +52,8 @@ public class SpringFoxConfig {
 
   // White list for path patterns that should be white listed so that swagger UI can be accessed
   // without authorization
-  public static final String[] WHITE_LIST =
-      new String[] {"/uploads/docs", "/uploads/docs/**", "/v2/api-docs", "/configuration/ui",
-          "/swagger-resources/**", "/configuration/security", "/swagger-ui.html", "/webjars/**"};
+  public static final String[] WHITE_LIST = new String[]{"/uploads/docs", "/uploads/docs/**", "/v2/api-docs", "/configuration/ui",
+    "/swagger-resources/**", "/configuration/security", "/swagger-ui", "/swagger-ui/**", "/webjars/**"};
 
   @Bean
   public Docket apiDocket() {
@@ -77,13 +74,13 @@ public class SpringFoxConfig {
         SecurityReference.builder().reference("token").scopes(new AuthorizationScope[0]).build());
   }
 
-  private List<? extends SecurityScheme> securitySchemes() {
+  private List<SecurityScheme> securitySchemes() {
     return singletonList(new ApiKey("Bearer", "Authorization", "header"));
   }
 
   /**
    * Returns the API protocols (for documentation)
-   * 
+   *
    * @return
    */
   private Set<String> protocols() {
@@ -104,7 +101,7 @@ public class SpringFoxConfig {
 
   /**
    * Returns the API information (defined in application.properties)
-   * 
+   *
    * @return
    */
   private ApiInfo getApiInfo() {

@@ -11,6 +11,7 @@ import de.caritas.cob.uploadservice.api.service.EncryptionService;
 import de.caritas.cob.uploadservice.api.service.LogService;
 import de.caritas.cob.uploadservice.generated.api.controller.UploadsApi;
 import io.swagger.annotations.Api;
+import java.util.Objects;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -76,6 +77,8 @@ public class UploadController implements UploadsApi {
       @RequestHeader String rcUserId,
       @RequestPart MultipartFile file,
       @RequestParam String sendNotification,
+      @RequestPart(required = false) String t,
+      @RequestPart(required = false) String fileHeader,
       @RequestParam(required = false) String msg,
       @RequestParam(required = false) String description,
       @RequestParam(required = false) String tmId) {
@@ -93,7 +96,12 @@ public class UploadController implements UploadsApi {
             .build();
 
     uploadFacade.uploadFileToRoom(
-        rocketChatCredentials, rocketChatUploadParameter, parseBoolean(sendNotification));
+        rocketChatCredentials,
+        rocketChatUploadParameter,
+        parseBoolean(sendNotification),
+        t,
+        fileHeader
+    );
 
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
