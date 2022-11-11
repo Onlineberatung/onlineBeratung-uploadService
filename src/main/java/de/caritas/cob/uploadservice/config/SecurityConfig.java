@@ -115,11 +115,8 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
    */
 
   @Bean
-  @Override
-  protected AdapterDeploymentContext adapterDeploymentContext() throws Exception {
-    AdapterDeploymentContextFactoryBean factoryBean = new AdapterDeploymentContextFactoryBean(new KeycloakSpringConfigResolverWrapper(new KeycloakSpringBootConfigResolver()));
-    factoryBean.afterPropertiesSet();
-    return factoryBean.getObject();
+  public KeycloakConfigResolver keyCloakConfigResolver() {
+    return new KeycloakSpringBootConfigResolver();
   }
 
   /**
