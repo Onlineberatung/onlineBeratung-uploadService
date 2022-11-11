@@ -1,6 +1,5 @@
 package de.caritas.cob.uploadservice.api.helper;
 
-import static de.caritas.cob.uploadservice.helper.TestConstants.FIELD_NAME_LOGSERVICE;
 import static de.caritas.cob.uploadservice.helper.TestConstants.INVALID_JSON_BODY;
 import static de.caritas.cob.uploadservice.helper.TestConstants.RC_UPLOAD_ERROR_RESPONSE_BODY;
 import static org.junit.Assert.assertEquals;
