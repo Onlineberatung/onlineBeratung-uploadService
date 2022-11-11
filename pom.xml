@@ -137,6 +137,13 @@
       <version>1.15</version>
     </dependency>
 
+    <!-- JSON -->
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20220924</version>
+    </dependency>
+
     <!-- Jsoup -->
     <dependency>
       <groupId>org.jsoup</groupId>
