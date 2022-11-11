@@ -11,7 +11,10 @@ import springfox.documentation.swagger.web.SwaggerResourcesProvider;
 @RequestMapping(value = "${springfox.docuPath}" + "/swagger-resources")
 public class CustomSwaggerUiApiResourceController extends ApiResourceController {
 
+  public static final String SWAGGER_UI_BASE_URL = "/uploads/docs";
+
   public CustomSwaggerUiApiResourceController(SwaggerResourcesProvider swaggerResources) {
-    super(swaggerResources);
+    super(swaggerResources, SWAGGER_UI_BASE_URL);
   }
+
 }
