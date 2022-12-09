@@ -321,7 +321,7 @@ public class UploadControllerTestIT {
       throws Exception {
     doThrow(InvalidFileTypeException.class).when(uploadFacade)
         .uploadFileToFeedbackRoom(any(RocketChatCredentials.class),
-            any(RocketChatUploadParameter.class), anyBoolean());
+            any(RocketChatUploadParameter.class), anyBoolean(), nullable(String.class), nullable(String.class));
     MockPart fileToUpload = new MockPart(FORM_PARAM_FILE, "fileToUpload", "content".getBytes());
 
     mvc.perform(
