@@ -223,7 +223,7 @@ public class UploadFacadeTest {
       throws Exception {
 
     uploadFacade.uploadFileToFeedbackRoom(
-        rocketChatCredentials, rocketChatUploadParameter, false);
+        rocketChatCredentials, rocketChatUploadParameter, false, null, null);
 
     verify(rocketChatUploadParameterSanitizer, times(1)).sanitize(rocketChatUploadParameter);
     verify(rocketChatUploadParameterEncrypter, times(1)).encrypt(rocketChatUploadParameter);
@@ -240,7 +240,7 @@ public class UploadFacadeTest {
   public void uploadFileToFeedbackRoom_Should_sendEmailNotification_WhenParamIsTrue() {
 
     uploadFacade.uploadFileToFeedbackRoom(
-        rocketChatCredentials, rocketChatUploadParameter, true);
+        rocketChatCredentials, rocketChatUploadParameter, true, null, null);
 
     verify(emailNotificationFacade, times(1)).sendFeedbackEmailNotification(RC_ROOM_ID);
   }
@@ -250,7 +250,7 @@ public class UploadFacadeTest {
       throws RocketChatPostMarkGroupAsReadException {
 
     uploadFacade.uploadFileToFeedbackRoom(
-        rocketChatCredentials, rocketChatUploadParameter, false);
+        rocketChatCredentials, rocketChatUploadParameter, false, null, null);
 
     verify(rocketChatService, times(1)).markGroupAsReadForSystemUser(RC_ROOM_ID);
   }
@@ -259,7 +259,7 @@ public class UploadFacadeTest {
   public void uploadFileToFeedbackRoom_Should_uploadToRocketChat() {
 
     uploadFacade.uploadFileToFeedbackRoom(
-        rocketChatCredentials, rocketChatUploadParameter, false);
+        rocketChatCredentials, rocketChatUploadParameter, false, null, null);
 
     verify(rocketChatService, times(1))
         .roomsUpload(
@@ -271,7 +271,7 @@ public class UploadFacadeTest {
       throws CustomCryptoException {
 
     uploadFacade.uploadFileToFeedbackRoom(
-        rocketChatCredentials, rocketChatUploadParameter, false);
+        rocketChatCredentials, rocketChatUploadParameter, false, null, null);
 
     verify(rocketChatUploadParameterEncrypter, times(1)).encrypt(rocketChatUploadParameter);
   }
@@ -280,7 +280,7 @@ public class UploadFacadeTest {
   public void uploadFileToFeedbackRoom_Should_SanitizeRocketChatParameter() {
 
     uploadFacade.uploadFileToFeedbackRoom(
-        rocketChatCredentials, rocketChatUploadParameter, false);
+        rocketChatCredentials, rocketChatUploadParameter, false, null, null);
 
     verify(rocketChatUploadParameterSanitizer, times(1)).sanitize(rocketChatUploadParameter);
   }
@@ -288,7 +288,7 @@ public class UploadFacadeTest {
   @Test
   public void uploadFileToFeedbackRoom_Should_sendLiveNotification_When_UploadSucceeds() {
 
-    uploadFacade.uploadFileToFeedbackRoom(rocketChatCredentials, rocketChatUploadParameter, false);
+    uploadFacade.uploadFileToFeedbackRoom(rocketChatCredentials, rocketChatUploadParameter, false, null, null);
 
     verify(this.liveEventNotificationService, times(1))
         .sendLiveEvent(eq(rocketChatUploadParameter.getRoomId()), any(), any());

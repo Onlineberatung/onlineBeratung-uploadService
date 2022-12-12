@@ -98,11 +98,12 @@ public class UploadFacade {
   public void uploadFileToFeedbackRoom(
       RocketChatCredentials rocketChatCredentials,
       RocketChatUploadParameter rocketChatUploadParameter,
-      boolean sendNotification) {
+      boolean sendNotification, String type, String fileHeader) {
 
     this.uploadTrackingService.validateUploadLimit(rocketChatUploadParameter.getRoomId());
+
     sanitizeAndEncryptParametersAndUploadToRocketChatRoom(
-        rocketChatCredentials, rocketChatUploadParameter, null, null);
+        rocketChatCredentials, rocketChatUploadParameter, type, fileHeader);
     this.liveEventNotificationService.sendLiveEvent(rocketChatUploadParameter.getRoomId(),
         authenticatedUser.getAccessToken(), TenantContext.getCurrentTenantOption());
     this.uploadTrackingService.trackUploadedFileForUser(rocketChatUploadParameter.getRoomId());
