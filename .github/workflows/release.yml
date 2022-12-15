@@ -3,7 +3,7 @@ name: Release action
 on:
   push:
     branches:
-      - release**
+      - 'release'
 
 jobs:
   build:
