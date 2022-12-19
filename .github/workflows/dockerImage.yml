@@ -3,7 +3,9 @@ name: Publish Docker image
 on:
   push:
     branches:
-      - "develop"
+      - 'release'
+      - 'staging'
+      - 'develop'
       - "tsys-release"
     tags:
       - "dockerImage.v.*"
@@ -96,7 +98,6 @@ jobs:
           echo "### Publish Docker image :x:" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- It seems that something has gone wrong" >> $GITHUB_STEP_SUMMARY
-
       - name: Run Trivy vulnerability image scanner
         if: ${{ (matrix.registry == 'ghcr.io') }}
         uses: aquasecurity/trivy-action@master
