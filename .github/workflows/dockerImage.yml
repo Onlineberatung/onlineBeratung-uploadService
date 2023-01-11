@@ -3,7 +3,9 @@ name: Publish Docker image
 on:
   push:
     branches:
-      - "develop"
+      - 'release'
+      - 'staging'
+      - 'develop'
       - "tsys-release"
     tags:
       - "dockerImage.v.*"
@@ -13,10 +15,16 @@ jobs:
   test:
     name: Build and run unit tests
     runs-on: ubuntu-latest
+    env:
+      FAIL_WEBHOOK_SECRET: ${{ secrets.MS_TEAMS_FAIL_WEBHOOK_URI }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
+      - name: Prepare environment variables
+        run: |
+          raw=$(git branch -r --contains ${{ github.ref }})
+          branch=${raw##*/}
+          echo BRANCH_NAME=$(echo -n "${branch}") >> $GITHUB_ENV
       - name: Setup JVM
         uses: actions/setup-java@v1
         with:
@@ -39,6 +47,20 @@ jobs:
         with:
           name: targetfiles
           path: target/*.jar
+      - name: Microsoft Teams Fail Card
+        if: ${{ (env.FAIL_WEBHOOK_SECRET != null) && (env.FAIL_WEBHOOK_SECRET != '') && (failure() || cancelled()) }}
+        uses: toko-bifrost/ms-teams-deploy-card@3.1.2
+        with:
+          github-token: ${{ github.token }}
+          webhook-uri: ${{ secrets.MS_TEAMS_FAIL_WEBHOOK_URI }}
+          show-on-start: false
+          show-on-exit: true
+          show-on-failure: true
+          card-layout-exit: complete
+          environment: ${{ env.BRANCH_NAME }}
+          custom-actions: |
+            - text: View CI
+              url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
   push_to_registry:
     strategy:
       matrix:
@@ -46,6 +68,9 @@ jobs:
     needs: [test]
     name: Push Docker image to GitHub Packages
     runs-on: ubuntu-latest
+    env:
+      IMAGE_WEBHOOK_SECRET: ${{ secrets.MS_TEAMS_IMAGE_WEBHOOK_URI }}
+      FAIL_WEBHOOK_SECRET: ${{ secrets.MS_TEAMS_FAIL_WEBHOOK_URI }}
     steps:
       - uses: actions/checkout@v2
       - name: Download buildfiles artifact
@@ -60,6 +85,9 @@ jobs:
           format: "YYYYMMDD[_]HHmmss"
       - name: Prepare environment variables
         run: |
+          raw=$(git branch -r --contains ${{ github.ref }})
+          branch=${raw##*/}
+          echo BRANCH_NAME=$(echo -n "${branch}") >> $GITHUB_ENV
           echo "DOCKER_REGISTRY=$(echo "${{ matrix.registry }}/${{ github.repository }}" | awk '{print tolower($0)}')" >> $GITHUB_ENV
           echo "DOCKER_IMAGE=$(echo "${{ github.repository }}" | awk -F / '{print tolower($2)}')" >> $GITHUB_ENV
           echo "REPO_NAME_WITHOUT_PREFIX"=$(echo "${{ github.repository }}" | sed "s/.*\///" | awk -F / '{print tolower($0)}') >> $GITHUB_ENV
@@ -75,14 +103,31 @@ jobs:
         if: ${{ env.TYPE == 'tag' }}
         run: echo DOCKER_IMAGE_TAG=$(echo "${{ env.CLEAN_REF }}") >> $GITHUB_ENV
         shell: bash
-      - name: Push to GitHub Packages
-        uses: docker/build-push-action@v1.1.1
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
         with:
+          images: '${{ env.DOCKER_REGISTRY }}/${{ env.REPO_NAME_WITHOUT_PREFIX }}'
+          flavor: |
+            latest=false
+          tags: |
+            type=ref,event=branch
+            type=ref,event=tag
+            type=raw,value=${{ env.DOCKER_IMAGE_TAG}}
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'release') }}
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.DOCKER_REGISTRY }}
           username: ${{ secrets.GH_PACKAGE_RELEASE_USER }}
           password: ${{ secrets.GH_PACKAGE_RELEASE_TOKEN }}
-          registry: ${{ env.DOCKER_REGISTRY }}
-          repository: ${{ env.DOCKER_IMAGE }}
-          tags: ${{ env.DOCKER_IMAGE_TAG}}
+      - name: Push to GitHub Packages
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
       - name: Hint about the Docker Image Tag if successfull
         if: ${{ success() }}
         run: |
@@ -96,7 +141,6 @@ jobs:
           echo "### Publish Docker image :x:" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- It seems that something has gone wrong" >> $GITHUB_STEP_SUMMARY
-
       - name: Run Trivy vulnerability image scanner
         if: ${{ (matrix.registry == 'ghcr.io') }}
         uses: aquasecurity/trivy-action@master
@@ -106,6 +150,39 @@ jobs:
           exit-code: '1'
           vuln-type: 'os,library'
           severity: 'CRITICAL'
+      - name: Microsoft Teams Fail Card
+        if: ${{ (env.FAIL_WEBHOOK_SECRET != null) && (env.FAIL_WEBHOOK_SECRET != '') && (matrix.registry == 'ghcr.io') && (failure() || cancelled()) }}
+        uses: toko-bifrost/ms-teams-deploy-card@3.1.2
+        with:
+          github-token: ${{ github.token }}
+          webhook-uri: ${{ secrets.MS_TEAMS_FAIL_WEBHOOK_URI }}
+          show-on-start: false
+          show-on-exit: true
+          show-on-failure: true
+          card-layout-exit: complete
+          environment: ${{ env.BRANCH_NAME }}
+          custom-actions: |
+            - text: View CI
+              url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      - name: Microsoft Teams Image Card
+        if: ${{ (env.IMAGE_WEBHOOK_SECRET != null) && (env.IMAGE_WEBHOOK_SECRET != '') && (matrix.registry == 'ghcr.io') && success() }}
+        uses: toko-bifrost/ms-teams-deploy-card@3.1.2
+        with:
+          github-token: ${{ github.token }}
+          webhook-uri: ${{ secrets.MS_TEAMS_IMAGE_WEBHOOK_URI }}
+          show-on-start: false
+          show-on-exit: true
+          show-on-failure: false
+          card-layout-exit: complete
+          environment: ${{ env.BRANCH_NAME }}
+          custom-facts: |
+            - name: Registry
+              value: ${{ env.DOCKER_REGISTRY }}/${{ env.REPO_NAME_WITHOUT_PREFIX }}
+            - name: Tag
+              value: ${{ env.DOCKER_IMAGE_TAG }}
+          custom-actions: |
+            - text: View CI
+              url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
       - name: Publish to T-sys if T-sys release
         if: ${{ (github.ref == 'refs/heads/tsys-release') && (matrix.registry == 'ghcr.io') }}
         uses: fjogeleit/http-request-action@v1
