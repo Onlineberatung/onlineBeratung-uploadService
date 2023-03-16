@@ -1,0 +1,85 @@
+<configuration>
+
+  <springProfile name="!testing">
+    <appender class="ch.qos.logback.core.FileAppender" name="FILE">
+      <append>true</append>
+      <encoder>
+        <pattern>%d{yyyy.MMM.dd HH:mm:ss.SSS} %level - %msg%n</pattern>
+      </encoder>
+      <file>log/uploadservice.log</file>
+    </appender>
+    <appender name="logstashcustom" class="de.caritas.cob.uploadservice.api.helper.LogstashAppender">
+      <logBufferSize>20</logBufferSize>
+      <connectionTimeoutMillis>400</connectionTimeoutMillis>
+      <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+        <providers>
+          <mdc/>
+          <pattern>
+            <pattern>
+              {
+              "serviceName": "upload",
+              "timestamp": "%date{yyyy-MM-dd'T'HH:mm:ss.SSS'Z',UTC}",
+              "request": {
+              "correlationId": "%mdc{CID:-null}",
+              "timestamp": "%date{yyyy-MM-dd'T'HH:mm:ss.SSS'Z',UTC}"
+              },
+              "log": {
+              "level": "%level",
+              "levelValue": "#asLong{%relative}",
+              "logger": "%logger",
+              "message": "%message",
+              "thread": "%thread",
+              "stack": "%replace(%replace(%rEx){'\n','\\\\n'}){'\t','\\\\t'}"
+              }
+              }
+            </pattern>
+          </pattern>
+        </providers>
+      </encoder>
+    </appender>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+      <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+        <providers>
+          <mdc/>
+          <pattern>
+            <pattern>
+              {
+              "serviceName": "upload",
+              "timestamp": "%date{yyyy-MM-dd'T'HH:mm:ss.SSS'Z',UTC}",
+              "request": {
+              "correlationId": "%mdc{CID:-null}",
+              "timestamp": "null"
+              },
+              "log": {
+              "level": "%level",
+              "levelValue": "#asLong{%relative}",
+              "logger": "%logger",
+              "message": "%message",
+              "thread": "%thread",
+              "stack": "%replace(%replace(%rEx){'\n','\\\\n'}){'\t','\\\\t'}"
+              }
+              }
+            </pattern>
+          </pattern>
+        </providers>
+      </encoder>
+    </appender>
+    <root level="INFO">
+      <appender-ref ref="STDOUT"/>
+      <appender-ref ref="logstashcustom"/>
+      <appender-ref ref="FILE"/>
+    </root>
+  </springProfile>
+
+  <springProfile name="testing">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+      <encoder>
+        <pattern>%date{ISO8601} %highlight(%-5level) [%X{X-Correlation-Id}] [%thread] %cyan(%logger[%method:%line]) - %msg %n</pattern>
+      </encoder>
+    </appender>
+    <root level="INFO">
+      <appender-ref ref="STDOUT"/>
+    </root>
+  </springProfile>
+
+</configuration>
