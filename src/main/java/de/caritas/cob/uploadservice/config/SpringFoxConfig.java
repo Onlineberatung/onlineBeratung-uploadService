@@ -52,8 +52,10 @@ public class SpringFoxConfig {
 
   // White list for path patterns that should be white listed so that swagger UI can be accessed
   // without authorization
-  public static final String[] WHITE_LIST = new String[]{"/uploads/docs", "/uploads/docs/**", "/v2/api-docs", "/configuration/ui",
-    "/swagger-resources/**", "/configuration/security", "/swagger-ui", "/swagger-ui/**", "/webjars/**"};
+  public static final String[] WHITE_LIST = new String[]{"/uploads/docs", "/uploads/docs/**",
+      "/v2/api-docs", "/configuration/ui",
+      "/swagger-resources/**", "/configuration/security", "/swagger-ui", "/swagger-ui/**",
+      "/webjars/**", "/actuator/health", "/actuator/health/**"};
 
   @Bean
   public Docket apiDocket() {
