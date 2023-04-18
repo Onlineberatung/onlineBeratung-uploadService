@@ -44,7 +44,7 @@ class HttpTenantFilterTest {
       throws ServletException, IOException {
 
     // given
-    Mockito.when(request.getRequestURI()).thenReturn("/users/1");
+    Mockito.when(request.getRequestURI()).thenReturn("/uploads/1");
 
     // when
     httpTenantFilter.doFilterInternal(request, response, filterChain);
