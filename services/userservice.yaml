@@ -565,39 +565,6 @@ paths:
           description: INTERNAL SERVER ERROR - server encountered unexpected condition
       security:
         - Bearer: [ ]
-  /users/sessions/monitoring/{sessionId}:
-    put:
-      tags:
-        - user-controller
-      summary: 'Update the monitoring values of a session [Authorization: Role: consultant]'
-      operationId: updateMonitoring
-      parameters:
-        - name: sessionId
-          in: path
-          description: Session Id
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/MonitoringDTO'
-        required: true
-      responses:
-        200:
-          description: OK - successfull operation
-        400:
-          description: BAD REQUEST - invalid/incomplete request or body object
-        401:
-          description: UNAUTHORIZED - no/invalid Keycloak token
-        403:
-          description: FORBIDDEN - no/invalid role/authorization or CSRF token
-        500:
-          description: INTERNAL SERVER ERROR - server encountered unexpected condition
-      security:
-        - Bearer: [ ]
   /users/consultants:
     get:
       tags:
@@ -719,40 +686,6 @@ paths:
           description: FORBIDDEN - no/invalid role/authorization
         409:
           description: CONFLICT - there was a key in the service
-        500:
-          description: INTERNAL SERVER ERROR - server encountered unexpected condition
-      security:
-        - Bearer: [ ]
-  /users/sessions/{sessionId}/monitoring:
-    get:
-      tags:
-        - user-controller
-      summary: 'Returns the monitoring for the given session [Authorization: Role:
-        consultant]'
-      operationId: getMonitoring
-      parameters:
-        - name: sessionId
-          in: path
-          description: Session Id
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        200:
-          description: successful operation
-          content:
-            'application/json':
-              schema:
-                $ref: '#/components/schemas/MonitoringDTO'
-        204:
-          description: successful operation, but no content
-        400:
-          description: BAD REQUEST - invalid/incomplete request or body object
-        401:
-          description: UNAUTHORIZED - no/invalid Keycloak token
-        403:
-          description: FORBIDDEN - no/invalid role/authorization or CSRF token
         500:
           description: INTERNAL SERVER ERROR - server encountered unexpected condition
       security:
@@ -1271,9 +1204,6 @@ components:
         isTeamSession:
           type: boolean
           example: false
-        monitoring:
-          type: boolean
-          example: true
         registrationType:
           type: string
           example: ANONYMOUS
@@ -1409,9 +1339,6 @@ components:
         isTeamSession:
           type: boolean
           example: false
-        isMonitoring:
-          type: boolean
-          example: true
 
     UserChatDTO:
       type: object
@@ -1675,12 +1602,6 @@ components:
         token:
           type: string
           example: "8cc2058"
-
-    MonitoringDTO:
-      type: object
-      properties:
-        additionalProperties:
-          $ref: "#/components/schemas/Properties"
 
     Properties:
       type: object
