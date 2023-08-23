@@ -31,7 +31,7 @@ class SubdomainTenantResolverTest {
   @Test
   void resolve_should_resolveTenantId_When_SubdomainCouldBeDetermined() {
     // given
-    when(subdomainExtractor.getCurrentSubdomain()).thenReturn(Optional.of("mucoviscidose"));
+    when(subdomainExtractor.getCurrentSubdomain(httpServletRequest)).thenReturn(Optional.of("mucoviscidose"));
     when(tenantService.getRestrictedTenantDataBySubdomain("mucoviscidose")).thenReturn(
         new de.caritas.cob.uploadservice.tenantservice.generated.web.model.RestrictedTenantDTO()
             .id(1L));
@@ -46,7 +46,7 @@ class SubdomainTenantResolverTest {
   @Test
   void resolve_should_NotResolve_When_SubdomainIsEmpty() {
     // given
-    when(subdomainExtractor.getCurrentSubdomain()).thenReturn(Optional.empty());
+    when(subdomainExtractor.getCurrentSubdomain(httpServletRequest)).thenReturn(Optional.empty());
 
     // when
     Optional<Long> resolve = subdomainTenantResolver.resolve(httpServletRequest);

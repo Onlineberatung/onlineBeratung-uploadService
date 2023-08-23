@@ -22,11 +22,11 @@ public class SubdomainTenantResolver implements TenantResolver {
 
   @Override
   public Optional<Long> resolve(HttpServletRequest request) {
-    return resolveTenantFromSubdomain();
+    return resolveTenantFromSubdomain(request);
   }
 
-  private Optional<Long> resolveTenantFromSubdomain() {
-    Optional<String> currentSubdomain = subdomainExtractor.getCurrentSubdomain();
+  private Optional<Long> resolveTenantFromSubdomain(HttpServletRequest request) {
+    Optional<String> currentSubdomain = subdomainExtractor.getCurrentSubdomain(request);
     if (currentSubdomain.isPresent()) {
       return of(getTenantIdBySubdomain(currentSubdomain.get()));
     } else {
