@@ -25,7 +25,7 @@ class CustomHeaderTenantResolverTest {
   @Test
   void resolve_Should_ResolveTenantId_When_SupplierCanResolveTenantId() {
     // given
-    when(tenantHeaderSupplier.getTenantFromHeader()).thenReturn(Optional.of(2L));
+    when(tenantHeaderSupplier.getTenantFromHeader(request)).thenReturn(Optional.of(2L));
     var resolved = customHeaderTenantResolver.resolve(request);
     // then
     assertThat(resolved).isEqualTo(Optional.of(2L));
@@ -34,7 +34,7 @@ class CustomHeaderTenantResolverTest {
   @Test
   void resolve_Should_NotResolveTenantId_When_SupplierCannotResolveTenantId() {
     // given
-    when(tenantHeaderSupplier.getTenantFromHeader()).thenReturn(Optional.empty());
+    when(tenantHeaderSupplier.getTenantFromHeader(request)).thenReturn(Optional.empty());
     var resolved = customHeaderTenantResolver.resolve(request);
     // then
     assertThat(resolved).isEmpty();
