@@ -31,7 +31,7 @@
     <liquibase-maven-plugin.version>4.1.1</liquibase-maven-plugin.version>
     <liquibase-core.version>4.9.1</liquibase-core.version>
     <springfox-boot-starter.version>3.0.0</springfox-boot-starter.version>
-    <spring-security.version>5.7.5</spring-security.version>
+    <spring-security.version>5.7.8</spring-security.version>
 
   </properties>
 
